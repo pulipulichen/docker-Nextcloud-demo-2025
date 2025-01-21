@@ -1,3 +1,3 @@
 #!/bin/bash
 
-cp -f /html/core/templates/layout.user.php /var/www/html/core/templates/
+cp -rf /html/* /var/www/html/

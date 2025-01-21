@@ -1,0 +1,40 @@
+version: "3.8"
+
+services:
+  nextcloud:
+    image: nextcloud
+    depends_on:
+      - nextclouddb
+      - redis
+    ports:
+      - 8080:80
+    volumes:
+      - nextcloud:/var/www/html/
+      - ./post-installation:/docker-entrypoint-hooks.d/post-installation
+      - ./html:/html
+    environment:
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      - MYSQL_PASSWORD=dbpassword
+      - MYSQL_HOST=nextclouddb
+      - REDIS_HOST=redis
+      - NEXTCLOUD_ADMIN_USER=admin
+      - NEXTCLOUD_ADMIN_PASSWORD=password
+
+  nextclouddb:
+    image: mariadb:11.6-ubi
+    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
+    volumes:
+      - db:/var/lib/mysql
+    environment:
+      - MYSQL_RANDOM_ROOT_PASSWORD=true
+      - MYSQL_PASSWORD=dbpassword
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      
+  redis:
+    image: redis:7.2.7-alpine3.21
+
+volumes:
+  nextcloud:
+  db:

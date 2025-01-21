@@ -97,11 +97,6 @@ p($theme->getTitle());
   nonce="<?php p($_['cspNonce']); ?>"
   src="https://cdnjs.cloudflare.com/ajax/libs/Snowstorm/20131208/snowstorm-min.js"
 ></script>
-<script nonce="<?php p($_['cspNonce']); ?>">
-snowStorm.snowColor = '#ff0000';   // red-ish snow!?
-snowStorm.flakesMaxActive = 96;    // show more snow on screen at once
-snowStorm.useTwinkleEffect = true; // let the snow flicker in and out of view
-</script>
 
 	</body>
 </html>

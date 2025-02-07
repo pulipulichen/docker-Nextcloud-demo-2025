@@ -6,6 +6,7 @@ services:
     depends_on:
       - nextclouddb
       - redis
+      - elasticsearch
     ports:
       - 8080:80
     volumes:
@@ -36,6 +37,21 @@ services:
   redis:
     image: redis:7.2.7-alpine3.21
 
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.10
+    # ports:
+    # 127.0.0.1:9200:9200 #only needed if you are connecting through a docker network
+    command: sh -c "bin/elasticsearch-plugin install --batch ingest-attachment; /bin/tini -s /usr/local/bin/docker-entrypoint.sh eswrapper"
+    restart: always
+    environment:
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx2048m"
+    user: 1000:1000
+    volumes:
+      - elasticsearch:/usr/share/elasticsearch/data
+
 volumes:
   nextcloud:
   db:
+  elasticsearch:

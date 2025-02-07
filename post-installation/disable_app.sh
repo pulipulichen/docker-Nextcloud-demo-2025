@@ -1,7 +1,5 @@
 #!/bin/bash
 
-/var/www/html/occ app:enable files_external
-
 /var/www/html/occ app:disable files_trashbin
 /var/www/html/occ app:disable files_versions
 /var/www/html/occ app:disable activity

@@ -26,3 +26,4 @@ FROM nextcloud:30.0.5-apache
 
 RUN apt-get update
 RUN apt-get install -y sudo
+RUN apt-get install -y nano

@@ -93,10 +93,12 @@ p($theme->getTitle());
 		</main>
 		<div id="profiler-toolbar"></div>
 
+<!--
 <script
   nonce="<?php p($_['cspNonce']); ?>"
   src="https://cdnjs.cloudflare.com/ajax/libs/Snowstorm/20131208/snowstorm-min.js"
 ></script>
+-->
 
 	</body>
 </html>

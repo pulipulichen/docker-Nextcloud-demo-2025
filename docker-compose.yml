@@ -56,11 +56,11 @@ services:
       - xpack.security.enabled=false
       - xpack.security.http.ssl:enabled=false
       # - network.host=0.0.0.0
-    ulimits:
-      # 取消内存相关限制 用于开启内存锁定
-      memlock:
-        soft: -1
-        hard: -1
+    # ulimits:
+    #   # 取消内存相关限制 用于开启内存锁定
+    #   memlock:
+    #     soft: -1
+    #     hard: -1
     volumes:
       - elasticsearch:/usr/share/elasticsearch/data
 

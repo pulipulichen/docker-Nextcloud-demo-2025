@@ -3,11 +3,12 @@
 /var/www/html/occ app:enable fulltextsearch
 /var/www/html/occ app:enable fulltextsearch_elasticsearch
 /var/www/html/occ app:enable files_fulltextsearch
-/var/www/html/occ app:enable files_fulltextsearch_tesseract
 
-apt install tesseract-ocr tesseract-ocr-chi-tra tesseract-ocr-chi-sim tesseract-ocr-eng -y
-
-
+# /var/www/html/occ app:enable files_fulltextsearch_tesseract
+# apt update
+# apt install tesseract-ocr tesseract-ocr-chi-tra tesseract-ocr-chi-sim \
+#   tesseract-ocr-eng tesseract-ocr-chi-tra-vert \
+#   tesseract-ocr-script-viet tesseract-ocr-script-hant tesseract-ocr-script-hant-vert -y
 
 
 wait_for_elasticsearch() {
@@ -17,18 +18,18 @@ wait_for_elasticsearch() {
 
   echo "Waiting for $HOST:$PORT..."
   while ! (echo > /dev/tcp/$HOST/$PORT) 2>/dev/null; do
-    sleep 2
-    echo "Waiting for Elasticsearch..."
+    sleep 10
+    echo "[enable_fulltextsearch.sh] Waiting for Elasticsearch..."
   done
 
   sleep 60
 
-  echo "Elasticsearch is ready!"
+  echo "[enable_fulltextsearch.sh] Elasticsearch is ready!"
 
-  /var/www/html/occ fulltextsearch:configure "{\
-    \"search_platform\": \"elastic_search\",\
-    \"elastic_host\": \"http://elastic:elastic@elasticsearch:9200/\"
-  }"
+  # /var/www/html/occ fulltextsearch:configure "{\
+  #   \"search_platform\": \"elastic_search\",\
+  #   \"elastic_host\": \"http://elastic:elastic@elasticsearch:9200/\"
+  # }"
 }
 
 wait_for_elasticsearch &

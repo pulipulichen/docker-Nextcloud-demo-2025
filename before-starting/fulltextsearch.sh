@@ -1,8 +1,9 @@
 #!/bin/bash
 
+# http://elastic:elastic@elasticsearch:9200/
+
 # https://fariszr.com/nextcloud-fulltextsearch-elasticsearch-docker-setup/
 
-# exit 0
 wait_for_elasticsearch() {
 
   HOST="elasticsearch"
@@ -10,18 +11,21 @@ wait_for_elasticsearch() {
 
   echo "Waiting for $HOST:$PORT..."
   while ! (echo > /dev/tcp/$HOST/$PORT) 2>/dev/null; do
-    sleep 2
-    echo "Waiting for Elasticsearch..."
+    sleep 10
+    echo "[fulltextsearch.sh] Waiting for Elasticsearch..."
   done
 
   sleep 60
 
-  echo "Elasticsearch is ready!"
+  echo "[fulltextsearch.sh] Elasticsearch is ready!"
 
   # Stop all running indexes
   # php /var/www/html/occ fulltextsearch:stop
   # Start live index
-  php /var/www/html/occ fulltextsearch:live 
+  php /var/www/html/occ fulltextsearch:check
+  php /var/www/html/occ fulltextsearch:test
+  php /var/www/html/occ fulltextsearch:index
+  php /var/www/html/occ fulltextsearch:live &
 }
 
-wait_for_elasticsearch &
+# wait_for_elasticsearch

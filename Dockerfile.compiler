@@ -26,15 +26,17 @@ FROM node:22.14.0-bookworm
 
 RUN mkdir -p /src
 
-COPY ./nextcloud/vue-src/.* /src/
-COPY ./nextcloud/vue-src/*.js /src/
-COPY ./nextcloud/vue-src/*.json /src/
-COPY ./nextcloud/vue-src/*.ts /src/
+COPY ./nextcloud/src/.* /src/
+COPY ./nextcloud/src/*.js /src/
+COPY ./nextcloud/src/*.json /src/
+COPY ./nextcloud/src/*.ts /src/
 
 WORKDIR /src
 
 RUN npm install
 
-COPY ./nextcloud/vue-src/version.php /src/
+COPY ./nextcloud/src/version.php /src/
+COPY ./nextcloud/src/version.php /src/
 
-CMD ["npm", "run", "watch"]
+# CMD ["npm", "run", "watch"]
+CMD ["/entrypoint.sh"]

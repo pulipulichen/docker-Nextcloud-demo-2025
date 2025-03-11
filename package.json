@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "docker-compose down; docker-compose up --build",
+    "start": "docker-compose up --build",
     "bash": "./bash-running.sh",
-    "reset": "docker-compose down -v; docker-compose rm -v;  docker-compose up --build",
+    "reset": "docker-compose down -v; docker-compose rm;  docker-compose up --build",
     "reset-start": "rm -rf ./docker-web-Apache-Solr; docker-compose up --build",
     "d0.build": "docker-compose build",
     "d1.bash": "docker-compose run --service-ports app bash /console.sh",

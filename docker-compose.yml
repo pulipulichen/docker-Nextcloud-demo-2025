@@ -1,19 +1,10 @@
 version: "3.8"
 
 services:
-  compiler:
+  
+  nextcloud_server:
     build: 
-      dockerfile: Dockerfile.compiler
-    volumes:
-      - ./nextcloud/src/apps:/src/apps
-      - ./nextcloud/src/build:/src/build
-      - ./nextcloud/src/core:/src/core
-      - ./nextcloud/server/dist:/src/dist
-      - ./nextcloud/src/entrypoint.sh:/entrypoint.sh
-
-  nextcloud:
-    build: 
-      dockerfile: Dockerfile.server
+      dockerfile: Dockerfile.nextcloud_server
     depends_on:
       - nextclouddb
       - redis
@@ -22,9 +13,9 @@ services:
       - 8080:80
     volumes:
       - nextcloud:/var/www/html/
-      - ./nextcloud/docker-entrypoint-hooks.d/post-installation:/docker-entrypoint-hooks.d/post-installation
-      - ./nextcloud/docker-entrypoint-hooks.d/before-starting:/docker-entrypoint-hooks.d/before-starting
-      - ./nextcloud/server:/html
+      - ./nextcloud_server/docker-entrypoint-hooks.d/post-installation:/docker-entrypoint-hooks.d/post-installation
+      - ./nextcloud_server/docker-entrypoint-hooks.d/before-starting:/docker-entrypoint-hooks.d/before-starting
+      - ./nextcloud_server/server:/html
     environment:
       - MYSQL_DATABASE=nextcloud
       - MYSQL_USER=nextcloud
@@ -38,6 +29,26 @@ services:
       # - OPCACHE_ENABLE=0
       # - NEXTCLOUD_TRUSTED_DOMAINS=192.168.88.195:8080
       # - PHP_MEMORY_LIMIT=1024M
+    env_file:
+      - .env
+
+  nextcloud_compiler:
+    build: 
+      context: .
+      dockerfile: ./nextcloud_compiler/Dockerfile
+    volumes:
+      - ./nextcloud_compiler/src/apps:/src/apps
+      - ./nextcloud_compiler/src/build:/src/build
+      - ./nextcloud_compiler/src/core/src:/src/core/src
+      - ./nextcloud_server/server/core/css:/src/core/css
+      - ./nextcloud_server/server/core/img:/src/core/img
+      - ./nextcloud_server/server/core/fonts:/src/core/fonts
+      - ./nextcloud_server/server/core/doc:/src/core/doc
+      - ./nextcloud_server/server/core/js:/src/core/js
+      - ./nextcloud_server/server/core/templates:/src/core/templates
+      - ./nextcloud_server/server/core/vendor:/src/core/vendor
+      - ./nextcloud_server/server/dist:/src/dist
+      - ./nextcloud_compiler/entrypoint.sh:/entrypoint.sh
     env_file:
       - .env
 

@@ -5,10 +5,10 @@ services:
     build: 
       dockerfile: compiler.Dockerfile
     volumes:
-      - ./nextcloud/vue-src/apps:/src/apps
-      - ./nextcloud/vue-src/build:/src/build
-      - ./nextcloud/vue-src/core:/src/core
-      - ./nextcloud/vue-src/dist:/src/dist
+      - ./nextcloud/src/apps:/src/apps
+      - ./nextcloud/src/build:/src/build
+      - ./nextcloud/src/core:/src/core
+      - ./nextcloud/server/dist:/src/dist
 
   nextcloud:
     # image: nextcloud:30.0.5-apache
@@ -22,12 +22,9 @@ services:
       - 8080:80
     volumes:
       - nextcloud:/var/www/html/
-      - ./nextcloud/post-installation:/docker-entrypoint-hooks.d/post-installation
-      - ./nextcloud/before-starting:/docker-entrypoint-hooks.d/before-starting
-      - ./nextcloud/html:/html
-      - ./nextcloud/files:/files
-      - ./nextcloud/vue-src/dist:/dist
-      # - ./es:/etc/elasticsearch/
+      - ./nextcloud/docker-entrypoint-hooks.d/post-installation:/docker-entrypoint-hooks.d/post-installation
+      - ./nextcloud/docker-entrypoint-hooks.d/before-starting:/docker-entrypoint-hooks.d/before-starting
+      - ./nextcloud/server:/html
     environment:
       - MYSQL_DATABASE=nextcloud
       - MYSQL_USER=nextcloud

@@ -1,9 +1,19 @@
 version: "3.8"
 
 services:
+  compiler:
+    build: 
+      dockerfile: compiler.Dockerfile
+    volumes:
+      - ./nextcloud/vue-src/apps:/src/apps
+      - ./nextcloud/vue-src/build:/src/build
+      - ./nextcloud/vue-src/core:/src/core
+      - ./nextcloud/vue-src/dist:/src/dist
+
   nextcloud:
     # image: nextcloud:30.0.5-apache
-    build: .
+    build: 
+      dockerfile: server.Dockerfile
     depends_on:
       - nextclouddb
       - redis
@@ -15,6 +25,8 @@ services:
       - ./nextcloud/post-installation:/docker-entrypoint-hooks.d/post-installation
       - ./nextcloud/before-starting:/docker-entrypoint-hooks.d/before-starting
       - ./nextcloud/html:/html
+      - ./nextcloud/files:/files
+      - ./nextcloud/vue-src/dist:/dist
       # - ./es:/etc/elasticsearch/
     environment:
       - MYSQL_DATABASE=nextcloud

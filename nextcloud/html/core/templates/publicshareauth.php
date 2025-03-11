@@ -69,7 +69,7 @@
 	<?php if (!isset($_['identityOk']) && $_['share']->getShareType() === $_['share']::TYPE_EMAIL && !$_['share']->getSendPasswordByTalk()): ?>
 		<a id="request-password-button-not-talk"><?php p($l->t('Forgot password?')); ?></a>
 	<?php endif; ?>
-
+	
 	<!-- back to showShare button -->
 	<form method="get">
 		<fieldset>

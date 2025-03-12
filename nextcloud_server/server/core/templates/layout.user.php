@@ -69,7 +69,6 @@ p($theme->getTitle());
 					id="nextcloud">
 					<div class="logo logo-icon"></div>
 				</a>
-
 				<nav id="header-left__appmenu"></nav>
 			</div>
 

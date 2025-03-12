@@ -13335,7 +13335,25 @@ var render = function render() {
       fn: function () {
         return [_c("ul", {
           staticClass: "app-navigation-entry__settings"
-        }, [_c("NavigationQuota")], 1)];
+        }, [_c("NavigationQuota"), _vm._v(" "), _c("NcAppNavigationItem", {
+          attrs: {
+            name: _vm.t("files", "Files settings"),
+            "data-cy-files-navigation-settings-button": ""
+          },
+          on: {
+            click: function ($event) {
+              $event.preventDefault();
+              $event.stopPropagation();
+              return _vm.openSettings.apply(null, arguments);
+            }
+          }
+        }, [_c("IconCog", {
+          attrs: {
+            slot: "icon",
+            size: 20
+          },
+          slot: "icon"
+        })], 1)], 1)];
       },
       proxy: true
     }])
@@ -18526,4 +18544,4 @@ __webpack_require__.r(__webpack_exports__);
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=files-main.js.map?v=3152a56e88cc0b89140e
+//# sourceMappingURL=files-main.js.map?v=7e63a3e12e30f7570102

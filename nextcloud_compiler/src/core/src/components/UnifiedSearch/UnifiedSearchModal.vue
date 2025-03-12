@@ -26,7 +26,7 @@
 				:label="t('core', 'Search apps, files, tags, messages') + '...'"
 				@update:value="debouncedFind" />
 			<div class="unified-search-modal__filters" data-cy-unified-search-filters
-				v-if="false">
+				v-if="!isGuest">
 				<NcActions :menu-name="t('core', 'Places')" :open.sync="providerActionMenuIsOpen" data-cy-unified-search-filter="places">
 					<template #icon>
 						<IconListBox :size="20" />
@@ -270,6 +270,10 @@ export default defineComponent({
 	},
 
 	computed: {
+		isGuest(): boolean {
+			return !OC.currentUser || OC.currentUser.includes('guest')
+		},
+		
 		isEmptySearch() {
 			return this.searchQuery.length === 0
 		},

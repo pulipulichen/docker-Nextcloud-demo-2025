@@ -9,3 +9,5 @@ echo "Guest password: $NEXTCLOUD_GUEST_PASSWORD"
 
 # export OC_PASS=password
 OC_PASS=$NEXTCLOUD_GUEST_PASSWORD /var/www/html/occ guests:add --password-from-env --display-name "$NEXTCLOUD_GUEST_USER" $NEXTCLOUD_ADMIN_USER $NEXTCLOUD_GUEST_EMAIL
+
+/var/www/html/occ config:app:set guests usewhitelist --value="false"

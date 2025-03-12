@@ -17,7 +17,7 @@ fi
 # TARGET_DIRS=("core" "config")
 
 # TARGET_DIRS=("core" "dist" "apps")
-TARGET_DIRS=("core" "dist")
+TARGET_DIRS=("core" "dist" "custom_theme")
 
 # 迭代處理每個目錄
 for DIR in "${TARGET_DIRS[@]}"; do

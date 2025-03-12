@@ -10,6 +10,7 @@
 			'app-menu-entry--active': app.active,
 			'app-menu-entry--truncated': needsSpace,
 		}">
+		<!--
 		<a class="app-menu-entry__link"
 			:href="app.href"
 			:title="app.name"
@@ -20,6 +21,13 @@
 			<span ref="labelElement" class="app-menu-entry__label">
 				{{ app.name }}
 			</span>
+		</a>
+		-->
+		<a class="app-menu-entry__list"
+			:class="{'active': app.active}"
+			:href="app.href">
+			<AppMenuIcon :app="app" />
+			{{ app.name }}
 		</a>
 	</li>
 </template>
@@ -41,7 +49,9 @@ const needsSpace = ref(false)
 function calculateSize() {
 	const maxWidth = containerElement.value!.clientWidth
 	// Also keep the 0.5px letter spacing in mind
-	needsSpace.value = (maxWidth - props.app.name.length * 0.5) < (labelElement.value!.scrollWidth)
+	if (labelElement.value!) {
+		needsSpace.value = (maxWidth - props.app.name.length * 0.5) < (labelElement.value!.scrollWidth)
+	}
 }
 // Update size on mounted and when the app name changes
 onMounted(calculateSize)
@@ -54,6 +64,7 @@ watch(() => props.app.name, calculateSize)
 	width: var(--header-height);
 	height: var(--header-height);
 	position: relative;
+	// color: red !important; 
 
 	&__link {
 		position: relative;
@@ -163,10 +174,10 @@ watch(() => props.app.name, calculateSize)
 
 <style lang="scss">
 // Showing the label
-.app-menu-entry:hover,
-.app-menu-entry:focus-within,
-.app-menu__list:hover,
-.app-menu__list:focus-within {
+.app-menu-entry,
+.app-menu-entry,
+.app-menu__list,
+.app-menu__list {
 	// Move icon up so that the name does not overflow the icon
 	.app-menu-entry__icon {
 		margin-block-end: 1lh;
@@ -186,4 +197,37 @@ watch(() => props.app.name, calculateSize)
 		opacity: 0;
 	}
 }
+</style>
+<style lang="scss">
+.app-menu-entry {
+	width: fit-content !important;
+
+	.app-menu-entry__list {
+
+		&.active {
+			font-weight: bold !important;
+			background-color: rgba(255,255,255,0.5);
+		}
+
+		display: flex;
+		/* border: 1px solid red; */
+		height: 50px;
+		
+		/* margin-right: 0.5rem; */
+		/* padding-right: 0.5rem; */
+		justify-content: flex-start;
+		align-items: center;
+		color: white;
+		
+		// margin-right: 1rem !important;
+		padding-left: 1rem !important;
+		padding-right: 1rem !important;
+
+		.app-menu-icon {
+			margin-right: 0.5rem !important;
+		}
+	}
+}
+
+
 </style>

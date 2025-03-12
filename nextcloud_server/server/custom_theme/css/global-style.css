@@ -1,0 +1,12 @@
+#content-vue {
+  border-radius: 0 !important;
+  margin-left: 0;
+  margin-right: 0;
+  width: 100vw;
+  margin-bottom: 0;
+  height: calc(100vh - 50px);
+}
+
+body {
+  background-image: none !important;
+}

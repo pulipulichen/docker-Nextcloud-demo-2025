@@ -10962,6 +10962,9 @@ const collator = Intl.Collator([(0,_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_2__.
     };
   },
   computed: {
+    isGuest() {
+      return !OC.currentUser || OC.currentUser.includes('guest');
+    },
     /**
      * The current view ID from the route params
      */
@@ -13335,7 +13338,7 @@ var render = function render() {
       fn: function () {
         return [_c("ul", {
           staticClass: "app-navigation-entry__settings"
-        }, [_c("NavigationQuota"), _vm._v(" "), _c("NcAppNavigationItem", {
+        }, [_c("NavigationQuota"), _vm._v(" "), !_vm.isGuest ? _c("NcAppNavigationItem", {
           attrs: {
             name: _vm.t("files", "Files settings"),
             "data-cy-files-navigation-settings-button": ""
@@ -13353,7 +13356,7 @@ var render = function render() {
             size: 20
           },
           slot: "icon"
-        })], 1)], 1)];
+        })], 1) : _vm._e()], 1)];
       },
       proxy: true
     }])
@@ -18544,4 +18547,4 @@ __webpack_require__.r(__webpack_exports__);
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=files-main.js.map?v=2ef42b7104c2fb03460f
+//# sourceMappingURL=files-main.js.map?v=2bf862107af0de524c78

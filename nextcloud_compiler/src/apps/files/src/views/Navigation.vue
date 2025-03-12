@@ -30,6 +30,7 @@
 				<!-- Files settings modal toggle-->
 				<NcAppNavigationItem :name="t('files', 'Files settings')"
 					data-cy-files-navigation-settings-button
+					v-if="!isGuest"
 					@click.prevent.stop="openSettings">
 					<IconCog slot="icon" :size="20" />
 				</NcAppNavigationItem>
@@ -108,6 +109,10 @@ export default defineComponent({
 	},
 
 	computed: {
+		isGuest(): boolean {
+			return !OC.currentUser || OC.currentUser.includes('guest')
+		},
+
 		/**
 		 * The current view ID from the route params
 		 */

@@ -7024,6 +7024,9 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   computed: {
+    isGuest() {
+      return !OC.currentUser || OC.currentUser.includes('guest');
+    },
     dirs() {
       const cumulativePath = acc => value => acc += `${value}/`;
       // Generate a cumulative path for each path segment: ['/', '/foo', '/foo/bar', ...] etc
@@ -11450,7 +11453,7 @@ var render = function render() {
     scopedSlots: _vm._u([{
       key: "actions",
       fn: function () {
-        return [_vm._t("actions")];
+        return [!_vm.isGuest ? _vm._t("actions") : _vm._e()];
       },
       proxy: true
     }], null, true)
@@ -18523,4 +18526,4 @@ __webpack_require__.r(__webpack_exports__);
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=files-main.js.map?v=fdc378a4b8b79f8ffbc6
+//# sourceMappingURL=files-main.js.map?v=3152a56e88cc0b89140e

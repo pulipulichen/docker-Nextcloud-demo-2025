@@ -28,7 +28,8 @@
 
 		<!-- Forward the actions slot -->
 		<template #actions>
-			<slot name="actions" />
+			<slot name="actions"
+				v-if="!isGuest" />
 		</template>
 	</NcBreadcrumbs>
 </template>
@@ -96,6 +97,10 @@ export default defineComponent({
 	},
 
 	computed: {
+		isGuest(): boolean {
+			return !OC.currentUser || OC.currentUser.includes('guest')
+		},
+
 		dirs(): string[] {
 			const cumulativePath = (acc: string) => (value: string) => (acc += `${value}/`)
 			// Generate a cumulative path for each path segment: ['/', '/foo', '/foo/bar', ...] etc

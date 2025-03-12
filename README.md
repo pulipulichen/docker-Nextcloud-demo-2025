@@ -11,6 +11,16 @@ http://localhost:8080/login?user=admin&password=password
 
 
 
-*.js,*.json,**/dist/,*.sh,.gitignore,.env,LICENSE,.xml,**/dav/,**/test,**/composer,**/tests/,*.mjs,*.mjs.map,.js.map
-
+````
 **/l10n/,**/js/,*.json,**/dist/,*.sh,.gitignore,.env,LICENSE,.xml,**/dav/,**/test,**/composer,**/tests/,*.mjs,*.mjs.map,.js.map
+````
+
+````Vue
+isGuest(): boolean {
+	return !OC.currentUser || OC.currentUser.includes('guest')
+},
+````
+
+````
+$userId = $this->userSession->getUser()->getUID();
+````

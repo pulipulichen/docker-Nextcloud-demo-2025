@@ -1,0 +1,9 @@
+body {
+  /* visibility: hidden; */
+  opacity: 0.7;
+}
+
+.text-editor__session-list,
+#viewer button[aria-label="Actions"][aria-haspopup="menu"] {
+  display: none !important;
+}

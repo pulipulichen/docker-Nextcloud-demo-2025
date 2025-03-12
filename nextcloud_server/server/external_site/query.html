@@ -83,7 +83,7 @@
   <section class="header-section">
     <h1>搜尋結果</h1>
     <div class="search-box">
-      <input type="text" placeholder="搜尋資料庫相關資訊...">
+      <input type="text" id="search_query" placeholder="搜尋資料庫相關資訊...">
       <button>搜尋</button>
     </div>
   </section>
@@ -103,5 +103,25 @@
       <p>這是一段關於搜尋結果 3 的描述文字，提供使用者一些基本的資訊。</p>
     </div>
   </section>
+
+  <script>
+    // 取得 URL 的查詢參數
+const urlParams = new URLSearchParams(window.location.search);
+
+// 檢查是否有 'query' 參數
+if (urlParams.has('query')) {
+    // 取得 'query' 的值
+    const queryValue = urlParams.get('query');
+
+    // 將值填入 #search_query 欄位
+    document.addEventListener("DOMContentLoaded", function () {
+        const searchInput = document.querySelector("#search_query");
+        if (searchInput) {
+            searchInput.value = queryValue;
+        }
+    });
+}
+
+  </script>
 </body>
 </html>

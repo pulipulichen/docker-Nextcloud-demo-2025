@@ -26,7 +26,7 @@
       position: relative;
       width: 100%;
       height: 100vh;
-      background: url('cover.jpg') no-repeat center center/cover;
+      background: url('coding-1841550_1280.jpg') no-repeat center center/cover;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -112,7 +112,7 @@
     /* 專業資料庫服務背景區 */
     .service-banner {
       position: relative;
-      background: url('service-banner.jpg') no-repeat center center/cover;
+      background: url('coding-1841550_1280.jpg') no-repeat center center/cover;
       color: #fff;
       text-align: center;
       height: 300px;
@@ -140,9 +140,11 @@
     .service-banner p {
       font-size: 1.2rem;
     }
-    /* 服務區塊 */
+    /* 服務介紹區塊 */
     .service-section {
       padding: 40px 20px;
+      max-width: 1200px;
+      margin: 0 auto;
     }
     .service-block {
       display: flex;
@@ -150,13 +152,10 @@
       margin: 40px 0;
       flex-wrap: wrap;
     }
-    /* 若加上 .reverse 就變成圖片在右，文字在左 */
-    .service-block.reverse {
-      flex-direction: row-reverse;
-    }
+    /* 調整圖片大小 */
     .service-image {
-      flex: 0 0 400px;
-      max-width: 400px;
+      flex: 0 0 300px;
+      max-width: 300px;
       padding: 10px;
     }
     .service-image img {
@@ -174,6 +173,10 @@
     .service-text p,
     .service-text ul {
       margin-bottom: 10px;
+    }
+    /* 反向區塊：圖片置右 */
+    .service-block.reverse {
+      flex-direction: row-reverse;
     }
     /* 頁尾 */
     footer {
@@ -230,9 +233,9 @@
 
   <!-- 跑馬燈圖片區 -->
   <div class="slider">
-    <img src="slide1.jpg" class="active" alt="Slide 1">
-    <img src="slide2.jpg" alt="Slide 2">
-    <img src="slide3.jpg" alt="Slide 3">
+    <img src="coding-1853305_1280.jpg" class="active" alt="Slide 1">
+    <img src="code-1839406_1280.jpg" alt="Slide 2">
+    <img src="coding-1841550_1280.jpg" alt="Slide 3">
   </div>
 
   <!-- 專業資料庫服務背景區 -->
@@ -249,7 +252,7 @@
     <!-- 資料庫設計與架構 (圖片在左) -->
     <div class="service-block">
       <div class="service-image">
-        <img src="design.jpg" alt="資料庫設計與架構">
+        <img src="coding-1853305_1280.jpg" alt="資料庫設計與架構">
       </div>
       <div class="service-text">
         <h3>資料庫設計與架構</h3>
@@ -267,7 +270,7 @@
     <!-- 資料安全與治理 (圖片在右) -->
     <div class="service-block reverse">
       <div class="service-image">
-        <img src="security.jpg" alt="資料安全與治理">
+        <img src="coding-1853305_1280.jpg" alt="資料安全與治理">
       </div>
       <div class="service-text">
         <h3>資料安全與治理</h3>
@@ -285,7 +288,7 @@
     <!-- 效能優化與監控 (圖片在左) -->
     <div class="service-block">
       <div class="service-image">
-        <img src="performance.jpg" alt="效能優化與監控">
+        <img src="coding-1853305_1280.jpg" alt="效能優化與監控">
       </div>
       <div class="service-text">
         <h3>效能優化與監控</h3>
@@ -320,7 +323,7 @@
     let currentSlide = 0;
     const slides = document.querySelectorAll('.slider img');
     const totalSlides = slides.length;
-
+    
     setInterval(() => {
       slides[currentSlide].classList.remove('active');
       currentSlide = (currentSlide + 1) % totalSlides;

@@ -13,13 +13,14 @@
 		data-cy-files-navigation-settings-quota
 		@click.stop.prevent="debounceUpdateStorageStats">
 		<ChartPie slot="icon" :size="20" />
-
+		
 		<!-- Progress bar -->
 		<NcProgressBar v-if="storageStats.quota >= 0"
 			slot="extra"
 			:aria-label="t('files', 'Storage quota')"
 			:error="storageStats.relative > 80"
 			:value="Math.min(storageStats.relative, 100)" />
+		
 	</NcAppNavigationItem>
 </template>
 

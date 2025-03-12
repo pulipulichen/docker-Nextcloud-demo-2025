@@ -4,10 +4,14 @@
 
 #!/bin/bash
 
+echo =================================================================
+echo "99.link_html.sh"
+echo =================================================================
+
 # 定義目標目錄
 # TARGET_DIRS=("core" "config", "lib")
 # TARGET_DIRS=("core" "config")
-TARGET_DIRS=("core" "dist")
+TARGET_DIRS=("core" "dist" "apps")
 
 # 迭代處理每個目錄
 for DIR in "${TARGET_DIRS[@]}"; do

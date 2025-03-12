@@ -53,8 +53,8 @@ wait_for_database
 # echo $(USER) $(whoami)
 if [ "$NEXTCLOUD_ENABLE_FULLTEXT_SEARCH" = "true" ]; then
   wait_for_elasticsearch
-else
-  php /var/www/html/occ app:disable fulltextsearch
-  php /var/www/html/occ app:disable fulltextsearch_elasticsearch
-  php /var/www/html/occ app:disable files_fulltextsearch
+# else
+  # php /var/www/html/occ app:disable fulltextsearch
+  # php /var/www/html/occ app:disable fulltextsearch_elasticsearch
+  # php /var/www/html/occ app:disable files_fulltextsearch
 fi

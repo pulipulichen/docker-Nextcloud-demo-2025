@@ -169,6 +169,7 @@ class ViewController extends Controller {
 		}
 
 		$this->initialState->provideInitialState('storageStats', $storageInfo);
+		
 		$this->initialState->provideInitialState('config', $this->userConfig->getConfigs());
 		$this->initialState->provideInitialState('viewConfigs', $this->viewConfig->getConfigs());
 

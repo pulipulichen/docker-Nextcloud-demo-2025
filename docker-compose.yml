@@ -41,7 +41,7 @@ services:
       context: .
       dockerfile: ./nextcloud_compiler/Dockerfile
     volumes:
-      - ./nextcloud_compiler/src/apps:/src/apps
+      - ./nextcloud_server/server/apps:/src/apps
       - ./nextcloud_compiler/src/build:/src/build
       - ./nextcloud_compiler/src/core/src:/src/core/src
       - ./nextcloud_server/server/core/css:/src/core/css

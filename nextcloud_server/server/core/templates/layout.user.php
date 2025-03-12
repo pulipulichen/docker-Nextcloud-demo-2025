@@ -92,8 +92,11 @@ p($theme->getTitle());
 		</main>
 		<div id="profiler-toolbar"></div>
 
+	  <!-- ================================================================= -->
 		<script nonce="<?php p($_['cspNonce']); ?>">
-			console.log('1112')
+			console.log('JavaScript example')
 		</script>
+		<!-- ================================================================= -->
+
 	</body>
 </html>

@@ -10,6 +10,7 @@
 		:description="avatarDescription">
 		<template #trigger>
 			<!-- The `key` is a hack as NcAvatar does not handle updating the preloaded status on show status change -->
+			<!--
 			<NcAvatar :key="String(showUserStatus)"
 				class="account-menu__avatar"
 				disable-menu
@@ -17,6 +18,9 @@
 				:show-user-status="showUserStatus"
 				:user="currentUserId"
 				:preloaded-user-status="userStatus" />
+			-->
+			<NcIconSvgWrapper
+				:path="icon" />
 		</template>
 		<ul class="account-menu__list">
 			<AccountMenuProfileEntry :id="profileEntry.id"
@@ -51,6 +55,9 @@ import NcAvatar from '@nextcloud/vue/components/NcAvatar'
 import NcHeaderMenu from '@nextcloud/vue/components/NcHeaderMenu'
 import AccountMenuProfileEntry from '../components/AccountMenu/AccountMenuProfileEntry.vue'
 import AccountMenuEntry from '../components/AccountMenu/AccountMenuEntry.vue'
+
+import NcIconSvgWrapper from '@nextcloud/vue/components/NcIconSvgWrapper'
+import { mdiDotsVertical } from '@mdi/js'
 
 interface ISettingsNavigationEntry {
 	/**
@@ -101,6 +108,7 @@ export default defineComponent({
 		AccountMenuProfileEntry,
 		NcAvatar,
 		NcHeaderMenu,
+		NcIconSvgWrapper
 	},
 
 	setup() {
@@ -135,6 +143,10 @@ export default defineComponent({
 				...this.userStatus,
 				status: this.translateStatus(this.userStatus.status),
 			}
+		},
+
+		icon () {
+			return mdiDotsVertical
 		},
 
 		avatarDescription() {

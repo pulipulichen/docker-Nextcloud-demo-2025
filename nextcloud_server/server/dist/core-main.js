@@ -7649,7 +7649,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _nextcloud_l10n__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @nextcloud/l10n */ "./node_modules/@nextcloud/l10n/dist/index.mjs");
 /* harmony import */ var _nextcloud_router__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @nextcloud/router */ "./node_modules/@nextcloud/router/dist/index.mjs");
 /* harmony import */ var _nextcloud_capabilities__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @nextcloud/capabilities */ "./node_modules/@nextcloud/capabilities/dist/index.mjs");
-/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.runtime.esm.js");
+/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.runtime.esm.js");
 /* harmony import */ var _apps_user_status_src_services_statusOptionsService_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../../apps/user_status/src/services/statusOptionsService.js */ "./apps/user_status/src/services/statusOptionsService.js");
 /* harmony import */ var _nextcloud_axios__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @nextcloud/axios */ "./node_modules/@nextcloud/axios/dist/index.mjs");
 /* harmony import */ var _logger_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../logger.js */ "./core/src/logger.js");
@@ -7657,6 +7657,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _nextcloud_vue_components_NcHeaderMenu__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! @nextcloud/vue/components/NcHeaderMenu */ "./node_modules/@nextcloud/vue/dist/Components/NcHeaderMenu.mjs");
 /* harmony import */ var _components_AccountMenu_AccountMenuProfileEntry_vue__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../components/AccountMenu/AccountMenuProfileEntry.vue */ "./core/src/components/AccountMenu/AccountMenuProfileEntry.vue");
 /* harmony import */ var _components_AccountMenu_AccountMenuEntry_vue__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../components/AccountMenu/AccountMenuEntry.vue */ "./core/src/components/AccountMenu/AccountMenuEntry.vue");
+/* harmony import */ var _nextcloud_vue_components_NcIconSvgWrapper__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! @nextcloud/vue/components/NcIconSvgWrapper */ "./node_modules/@nextcloud/vue/dist/Components/NcIconSvgWrapper.mjs");
+/* harmony import */ var _mdi_js__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! @mdi/js */ "./node_modules/@mdi/js/mdi.js");
+
+
 
 
 
@@ -7672,13 +7676,14 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const USER_DEFINABLE_STATUSES = (0,_apps_user_status_src_services_statusOptionsService_js__WEBPACK_IMPORTED_MODULE_6__.getAllStatusOptions)();
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,vue__WEBPACK_IMPORTED_MODULE_13__.defineComponent)({
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,vue__WEBPACK_IMPORTED_MODULE_14__.defineComponent)({
   name: 'AccountMenu',
   components: {
     AccountMenuEntry: _components_AccountMenu_AccountMenuEntry_vue__WEBPACK_IMPORTED_MODULE_12__["default"],
     AccountMenuProfileEntry: _components_AccountMenu_AccountMenuProfileEntry_vue__WEBPACK_IMPORTED_MODULE_11__["default"],
     NcAvatar: _nextcloud_vue_components_NcAvatar__WEBPACK_IMPORTED_MODULE_9__["default"],
-    NcHeaderMenu: _nextcloud_vue_components_NcHeaderMenu__WEBPACK_IMPORTED_MODULE_10__["default"]
+    NcHeaderMenu: _nextcloud_vue_components_NcHeaderMenu__WEBPACK_IMPORTED_MODULE_10__["default"],
+    NcIconSvgWrapper: _nextcloud_vue_components_NcIconSvgWrapper__WEBPACK_IMPORTED_MODULE_13__["default"]
   },
   setup() {
     const settingsNavEntries = (0,_nextcloud_initial_state__WEBPACK_IMPORTED_MODULE_2__.loadState)('core', 'settingsNavEntries', {});
@@ -7710,6 +7715,9 @@ const USER_DEFINABLE_STATUSES = (0,_apps_user_status_src_services_statusOptionsS
         ...this.userStatus,
         status: this.translateStatus(this.userStatus.status)
       };
+    },
+    icon() {
+      return _mdi_js__WEBPACK_IMPORTED_MODULE_15__.mdiDotsVertical;
     },
     avatarDescription() {
       const description = [(0,_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_3__.t)('core', 'Avatar of {displayName}', {
@@ -8417,15 +8425,9 @@ var render = function render() {
     scopedSlots: _vm._u([{
       key: "trigger",
       fn: function () {
-        return [_c("NcAvatar", {
-          key: String(_vm.showUserStatus),
-          staticClass: "account-menu__avatar",
+        return [_c("NcIconSvgWrapper", {
           attrs: {
-            "disable-menu": "",
-            "disable-tooltip": "",
-            "show-user-status": _vm.showUserStatus,
-            user: _vm.currentUserId,
-            "preloaded-user-status": _vm.userStatus
+            path: _vm.icon
           }
         })];
       },
@@ -68051,4 +68053,4 @@ module.exports = "data:image/gif;base64,R0lGODlhKAAoAIABAAAAAP///yH/C05FVFNDQVBF
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=core-main.js.map?v=0c37644e0cbccfdf40e7
+//# sourceMappingURL=core-main.js.map?v=ef9d63afcb53cebf4fc4

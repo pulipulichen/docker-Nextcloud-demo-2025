@@ -1,13 +1,14 @@
 [[]trash
 # /html/tmp
 
-/nextcloud/server/dist/apps_*
-/nextcloud/server/dist/node_modules*
-/nextcloud/server/dist/data_image*
-/nextcloud/server/dist/core_src*
+# /nextcloud_server/server/dist/apps_*
+# /nextcloud_server/server/dist/node_modules*
+# /nextcloud_server/server/dist/data_image*
+# /nextcloud_server/server/dist/core_src*
 
 /files
 !/files/.gitkeep
 !/files/README.md
 !/files/database/.gitkeep
 !/files/database/README.md
+

@@ -65,15 +65,6 @@ watch_files() {
   
   sync_to_nextcloud_files
 
-  # 監控目錄變更
-  inotifywait -m -r -e modify,create,delete,move "$SRC" --format '%w%f' | while read FILE
-  do
-      echo "檔案變更偵測到：$FILE，執行同步..."
-      rsync -a --update --delete "$SRC" "$DEST"
-      /var/www/html/occ files:scan -- $NEXTCLOUD_ADMIN_USER
-    #   echo "同步完成！"
-  done
-
   # 使用 inotifywait 持續監控目錄
   inotifywait -m -r -e modify -e create -e delete -e move --format '%e %w%f %T' --timefmt '%Y-%m-%d %H:%M:%S' "$SRC" |
   while read event file timestamp; do

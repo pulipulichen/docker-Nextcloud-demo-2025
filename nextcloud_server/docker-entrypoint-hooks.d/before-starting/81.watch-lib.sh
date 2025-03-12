@@ -39,10 +39,12 @@ watch_lib() {
   local DIR=$1
 
   # 監控目錄變更
-  inotifywait -m -r -e modify,create,delete,move "$SRC$DIR" --format '%w%f' | while read FILE
+  # inotifywait -m -r -e modify,create,delete,move "$SRC$DIR" --format '%w%f' | while read FILE
+  inotifywait -m -r -e modify "$SRC$DIR" --format '%w%f' | while read FILE
   do
       echo "[watch-lib] 檔案變更偵測到：$FILE，執行同步... ( rsync -a "$SRC$DIR" "$DEST$DIR" )"
-      rsync -a "$SRC$DIR" "$DEST$DIR"
+      # rsync -a "$SRC$DIR" "$DEST$DIR"
+      cp -f "$FILE" "/var/www$FILE"
     #   echo "同步完成！"
   done
 }

@@ -25,8 +25,8 @@ watch_lib_prepare() {
 
   # sleep 10
 
-  echo "開始監控 $SRC$DIR"
-  echo "目標是   $DEST$DIR"
+  # echo "開始監控 $SRC$DIR"
+  # echo "目標是   $DEST$DIR"
 
   if [ ! -d "$DEST$DIR.bak" ]; then
     cp -rf "$DEST$DIR" "$DEST$DIR.bak"

@@ -24,8 +24,8 @@ watch_apps_prepare() {
   local DIR=$1
   local DIRNAME=$(basename $DIR)
 
-  echo "開始監控 $DIR"
-  echo "目標是   $DEST$DIRNAME"
+  # echo "開始監控 $DIR"
+  # echo "目標是   $DEST$DIRNAME"
 
 #   sleep 10
 

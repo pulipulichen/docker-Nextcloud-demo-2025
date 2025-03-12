@@ -123,6 +123,8 @@ export default defineComponent({
 		const fileListWidth = useFileListWidth()
 		const { fileId, openDetails, openFile } = useRouteParameters()
 
+		console.trace({ fileId, openDetails, openFile })
+
 		return {
 			fileId,
 			fileListWidth,

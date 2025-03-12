@@ -24,3 +24,7 @@ isGuest(): boolean {
 ````
 $userId = $this->userSession->getUser()->getUID();
 ````
+
+http://localhost:8080/apps/files/files/0?path=/database/README.md&openfile=true
+
+http://localhost:8080/apps/files/files/0?path=/database/README.md

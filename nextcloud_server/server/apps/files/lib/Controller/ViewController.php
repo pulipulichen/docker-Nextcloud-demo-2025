@@ -81,6 +81,7 @@ class ViewController extends Controller {
 	#[NoAdminRequired]
 	#[NoCSRFRequired]
 	public function showFile(?string $fileid = null): Response {
+		
 		if (!$fileid) {
 			return new RedirectResponse($this->urlGenerator->linkToRoute('files.view.index'));
 		}
@@ -130,7 +131,35 @@ class ViewController extends Controller {
 	#[NoAdminRequired]
 	#[NoCSRFRequired]
 	public function index($dir = '', $view = '', $fileid = null, $fileNotFound = false) {
+		
+		$userId = $this->userSession->getUser()->getUID();
+
+		if ($fileid !== null && isset($_GET["path"])) {
+			$filePath = $_GET['path'];
+			// 確保 Nextcloud API 可用
+			$server = \OC::$server;
+			$rootFolder = $server->get(IRootFolder::class);
+
+	    // // 取得使用者的根文件夾
+	    $userFolder = $rootFolder->getUserFolder($userId);
+
+	    // // 取得檔案節點
+	    $node = $userFolder->get($filePath);
+
+	    // // 取得 fileid
+	    $fileid = $node->getId();
+
+			$openfile = "false";
+			if (isset($_GET["openfile"])) {
+				$openfile = $_GET["openfile"];
+			}
+
+			return $this->redirectToFile((int) $fileid, $openfile);
+		}
+
+
 		if ($fileid !== null && $view !== 'trashbin') {
+			// echo "================================================";
 			try {
 				return $this->redirectToFileIfInTrashbin((int) $fileid);
 			} catch (NotFoundException $e) {
@@ -142,7 +171,7 @@ class ViewController extends Controller {
 		\OCP\Util::addStyle('files', 'merged');
 		\OCP\Util::addScript('files', 'main');
 
-		$userId = $this->userSession->getUser()->getUID();
+		
 
 		// If the file doesn't exists in the folder and
 		// exists in only one occurrence, redirect to that file
@@ -257,7 +286,8 @@ class ViewController extends Controller {
 	 * @return RedirectResponse redirect response or not found response
 	 * @throws NotFoundException
 	 */
-	private function redirectToFile(int $fileId) {
+	private function redirectToFile(int $fileId, $openfile = "true") {
+		
 		$uid = $this->userSession->getUser()->getUID();
 		$baseFolder = $this->rootFolder->getUserFolder($uid);
 		$node = $baseFolder->getFirstNodeById($fileId);
@@ -277,7 +307,13 @@ class ViewController extends Controller {
 				// set parent path as dir
 				$params['dir'] = $baseFolder->getRelativePath($node->getParent()->getPath());
 				// open the file by default (opening the viewer)
-				$params['openfile'] = 'true';
+				if (isset($openfile)) {
+					$params['openfile'] = $openfile;	
+				}
+				else {
+					$params['openfile'] = 'true';
+				}
+				
 			}
 			return new RedirectResponse($this->urlGenerator->linkToRoute('files.view.indexViewFileid', $params));
 		}

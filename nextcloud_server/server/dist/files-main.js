@@ -9456,6 +9456,11 @@ __webpack_require__.r(__webpack_exports__);
       openDetails,
       openFile
     } = (0,_composables_useRouteParameters_ts__WEBPACK_IMPORTED_MODULE_8__.useRouteParameters)();
+    console.trace({
+      fileId,
+      openDetails,
+      openFile
+    });
     return {
       fileId,
       fileListWidth,
@@ -18547,4 +18552,4 @@ __webpack_require__.r(__webpack_exports__);
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=files-main.js.map?v=2bf862107af0de524c78
+//# sourceMappingURL=files-main.js.map?v=c3fbf80dc56212b3093d

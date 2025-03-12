@@ -6,8 +6,8 @@
   "scripts": {
     "start": "docker-compose up --build",
     "bash": "./bash-running.sh",
-    "reset": "docker-compose down -v; docker-compose rm;  docker-compose up --build",
-    "reset-start": "rm -rf ./docker-web-Apache-Solr; docker-compose up --build",
+    "reset-start": "./reset.sh; docker-compose up --build",
+    "reset": "./reset.sh",
     "d0.build": "docker-compose build",
     "d1.bash": "docker-compose run --service-ports app bash /console.sh",
     "save-conf": "bash ./docker-build/save-conf.sh",

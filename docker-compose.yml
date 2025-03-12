@@ -4,7 +4,8 @@ services:
   
   nextcloud_server:
     build: 
-      dockerfile: Dockerfile.nextcloud_server
+      context: .
+      dockerfile: ./nextcloud_server/Dockerfile
     depends_on:
       - nextclouddb
       - redis
@@ -16,6 +17,7 @@ services:
       - ./nextcloud_server/docker-entrypoint-hooks.d/post-installation:/docker-entrypoint-hooks.d/post-installation
       - ./nextcloud_server/docker-entrypoint-hooks.d/before-starting:/docker-entrypoint-hooks.d/before-starting
       - ./nextcloud_server/server:/html
+      - ./data:/data
     environment:
       - MYSQL_DATABASE=nextcloud
       - MYSQL_USER=nextcloud

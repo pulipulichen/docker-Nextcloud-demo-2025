@@ -12,7 +12,7 @@ WORKDIR /src
 RUN npm install
 
 COPY ./nextcloud_compiler/src/version.php /src/
-COPY ./nextcloud/entrypoint.sh /entrypoint.sh
+COPY ./nextcloud_compiler/entrypoint.sh /entrypoint.sh
 
 # CMD ["npm", "run", "watch"]
 CMD ["/entrypoint.sh"]

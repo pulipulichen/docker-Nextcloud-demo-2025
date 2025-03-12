@@ -30,6 +30,12 @@
 						@click.prevent="resetPassword = true">
 						{{ t('core', 'Forgot password?') }}
 					</a>
+					<a
+						id="guest-link"
+						class="login-box__link"
+						href="/">
+						{{ t('core', 'Guest Link') }}
+					</a>
 					<!--
 					<template v-if="hasPasswordless">
 						<div v-if="countAlternativeLogins"

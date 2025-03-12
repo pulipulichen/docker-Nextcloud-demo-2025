@@ -5,3 +5,5 @@
 /nextcloud/server/dist/node_modules*
 /nextcloud/server/dist/data_image*
 /nextcloud/server/dist/core_src*
+
+/data

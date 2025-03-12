@@ -1,2 +1,925 @@
-(()=>{"use strict";var t,e,n,r={26436:(t,e,n)=>{var r,i=n(32981),s=n(53334),o=n(35810),a=n(56760),l=n(63814),u=n(85168),c=n(65043),d=n(85471);!function(t){t[t.SUCCESS=0]="SUCCESS",t[t.ERROR=1]="ERROR",t[t.INDETERMINATE=2]="INDETERMINATE",t[t.INCOMPLETE_CONF=3]="INCOMPLETE_CONF",t[t.UNAUTHORIZED=4]="UNAUTHORIZED",t[t.TIMEOUT=5]="TIMEOUT",t[t.NETWORK_ERROR=6]="NETWORK_ERROR"}(r||(r={}));const h=function(t){return!(!t.status||t.status===r.SUCCESS)&&(t.userProvided||"password::global::user"===t.authMechanism)},f=function(t){if(t.type===o.pt.File)return!1;const e=t.attributes;return!(!e.scope||!e.backend||"personal"!==e.scope&&"system"!==e.scope)};(0,a.IF)(c.Ay);const p=new o.hY({id:"credentials-external-storage",displayName:()=>(0,s.Tl)("files","Enter missing credentials"),iconSvgInline:()=>'<svg xmlns="http://www.w3.org/2000/svg" id="mdi-login" viewBox="0 0 24 24"><path d="M11 7L9.6 8.4L12.2 11H2V13H12.2L9.6 15.6L11 17L16 12L11 7M20 19H12V21H20C21.1 21 22 20.1 22 19V5C22 3.9 21.1 3 20 3H12V5H20V19Z" /></svg>',enabled:t=>{if(1!==t.length)return!1;const e=t[0];if(!f(e))return!1;const n=e.attributes?.config||{};return!!h(n)},async exec(t){const{login:e,password:i}=await new Promise((t=>(0,u.Ss)((0,d.$V)((()=>Promise.all([n.e(4208),n.e(4040)]).then(n.bind(n,74040)))),{},(e=>{t(e)}))));if(e&&i)try{await async function(t,e,n){const i=(await c.Ay.request({method:"PUT",url:(0,l.Jv)("apps/files_external/userglobalstorages/{id}",{id:t.attributes.id}),confirmPassword:a.mH.Strict,data:{backendOptions:{user:e,password:n}}})).data;return i.status!==r.SUCCESS?((0,u.Qg)((0,s.Tl)("files_external","Unable to update this external storage config. {statusMessage}",{statusMessage:i?.statusMessage||""})),null):((0,u.Te)((0,s.Tl)("files_external","New configuration successfully saved")),d.Ay.set(t.attributes,"config",i),!0)}(t,e,i),(0,u.Te)((0,s.Tl)("files_external","Credentials successfully set"))}catch(t){(0,u.Qg)((0,s.Tl)("files_external","Error while setting credentials: {error}",{error:t.message}))}return null},order:-1e3,default:o.m9.DEFAULT,inline:()=>!0});var g=n(85072),E=n.n(g),m=n(97825),N=n.n(m),w=n(77659),A=n.n(w),v=n(55056),b=n.n(v),x=n(10540),I=n.n(x),T=n(41113),y=n.n(T),O=n(64755),C={};C.styleTagTransform=y(),C.setAttributes=b(),C.insert=A().bind(null,"head"),C.domAPI=N(),C.insertStyleElement=I(),E()(O.A,C),O.A&&O.A.locals&&O.A.locals;var R=n(21777);const L=`/files/${(0,R.HW)()?.uid}`,_=t=>{const e=(t.path+"/"+t.name).replace(/^\//gm,"");return new o.vd({id:t.id,source:(0,l.dC)("dav"+L+"/"+e),root:L,owner:(0,R.HW)()?.uid||null,permissions:t.config.status!==r.SUCCESS?o.aX.NONE:t?.permissions||o.aX.READ,attributes:{displayName:e,...t}})},S=new o.hY({id:"check-external-storage",displayName:()=>"",iconSvgInline:()=>"",enabled:t=>t.every((t=>!0===f(t))),exec:async()=>null,async renderInline(t){const e=document.createElement("span");e.className="files-list__row-status",e.innerHTML=(0,s.Tl)("files_external","Checking storage …");let n=null;return function(t){const e=arguments.length>1&&void 0!==arguments[1]&&!arguments[1]?"userstorages":"userglobalstorages";return c.Ay.get((0,l.Jv)(`apps/files_external/${e}/${t}?testOnly=false`))}(t.attributes.id,"system"===t.attributes.scope).then((i=>{if(n=i.data,d.Ay.set(t.attributes,"config",n),n.status!==r.SUCCESS)throw new Error(n?.statusMessage||(0,s.Tl)("files_external","There was an error with this external storage."));e.remove()})).catch((r=>{r.response&&!n&&(0,u.I9)((0,s.Tl)("files_external","We were unable to check the external storage {basename}",{basename:t.basename})),e.innerHTML="";const i=!!n&&h(n),o=document.createElement("span");o.classList.add("files-list__row-status--"+(i?"warning":"error")),i||(e.innerHTML='<svg xmlns="http://www.w3.org/2000/svg" id="mdi-alert-circle" viewBox="0 0 24 24"><path d="M13,13H11V7H13M13,17H11V15H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" /></svg>',e.title=r.message),e.prepend(o)})),e},order:10}),P=new o.hY({id:"open-in-files-external-storage",displayName:t=>(t?.[0]?.attributes?.config||{status:r.INDETERMINATE}).status!==r.SUCCESS?(0,s.Tl)("files_external","Examine this faulty external storage configuration"):(0,s.Tl)("files","Open in Files"),iconSvgInline:()=>"",enabled:(t,e)=>"extstoragemounts"===e.id,async exec(t){const e=t.attributes.config;return e?.status!==r.SUCCESS?(window.OC.dialogs.confirm((0,s.Tl)("files_external","There was an error with this external storage. Do you want to review this mount point config in the settings page?"),(0,s.Tl)("files_external","External mount error"),(t=>{if(!0===t){const t=(0,R.HW)()?.isAdmin?"admin":"user";window.location.href=(0,l.Jv)(`/settings/${t}/externalstorages`)}})),null):(window.OCP.Files.Router.goToRoute(null,{view:"files"},{dir:t.path}),null)},order:-1e3,default:o.m9.HIDDEN}),$=(0,i.C)("files_external","allowUserMounting",!1);(0,o.bh)().register(new o.Ss({id:"extstoragemounts",name:(0,s.Tl)("files_external","External storage"),caption:(0,s.Tl)("files_external","List of external storage."),emptyCaption:$?(0,s.Tl)("files_external","There is no external storage configured. You can configure them in your Personal settings."):(0,s.Tl)("files_external","There is no external storage configured and you don't have the permission to configure them."),emptyTitle:(0,s.Tl)("files_external","No external storage"),icon:'<svg xmlns="http://www.w3.org/2000/svg" id="mdi-folder-network" viewBox="0 0 24 24"><path d="M3,15V5A2,2 0 0,1 5,3H11L13,5H19A2,2 0 0,1 21,7V15A2,2 0 0,1 19,17H13V19H14A1,1 0 0,1 15,20H22V22H15A1,1 0 0,1 14,23H10A1,1 0 0,1 9,22H2V20H9A1,1 0 0,1 10,19H11V17H5A2,2 0 0,1 3,15Z" /></svg>',order:30,columns:[new o.VP({id:"storage-type",title:(0,s.Tl)("files_external","Storage type"),render(t){const e=t.attributes?.backend||(0,s.Tl)("files_external","Unknown"),n=document.createElement("span");return n.textContent=e,n}}),new o.VP({id:"scope",title:(0,s.Tl)("files_external","Scope"),render(t){const e=document.createElement("span");let n=(0,s.Tl)("files_external","Personal");return"system"===t.attributes?.scope&&(n=(0,s.Tl)("files_external","System")),e.textContent=n,e}})],getContents:async()=>{const t=(await c.Ay.get((0,l.KT)("apps/files_external/api/v1/mounts"))).data.ocs.data.map(_);return{folder:new o.vd({id:0,source:(0,l.dC)("dav"+L),root:L,owner:(0,R.HW)()?.uid||null,permissions:o.aX.READ}),contents:t}}})),(0,o.Gg)(p),(0,o.Gg)(S),(0,o.Gg)(P)},35810:(t,e,n)=>{n.d(e,{Al:()=>r.r,Gg:()=>u,H4:()=>r.c,Q$:()=>r.e,R3:()=>r.n,Ss:()=>J,VL:()=>r.l,VP:()=>m,aX:()=>r.P,bh:()=>E,hY:()=>l,lJ:()=>r.d,m9:()=>a,pt:()=>r.F,ur:()=>p,v7:()=>h,vd:()=>r.s});var r=n(68251),i=(n(43627),n(53334)),s=n(380),o=n(65606),a=(t=>(t.DEFAULT="default",t.HIDDEN="hidden",t))(a||{});class l{_action;constructor(t){this.validateAction(t),this._action=t}get id(){return this._action.id}get displayName(){return this._action.displayName}get title(){return this._action.title}get iconSvgInline(){return this._action.iconSvgInline}get enabled(){return this._action.enabled}get exec(){return this._action.exec}get execBatch(){return this._action.execBatch}get order(){return this._action.order}get parent(){return this._action.parent}get default(){return this._action.default}get destructive(){return this._action.destructive}get inline(){return this._action.inline}get renderInline(){return this._action.renderInline}validateAction(t){if(!t.id||"string"!=typeof t.id)throw new Error("Invalid id");if(!t.displayName||"function"!=typeof t.displayName)throw new Error("Invalid displayName function");if("title"in t&&"function"!=typeof t.title)throw new Error("Invalid title function");if(!t.iconSvgInline||"function"!=typeof t.iconSvgInline)throw new Error("Invalid iconSvgInline function");if(!t.exec||"function"!=typeof t.exec)throw new Error("Invalid exec function");if("enabled"in t&&"function"!=typeof t.enabled)throw new Error("Invalid enabled function");if("execBatch"in t&&"function"!=typeof t.execBatch)throw new Error("Invalid execBatch function");if("order"in t&&"number"!=typeof t.order)throw new Error("Invalid order");if(void 0!==t.destructive&&"boolean"!=typeof t.destructive)throw new Error("Invalid destructive flag");if("parent"in t&&"string"!=typeof t.parent)throw new Error("Invalid parent");if(t.default&&!Object.values(a).includes(t.default))throw new Error("Invalid default");if("inline"in t&&"function"!=typeof t.inline)throw new Error("Invalid inline function");if("renderInline"in t&&"function"!=typeof t.renderInline)throw new Error("Invalid renderInline function")}}const u=function(t){void 0===window._nc_fileactions&&(window._nc_fileactions=[],r.o.debug("FileActions initialized")),window._nc_fileactions.find((e=>e.id===t.id))?r.o.error(`FileAction ${t.id} already registered`,{action:t}):window._nc_fileactions.push(t)};Error;const c=["B","KB","MB","GB","TB","PB"],d=["B","KiB","MiB","GiB","TiB","PiB"];function h(t,e=!1,n=!1,r=!1){n=n&&!r,"string"==typeof t&&(t=Number(t));let s=t>0?Math.floor(Math.log(t)/Math.log(r?1e3:1024)):0;s=Math.min((n?d.length:c.length)-1,s);const o=n?d[s]:c[s];let a=(t/Math.pow(r?1e3:1024,s)).toFixed(1);return!0===e&&0===s?("0.0"!==a?"< 1 ":"0 ")+(n?d[1]:c[1]):(a=s<2?parseFloat(a).toFixed(0):parseFloat(a).toLocaleString((0,i.lO)()),a+" "+o)}function f(t){return t instanceof Date?t.toISOString():String(t)}function p(t,e={}){const n={sortingMode:"basename",sortingOrder:"asc",...e};return function(t,e,n){n=n??[];const r=(e=e??[t=>t]).map(((t,e)=>"asc"===(n[e]??"asc")?1:-1)),s=Intl.Collator([(0,i.Z0)(),(0,i.lO)()],{numeric:!0,usage:"sort"});return[...t].sort(((t,n)=>{for(const[i,o]of e.entries()){const e=s.compare(f(o(t)),f(o(n)));if(0!==e)return e*r[i]}return 0}))}(t,[...n.sortFavoritesFirst?[t=>1!==t.attributes?.favorite]:[],...n.sortFoldersFirst?[t=>"folder"!==t.type]:[],..."basename"!==n.sortingMode?[t=>t[n.sortingMode]]:[],t=>{return(e=t.displayname||t.attributes?.displayname||t.basename).lastIndexOf(".")>0?e.slice(0,e.lastIndexOf(".")):e;var e},t=>t.basename],[...n.sortFavoritesFirst?["asc"]:[],...n.sortFoldersFirst?["asc"]:[],..."mtime"===n.sortingMode?["asc"===n.sortingOrder?"desc":"asc"]:[],..."mtime"!==n.sortingMode&&"basename"!==n.sortingMode?[n.sortingOrder]:[],n.sortingOrder,n.sortingOrder])}class g extends s.m{_views=[];_currentView=null;register(t){if(this._views.find((e=>e.id===t.id)))throw new Error(`View id ${t.id} is already registered`);this._views.push(t),this.dispatchTypedEvent("update",new CustomEvent("update"))}remove(t){const e=this._views.findIndex((e=>e.id===t));-1!==e&&(this._views.splice(e,1),this.dispatchTypedEvent("update",new CustomEvent("update")))}setActive(t){this._currentView=t;const e=new CustomEvent("updateActive",{detail:t});this.dispatchTypedEvent("updateActive",e)}get active(){return this._currentView}get views(){return this._views}}const E=function(){return void 0===window._nc_navigation&&(window._nc_navigation=new g,r.o.debug("Navigation service initialized")),window._nc_navigation};class m{_column;constructor(t){N(t),this._column=t}get id(){return this._column.id}get title(){return this._column.title}get render(){return this._column.render}get sort(){return this._column.sort}get summary(){return this._column.summary}}const N=function(t){if(!t.id||"string"!=typeof t.id)throw new Error("A column id is required");if(!t.title||"string"!=typeof t.title)throw new Error("A column title is required");if(!t.render||"function"!=typeof t.render)throw new Error("A render function is required");if(t.sort&&"function"!=typeof t.sort)throw new Error("Column sortFunction must be a function");if(t.summary&&"function"!=typeof t.summary)throw new Error("Column summary must be a function");return!0};var w,A,v={},b={};function x(){return w||(w=1,function(t){const e=":A-Za-z_\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u02FF\\u0370-\\u037D\\u037F-\\u1FFF\\u200C-\\u200D\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD",n="["+e+"]["+e+"\\-.\\d\\u00B7\\u0300-\\u036F\\u203F-\\u2040]*",r=new RegExp("^"+n+"$");t.isExist=function(t){return void 0!==t},t.isEmptyObject=function(t){return 0===Object.keys(t).length},t.merge=function(t,e,n){if(e){const r=Object.keys(e),i=r.length;for(let s=0;s<i;s++)t[r[s]]="strict"===n?[e[r[s]]]:e[r[s]]}},t.getValue=function(e){return t.isExist(e)?e:""},t.isName=function(t){return!(null==r.exec(t))},t.getAllMatches=function(t,e){const n=[];let r=e.exec(t);for(;r;){const i=[];i.startIndex=e.lastIndex-r[0].length;const s=r.length;for(let t=0;t<s;t++)i.push(r[t]);n.push(i),r=e.exec(t)}return n},t.nameRegexp=n}(b)),b}function I(){if(A)return v;A=1;const t=x(),e={allowBooleanAttributes:!1,unpairedTags:[]};function n(t){return" "===t||"\t"===t||"\n"===t||"\r"===t}function r(t,e){const n=e;for(;e<t.length;e++)if("?"!=t[e]&&" "!=t[e]);else{const r=t.substr(n,e-n);if(e>5&&"xml"===r)return d("InvalidXml","XML declaration allowed only at the start of the document.",f(t,e));if("?"==t[e]&&">"==t[e+1]){e++;break}}return e}function i(t,e){if(t.length>e+5&&"-"===t[e+1]&&"-"===t[e+2]){for(e+=3;e<t.length;e++)if("-"===t[e]&&"-"===t[e+1]&&">"===t[e+2]){e+=2;break}}else if(t.length>e+8&&"D"===t[e+1]&&"O"===t[e+2]&&"C"===t[e+3]&&"T"===t[e+4]&&"Y"===t[e+5]&&"P"===t[e+6]&&"E"===t[e+7]){let n=1;for(e+=8;e<t.length;e++)if("<"===t[e])n++;else if(">"===t[e]&&(n--,0===n))break}else if(t.length>e+9&&"["===t[e+1]&&"C"===t[e+2]&&"D"===t[e+3]&&"A"===t[e+4]&&"T"===t[e+5]&&"A"===t[e+6]&&"["===t[e+7])for(e+=8;e<t.length;e++)if("]"===t[e]&&"]"===t[e+1]&&">"===t[e+2]){e+=2;break}return e}v.validate=function(s,o){o=Object.assign({},e,o);const l=[];let h=!1,p=!1;"\ufeff"===s[0]&&(s=s.substr(1));for(let e=0;e<s.length;e++)if("<"===s[e]&&"?"===s[e+1]){if(e+=2,e=r(s,e),e.err)return e}else{if("<"!==s[e]){if(n(s[e]))continue;return d("InvalidChar","char '"+s[e]+"' is not expected.",f(s,e))}{let E=e;if(e++,"!"===s[e]){e=i(s,e);continue}{let m=!1;"/"===s[e]&&(m=!0,e++);let N="";for(;e<s.length&&">"!==s[e]&&" "!==s[e]&&"\t"!==s[e]&&"\n"!==s[e]&&"\r"!==s[e];e++)N+=s[e];if(N=N.trim(),"/"===N[N.length-1]&&(N=N.substring(0,N.length-1),e--),g=N,!t.isName(g)){let t;return t=0===N.trim().length?"Invalid space after '<'.":"Tag '"+N+"' is an invalid name.",d("InvalidTag",t,f(s,e))}const w=a(s,e);if(!1===w)return d("InvalidAttr","Attributes for '"+N+"' have open quote.",f(s,e));let A=w.value;if(e=w.index,"/"===A[A.length-1]){const t=e-A.length;A=A.substring(0,A.length-1);const n=u(A,o);if(!0!==n)return d(n.err.code,n.err.msg,f(s,t+n.err.line));h=!0}else if(m){if(!w.tagClosed)return d("InvalidTag","Closing tag '"+N+"' doesn't have proper closing.",f(s,e));if(A.trim().length>0)return d("InvalidTag","Closing tag '"+N+"' can't have attributes or invalid starting.",f(s,E));if(0===l.length)return d("InvalidTag","Closing tag '"+N+"' has not been opened.",f(s,E));{const t=l.pop();if(N!==t.tagName){let e=f(s,t.tagStartPos);return d("InvalidTag","Expected closing tag '"+t.tagName+"' (opened in line "+e.line+", col "+e.col+") instead of closing tag '"+N+"'.",f(s,E))}0==l.length&&(p=!0)}}else{const t=u(A,o);if(!0!==t)return d(t.err.code,t.err.msg,f(s,e-A.length+t.err.line));if(!0===p)return d("InvalidXml","Multiple possible root nodes found.",f(s,e));-1!==o.unpairedTags.indexOf(N)||l.push({tagName:N,tagStartPos:E}),h=!0}for(e++;e<s.length;e++)if("<"===s[e]){if("!"===s[e+1]){e++,e=i(s,e);continue}if("?"!==s[e+1])break;if(e=r(s,++e),e.err)return e}else if("&"===s[e]){const t=c(s,e);if(-1==t)return d("InvalidChar","char '&' is not expected.",f(s,e));e=t}else if(!0===p&&!n(s[e]))return d("InvalidXml","Extra text at the end",f(s,e));"<"===s[e]&&e--}}}var g;return h?1==l.length?d("InvalidTag","Unclosed tag '"+l[0].tagName+"'.",f(s,l[0].tagStartPos)):!(l.length>0)||d("InvalidXml","Invalid '"+JSON.stringify(l.map((t=>t.tagName)),null,4).replace(/\r?\n/g,"")+"' found.",{line:1,col:1}):d("InvalidXml","Start tag expected.",1)};const s='"',o="'";function a(t,e){let n="",r="",i=!1;for(;e<t.length;e++){if(t[e]===s||t[e]===o)""===r?r=t[e]:r!==t[e]||(r="");else if(">"===t[e]&&""===r){i=!0;break}n+=t[e]}return""===r&&{value:n,index:e,tagClosed:i}}const l=new RegExp("(\\s*)([^\\s=]+)(\\s*=)?(\\s*(['\"])(([\\s\\S])*?)\\5)?","g");function u(e,n){const r=t.getAllMatches(e,l),i={};for(let t=0;t<r.length;t++){if(0===r[t][1].length)return d("InvalidAttr","Attribute '"+r[t][2]+"' has no space in starting.",p(r[t]));if(void 0!==r[t][3]&&void 0===r[t][4])return d("InvalidAttr","Attribute '"+r[t][2]+"' is without value.",p(r[t]));if(void 0===r[t][3]&&!n.allowBooleanAttributes)return d("InvalidAttr","boolean attribute '"+r[t][2]+"' is not allowed.",p(r[t]));const e=r[t][2];if(!h(e))return d("InvalidAttr","Attribute '"+e+"' is an invalid name.",p(r[t]));if(i.hasOwnProperty(e))return d("InvalidAttr","Attribute '"+e+"' is repeated.",p(r[t]));i[e]=1}return!0}function c(t,e){if(";"===t[++e])return-1;if("#"===t[e])return function(t,e){let n=/\d/;for("x"===t[e]&&(e++,n=/[\da-fA-F]/);e<t.length;e++){if(";"===t[e])return e;if(!t[e].match(n))break}return-1}(t,++e);let n=0;for(;e<t.length;e++,n++)if(!(t[e].match(/\w/)&&n<20)){if(";"===t[e])break;return-1}return e}function d(t,e,n){return{err:{code:t,msg:e,line:n.line||n,col:n.col}}}function h(e){return t.isName(e)}function f(t,e){const n=t.substring(0,e).split(/\r?\n/);return{line:n.length,col:n[n.length-1].length+1}}function p(t){return t.startIndex+t[1].length}return v}var T,y,O,C,R,L,_,S,P,$,F,D={};function M(){return P?S:(P=1,S=function(t){return"function"==typeof t?t:Array.isArray(t)?e=>{for(const n of t){if("string"==typeof n&&e===n)return!0;if(n instanceof RegExp&&n.test(e))return!0}}:()=>!1})}var V,k,j,G,U,B,X,H,Y,q={};function Z(){if(V)return q;function t(i,s,o){let a;const l={};for(let u=0;u<i.length;u++){const c=i[u],d=e(c);let h="";if(h=void 0===o?d:o+"."+d,d===s.textNodeName)void 0===a?a=c[d]:a+=""+c[d];else{if(void 0===d)continue;if(c[d]){let e=t(c[d],s,h);const i=r(e,s);c[":@"]?n(e,c[":@"],h,s):1!==Object.keys(e).length||void 0===e[s.textNodeName]||s.alwaysCreateTextNode?0===Object.keys(e).length&&(s.alwaysCreateTextNode?e[s.textNodeName]="":e=""):e=e[s.textNodeName],void 0!==l[d]&&l.hasOwnProperty(d)?(Array.isArray(l[d])||(l[d]=[l[d]]),l[d].push(e)):s.isArray(d,h,i)?l[d]=[e]:l[d]=e}}}return"string"==typeof a?a.length>0&&(l[s.textNodeName]=a):void 0!==a&&(l[s.textNodeName]=a),l}function e(t){const e=Object.keys(t);for(let t=0;t<e.length;t++){const n=e[t];if(":@"!==n)return n}}function n(t,e,n,r){if(e){const i=Object.keys(e),s=i.length;for(let o=0;o<s;o++){const s=i[o];r.isArray(s,n+"."+s,!0,!0)?t[s]=[e[s]]:t[s]=e[s]}}}function r(t,e){const{textNodeName:n}=e,r=Object.keys(t).length;return 0===r||!(1!==r||!t[n]&&"boolean"!=typeof t[n]&&0!==t[n])}return V=1,q.prettify=function(e,n){return t(e,n)},q}function K(){if(j)return k;j=1;const{buildOptions:t}=function(){if(T)return D;T=1;const t={preserveOrder:!1,attributeNamePrefix:"@_",attributesGroupName:!1,textNodeName:"#text",ignoreAttributes:!0,removeNSPrefix:!1,allowBooleanAttributes:!1,parseTagValue:!0,parseAttributeValue:!1,trimValues:!0,cdataPropName:!1,numberParseOptions:{hex:!0,leadingZeros:!0,eNotation:!0},tagValueProcessor:function(t,e){return e},attributeValueProcessor:function(t,e){return e},stopNodes:[],alwaysCreateTextNode:!1,isArray:()=>!1,commentPropName:!1,unpairedTags:[],processEntities:!0,htmlEntities:!1,ignoreDeclaration:!1,ignorePiTags:!1,transformTagName:!1,transformAttributeName:!1,updateTag:function(t,e,n){return t}};return D.buildOptions=function(e){return Object.assign({},t,e)},D.defaultOptions=t,D}(),e=function(){if(F)return $;F=1;const t=x(),e=O?y:(O=1,y=class{constructor(t){this.tagname=t,this.child=[],this[":@"]={}}add(t,e){"__proto__"===t&&(t="#__proto__"),this.child.push({[t]:e})}addChild(t){"__proto__"===t.tagname&&(t.tagname="#__proto__"),t[":@"]&&Object.keys(t[":@"]).length>0?this.child.push({[t.tagname]:t.child,":@":t[":@"]}):this.child.push({[t.tagname]:t.child})}}),n=function(){if(R)return C;R=1;const t=x();function e(t,e){let n="";for(;e<t.length&&"'"!==t[e]&&'"'!==t[e];e++)n+=t[e];if(n=n.trim(),-1!==n.indexOf(" "))throw new Error("External entites are not supported");const r=t[e++];let i="";for(;e<t.length&&t[e]!==r;e++)i+=t[e];return[n,i,e]}function n(t,e){return"!"===t[e+1]&&"E"===t[e+2]&&"N"===t[e+3]&&"T"===t[e+4]&&"I"===t[e+5]&&"T"===t[e+6]&&"Y"===t[e+7]}function r(t,e){return"!"===t[e+1]&&"E"===t[e+2]&&"L"===t[e+3]&&"E"===t[e+4]&&"M"===t[e+5]&&"E"===t[e+6]&&"N"===t[e+7]&&"T"===t[e+8]}function i(t,e){return"!"===t[e+1]&&"A"===t[e+2]&&"T"===t[e+3]&&"T"===t[e+4]&&"L"===t[e+5]&&"I"===t[e+6]&&"S"===t[e+7]&&"T"===t[e+8]}function s(t,e){return"!"===t[e+1]&&"N"===t[e+2]&&"O"===t[e+3]&&"T"===t[e+4]&&"A"===t[e+5]&&"T"===t[e+6]&&"I"===t[e+7]&&"O"===t[e+8]&&"N"===t[e+9]}function o(e){if(t.isName(e))return e;throw new Error(`Invalid entity name ${e}`)}return C=function(t,a){const l={};if("O"!==t[a+3]||"C"!==t[a+4]||"T"!==t[a+5]||"Y"!==t[a+6]||"P"!==t[a+7]||"E"!==t[a+8])throw new Error("Invalid Tag instead of DOCTYPE");{a+=9;let u=1,c=!1,d=!1,h="";for(;a<t.length;a++)if("<"!==t[a]||d)if(">"===t[a]){if(d?"-"===t[a-1]&&"-"===t[a-2]&&(d=!1,u--):u--,0===u)break}else"["===t[a]?c=!0:h+=t[a];else{if(c&&n(t,a)){let n,r;a+=7,[n,r,a]=e(t,a+1),-1===r.indexOf("&")&&(l[o(n)]={regx:RegExp(`&${n};`,"g"),val:r})}else c&&r(t,a)||c&&i(t,a)?a+=8:c&&s(t,a)?a+=9:d=!0;u++,h=""}if(0!==u)throw new Error("Unclosed DOCTYPE")}return{entities:l,i:a}}}(),r=function(){if(_)return L;_=1;const t=/^[-+]?0x[a-fA-F0-9]+$/,e=/^([\-\+])?(0*)(\.[0-9]+([eE]\-?[0-9]+)?|[0-9]+(\.[0-9]+([eE]\-?[0-9]+)?)?)$/;!Number.parseInt&&window.parseInt&&(Number.parseInt=window.parseInt),!Number.parseFloat&&window.parseFloat&&(Number.parseFloat=window.parseFloat);const n={hex:!0,leadingZeros:!0,decimalPoint:".",eNotation:!0};return L=function(r,i={}){if(i=Object.assign({},n,i),!r||"string"!=typeof r)return r;let s=r.trim();if(void 0!==i.skipLike&&i.skipLike.test(s))return r;if(i.hex&&t.test(s))return Number.parseInt(s,16);{const t=e.exec(s);if(t){const e=t[1],n=t[2];let a=(o=t[3])&&-1!==o.indexOf(".")?("."===(o=o.replace(/0+$/,""))?o="0":"."===o[0]?o="0"+o:"."===o[o.length-1]&&(o=o.substr(0,o.length-1)),o):o;const l=t[4]||t[6];if(!i.leadingZeros&&n.length>0&&e&&"."!==s[2])return r;if(!i.leadingZeros&&n.length>0&&!e&&"."!==s[1])return r;{const t=Number(s),o=""+t;return-1!==o.search(/[eE]/)||l?i.eNotation?t:r:-1!==s.indexOf(".")?"0"===o&&""===a||o===a||e&&o==="-"+a?t:r:n?a===o||e+a===o?t:r:s===o||s===e+o?t:r}}return r}var o}}(),i=M();function s(t){const e=Object.keys(t);for(let n=0;n<e.length;n++){const r=e[n];this.lastEntities[r]={regex:new RegExp("&"+r+";","g"),val:t[r]}}}function o(t,e,n,r,i,s,o){if(void 0!==t&&(this.options.trimValues&&!r&&(t=t.trim()),t.length>0)){o||(t=this.replaceEntitiesValue(t));const r=this.options.tagValueProcessor(e,t,n,i,s);return null==r?t:typeof r!=typeof t||r!==t?r:this.options.trimValues||t.trim()===t?N(t,this.options.parseTagValue,this.options.numberParseOptions):t}}function a(t){if(this.options.removeNSPrefix){const e=t.split(":"),n="/"===t.charAt(0)?"/":"";if("xmlns"===e[0])return"";2===e.length&&(t=n+e[1])}return t}const l=new RegExp("([^\\s=]+)\\s*(=\\s*(['\"])([\\s\\S]*?)\\3)?","gm");function u(e,n,r){if(!0!==this.options.ignoreAttributes&&"string"==typeof e){const r=t.getAllMatches(e,l),i=r.length,s={};for(let t=0;t<i;t++){const e=this.resolveNameSpace(r[t][1]);if(this.ignoreAttributesFn(e,n))continue;let i=r[t][4],o=this.options.attributeNamePrefix+e;if(e.length)if(this.options.transformAttributeName&&(o=this.options.transformAttributeName(o)),"__proto__"===o&&(o="#__proto__"),void 0!==i){this.options.trimValues&&(i=i.trim()),i=this.replaceEntitiesValue(i);const t=this.options.attributeValueProcessor(e,i,n);s[o]=null==t?i:typeof t!=typeof i||t!==i?t:N(i,this.options.parseAttributeValue,this.options.numberParseOptions)}else this.options.allowBooleanAttributes&&(s[o]=!0)}if(!Object.keys(s).length)return;if(this.options.attributesGroupName){const t={};return t[this.options.attributesGroupName]=s,t}return s}}const c=function(t){t=t.replace(/\r\n?/g,"\n");const r=new e("!xml");let i=r,s="",o="";for(let a=0;a<t.length;a++)if("<"===t[a])if("/"===t[a+1]){const e=g(t,">",a,"Closing Tag is not closed.");let n=t.substring(a+2,e).trim();if(this.options.removeNSPrefix){const t=n.indexOf(":");-1!==t&&(n=n.substr(t+1))}this.options.transformTagName&&(n=this.options.transformTagName(n)),i&&(s=this.saveTextToParentTag(s,i,o));const r=o.substring(o.lastIndexOf(".")+1);if(n&&-1!==this.options.unpairedTags.indexOf(n))throw new Error(`Unpaired tag can not be used as closing tag: </${n}>`);let l=0;r&&-1!==this.options.unpairedTags.indexOf(r)?(l=o.lastIndexOf(".",o.lastIndexOf(".")-1),this.tagsNodeStack.pop()):l=o.lastIndexOf("."),o=o.substring(0,l),i=this.tagsNodeStack.pop(),s="",a=e}else if("?"===t[a+1]){let n=E(t,a,!1,"?>");if(!n)throw new Error("Pi Tag is not closed.");if(s=this.saveTextToParentTag(s,i,o),this.options.ignoreDeclaration&&"?xml"===n.tagName||this.options.ignorePiTags);else{const t=new e(n.tagName);t.add(this.options.textNodeName,""),n.tagName!==n.tagExp&&n.attrExpPresent&&(t[":@"]=this.buildAttributesMap(n.tagExp,o,n.tagName)),this.addChild(i,t,o)}a=n.closeIndex+1}else if("!--"===t.substr(a+1,3)){const e=g(t,"--\x3e",a+4,"Comment is not closed.");if(this.options.commentPropName){const n=t.substring(a+4,e-2);s=this.saveTextToParentTag(s,i,o),i.add(this.options.commentPropName,[{[this.options.textNodeName]:n}])}a=e}else if("!D"===t.substr(a+1,2)){const e=n(t,a);this.docTypeEntities=e.entities,a=e.i}else if("!["===t.substr(a+1,2)){const e=g(t,"]]>",a,"CDATA is not closed.")-2,n=t.substring(a+9,e);s=this.saveTextToParentTag(s,i,o);let r=this.parseTextData(n,i.tagname,o,!0,!1,!0,!0);null==r&&(r=""),this.options.cdataPropName?i.add(this.options.cdataPropName,[{[this.options.textNodeName]:n}]):i.add(this.options.textNodeName,r),a=e+2}else{let n=E(t,a,this.options.removeNSPrefix),l=n.tagName;const u=n.rawTagName;let c=n.tagExp,d=n.attrExpPresent,h=n.closeIndex;this.options.transformTagName&&(l=this.options.transformTagName(l)),i&&s&&"!xml"!==i.tagname&&(s=this.saveTextToParentTag(s,i,o,!1));const f=i;if(f&&-1!==this.options.unpairedTags.indexOf(f.tagname)&&(i=this.tagsNodeStack.pop(),o=o.substring(0,o.lastIndexOf("."))),l!==r.tagname&&(o+=o?"."+l:l),this.isItStopNode(this.options.stopNodes,o,l)){let r="";if(c.length>0&&c.lastIndexOf("/")===c.length-1)"/"===l[l.length-1]?(l=l.substr(0,l.length-1),o=o.substr(0,o.length-1),c=l):c=c.substr(0,c.length-1),a=n.closeIndex;else if(-1!==this.options.unpairedTags.indexOf(l))a=n.closeIndex;else{const e=this.readStopNodeData(t,u,h+1);if(!e)throw new Error(`Unexpected end of ${u}`);a=e.i,r=e.tagContent}const s=new e(l);l!==c&&d&&(s[":@"]=this.buildAttributesMap(c,o,l)),r&&(r=this.parseTextData(r,l,o,!0,d,!0,!0)),o=o.substr(0,o.lastIndexOf(".")),s.add(this.options.textNodeName,r),this.addChild(i,s,o)}else{if(c.length>0&&c.lastIndexOf("/")===c.length-1){"/"===l[l.length-1]?(l=l.substr(0,l.length-1),o=o.substr(0,o.length-1),c=l):c=c.substr(0,c.length-1),this.options.transformTagName&&(l=this.options.transformTagName(l));const t=new e(l);l!==c&&d&&(t[":@"]=this.buildAttributesMap(c,o,l)),this.addChild(i,t,o),o=o.substr(0,o.lastIndexOf("."))}else{const t=new e(l);this.tagsNodeStack.push(i),l!==c&&d&&(t[":@"]=this.buildAttributesMap(c,o,l)),this.addChild(i,t,o),i=t}s="",a=h}}else s+=t[a];return r.child};function d(t,e,n){const r=this.options.updateTag(e.tagname,n,e[":@"]);!1===r||("string"==typeof r?(e.tagname=r,t.addChild(e)):t.addChild(e))}const h=function(t){if(this.options.processEntities){for(let e in this.docTypeEntities){const n=this.docTypeEntities[e];t=t.replace(n.regx,n.val)}for(let e in this.lastEntities){const n=this.lastEntities[e];t=t.replace(n.regex,n.val)}if(this.options.htmlEntities)for(let e in this.htmlEntities){const n=this.htmlEntities[e];t=t.replace(n.regex,n.val)}t=t.replace(this.ampEntity.regex,this.ampEntity.val)}return t};function f(t,e,n,r){return t&&(void 0===r&&(r=0===Object.keys(e.child).length),void 0!==(t=this.parseTextData(t,e.tagname,n,!1,!!e[":@"]&&0!==Object.keys(e[":@"]).length,r))&&""!==t&&e.add(this.options.textNodeName,t),t=""),t}function p(t,e,n){const r="*."+n;for(const n in t){const i=t[n];if(r===i||e===i)return!0}return!1}function g(t,e,n,r){const i=t.indexOf(e,n);if(-1===i)throw new Error(r);return i+e.length-1}function E(t,e,n,r=">"){const i=function(t,e,n=">"){let r,i="";for(let s=e;s<t.length;s++){let e=t[s];if(r)e===r&&(r="");else if('"'===e||"'"===e)r=e;else if(e===n[0]){if(!n[1])return{data:i,index:s};if(t[s+1]===n[1])return{data:i,index:s}}else"\t"===e&&(e=" ");i+=e}}(t,e+1,r);if(!i)return;let s=i.data;const o=i.index,a=s.search(/\s/);let l=s,u=!0;-1!==a&&(l=s.substring(0,a),s=s.substring(a+1).trimStart());const c=l;if(n){const t=l.indexOf(":");-1!==t&&(l=l.substr(t+1),u=l!==i.data.substr(t+1))}return{tagName:l,tagExp:s,closeIndex:o,attrExpPresent:u,rawTagName:c}}function m(t,e,n){const r=n;let i=1;for(;n<t.length;n++)if("<"===t[n])if("/"===t[n+1]){const s=g(t,">",n,`${e} is not closed`);if(t.substring(n+2,s).trim()===e&&(i--,0===i))return{tagContent:t.substring(r,n),i:s};n=s}else if("?"===t[n+1])n=g(t,"?>",n+1,"StopNode is not closed.");else if("!--"===t.substr(n+1,3))n=g(t,"--\x3e",n+3,"StopNode is not closed.");else if("!["===t.substr(n+1,2))n=g(t,"]]>",n,"StopNode is not closed.")-2;else{const r=E(t,n,">");r&&((r&&r.tagName)===e&&"/"!==r.tagExp[r.tagExp.length-1]&&i++,n=r.closeIndex)}}function N(e,n,i){if(n&&"string"==typeof e){const t=e.trim();return"true"===t||"false"!==t&&r(e,i)}return t.isExist(e)?e:""}return $=class{constructor(t){this.options=t,this.currentNode=null,this.tagsNodeStack=[],this.docTypeEntities={},this.lastEntities={apos:{regex:/&(apos|#39|#x27);/g,val:"'"},gt:{regex:/&(gt|#62|#x3E);/g,val:">"},lt:{regex:/&(lt|#60|#x3C);/g,val:"<"},quot:{regex:/&(quot|#34|#x22);/g,val:'"'}},this.ampEntity={regex:/&(amp|#38|#x26);/g,val:"&"},this.htmlEntities={space:{regex:/&(nbsp|#160);/g,val:" "},cent:{regex:/&(cent|#162);/g,val:"¢"},pound:{regex:/&(pound|#163);/g,val:"£"},yen:{regex:/&(yen|#165);/g,val:"¥"},euro:{regex:/&(euro|#8364);/g,val:"€"},copyright:{regex:/&(copy|#169);/g,val:"©"},reg:{regex:/&(reg|#174);/g,val:"®"},inr:{regex:/&(inr|#8377);/g,val:"₹"},num_dec:{regex:/&#([0-9]{1,7});/g,val:(t,e)=>String.fromCharCode(Number.parseInt(e,10))},num_hex:{regex:/&#x([0-9a-fA-F]{1,6});/g,val:(t,e)=>String.fromCharCode(Number.parseInt(e,16))}},this.addExternalEntities=s,this.parseXml=c,this.parseTextData=o,this.resolveNameSpace=a,this.buildAttributesMap=u,this.isItStopNode=p,this.replaceEntitiesValue=h,this.readStopNodeData=m,this.saveTextToParentTag=f,this.addChild=d,this.ignoreAttributesFn=i(this.options.ignoreAttributes)}}}(),{prettify:n}=Z(),r=I();return k=class{constructor(e){this.externalEntities={},this.options=t(e)}parse(t,i){if("string"==typeof t);else{if(!t.toString)throw new Error("XML data is accepted in String or Bytes[] form.");t=t.toString()}if(i){!0===i&&(i={});const e=r.validate(t,i);if(!0!==e)throw Error(`${e.err.msg}:${e.err.line}:${e.err.col}`)}const s=new e(this.options);s.addExternalEntities(this.externalEntities);const o=s.parseXml(t);return this.options.preserveOrder||void 0===o?o:n(o,this.options)}addEntity(t,e){if(-1!==e.indexOf("&"))throw new Error("Entity value can't have '&'");if(-1!==t.indexOf("&")||-1!==t.indexOf(";"))throw new Error("An entity must be set without '&' and ';'. Eg. use '#xD' for '&#xD;'");if("&"===e)throw new Error("An entity with value '&' is not permitted");this.externalEntities[t]=e}}}function W(){if(U)return G;function t(s,o,a,l){let u="",c=!1;for(let d=0;d<s.length;d++){const h=s[d],f=e(h);if(void 0===f)continue;let p="";if(p=0===a.length?f:`${a}.${f}`,f===o.textNodeName){let t=h[f];r(p,o)||(t=o.tagValueProcessor(f,t),t=i(t,o)),c&&(u+=l),u+=t,c=!1;continue}if(f===o.cdataPropName){c&&(u+=l),u+=`<![CDATA[${h[f][0][o.textNodeName]}]]>`,c=!1;continue}if(f===o.commentPropName){u+=l+`\x3c!--${h[f][0][o.textNodeName]}--\x3e`,c=!0;continue}if("?"===f[0]){const t=n(h[":@"],o),e="?xml"===f?"":l;let r=h[f][0][o.textNodeName];r=0!==r.length?" "+r:"",u+=e+`<${f}${r}${t}?>`,c=!0;continue}let g=l;""!==g&&(g+=o.indentBy);const E=l+`<${f}${n(h[":@"],o)}`,m=t(h[f],o,p,g);-1!==o.unpairedTags.indexOf(f)?o.suppressUnpairedNode?u+=E+">":u+=E+"/>":m&&0!==m.length||!o.suppressEmptyNode?m&&m.endsWith(">")?u+=E+`>${m}${l}</${f}>`:(u+=E+">",m&&""!==l&&(m.includes("/>")||m.includes("</"))?u+=l+o.indentBy+m+l:u+=m,u+=`</${f}>`):u+=E+"/>",c=!0}return u}function e(t){const e=Object.keys(t);for(let n=0;n<e.length;n++){const r=e[n];if(t.hasOwnProperty(r)&&":@"!==r)return r}}function n(t,e){let n="";if(t&&!e.ignoreAttributes)for(let r in t){if(!t.hasOwnProperty(r))continue;let s=e.attributeValueProcessor(r,t[r]);s=i(s,e),!0===s&&e.suppressBooleanAttributes?n+=` ${r.substr(e.attributeNamePrefix.length)}`:n+=` ${r.substr(e.attributeNamePrefix.length)}="${s}"`}return n}function r(t,e){let n=(t=t.substr(0,t.length-e.textNodeName.length-1)).substr(t.lastIndexOf(".")+1);for(let r in e.stopNodes)if(e.stopNodes[r]===t||e.stopNodes[r]==="*."+n)return!0;return!1}function i(t,e){if(t&&t.length>0&&e.processEntities)for(let n=0;n<e.entities.length;n++){const r=e.entities[n];t=t.replace(r.regex,r.val)}return t}return U=1,G=function(e,n){let r="";return n.format&&n.indentBy.length>0&&(r="\n"),t(e,n,"",r)}}var z=function(){if(Y)return H;Y=1;const t=I(),e=K(),n=function(){if(X)return B;X=1;const t=W(),e=M(),n={attributeNamePrefix:"@_",attributesGroupName:!1,textNodeName:"#text",ignoreAttributes:!0,cdataPropName:!1,format:!1,indentBy:"  ",suppressEmptyNode:!1,suppressUnpairedNode:!0,suppressBooleanAttributes:!0,tagValueProcessor:function(t,e){return e},attributeValueProcessor:function(t,e){return e},preserveOrder:!1,commentPropName:!1,unpairedTags:[],entities:[{regex:new RegExp("&","g"),val:"&amp;"},{regex:new RegExp(">","g"),val:"&gt;"},{regex:new RegExp("<","g"),val:"&lt;"},{regex:new RegExp("'","g"),val:"&apos;"},{regex:new RegExp('"',"g"),val:"&quot;"}],processEntities:!0,stopNodes:[],oneListGroup:!1};function r(t){this.options=Object.assign({},n,t),!0===this.options.ignoreAttributes||this.options.attributesGroupName?this.isAttribute=function(){return!1}:(this.ignoreAttributesFn=e(this.options.ignoreAttributes),this.attrPrefixLen=this.options.attributeNamePrefix.length,this.isAttribute=o),this.processTextOrObjNode=i,this.options.format?(this.indentate=s,this.tagEndChar=">\n",this.newLine="\n"):(this.indentate=function(){return""},this.tagEndChar=">",this.newLine="")}function i(t,e,n,r){const i=this.j2x(t,n+1,r.concat(e));return void 0!==t[this.options.textNodeName]&&1===Object.keys(t).length?this.buildTextValNode(t[this.options.textNodeName],e,i.attrStr,n):this.buildObjectNode(i.val,e,i.attrStr,n)}function s(t){return this.options.indentBy.repeat(t)}function o(t){return!(!t.startsWith(this.options.attributeNamePrefix)||t===this.options.textNodeName)&&t.substr(this.attrPrefixLen)}return r.prototype.build=function(e){return this.options.preserveOrder?t(e,this.options):(Array.isArray(e)&&this.options.arrayNodeName&&this.options.arrayNodeName.length>1&&(e={[this.options.arrayNodeName]:e}),this.j2x(e,0,[]).val)},r.prototype.j2x=function(t,e,n){let r="",i="";const s=n.join(".");for(let o in t)if(Object.prototype.hasOwnProperty.call(t,o))if(void 0===t[o])this.isAttribute(o)&&(i+="");else if(null===t[o])this.isAttribute(o)?i+="":"?"===o[0]?i+=this.indentate(e)+"<"+o+"?"+this.tagEndChar:i+=this.indentate(e)+"<"+o+"/"+this.tagEndChar;else if(t[o]instanceof Date)i+=this.buildTextValNode(t[o],o,"",e);else if("object"!=typeof t[o]){const n=this.isAttribute(o);if(n&&!this.ignoreAttributesFn(n,s))r+=this.buildAttrPairStr(n,""+t[o]);else if(!n)if(o===this.options.textNodeName){let e=this.options.tagValueProcessor(o,""+t[o]);i+=this.replaceEntitiesValue(e)}else i+=this.buildTextValNode(t[o],o,"",e)}else if(Array.isArray(t[o])){const r=t[o].length;let s="",a="";for(let l=0;l<r;l++){const r=t[o][l];if(void 0===r);else if(null===r)"?"===o[0]?i+=this.indentate(e)+"<"+o+"?"+this.tagEndChar:i+=this.indentate(e)+"<"+o+"/"+this.tagEndChar;else if("object"==typeof r)if(this.options.oneListGroup){const t=this.j2x(r,e+1,n.concat(o));s+=t.val,this.options.attributesGroupName&&r.hasOwnProperty(this.options.attributesGroupName)&&(a+=t.attrStr)}else s+=this.processTextOrObjNode(r,o,e,n);else if(this.options.oneListGroup){let t=this.options.tagValueProcessor(o,r);t=this.replaceEntitiesValue(t),s+=t}else s+=this.buildTextValNode(r,o,"",e)}this.options.oneListGroup&&(s=this.buildObjectNode(s,o,a,e)),i+=s}else if(this.options.attributesGroupName&&o===this.options.attributesGroupName){const e=Object.keys(t[o]),n=e.length;for(let i=0;i<n;i++)r+=this.buildAttrPairStr(e[i],""+t[o][e[i]])}else i+=this.processTextOrObjNode(t[o],o,e,n);return{attrStr:r,val:i}},r.prototype.buildAttrPairStr=function(t,e){return e=this.options.attributeValueProcessor(t,""+e),e=this.replaceEntitiesValue(e),this.options.suppressBooleanAttributes&&"true"===e?" "+t:" "+t+'="'+e+'"'},r.prototype.buildObjectNode=function(t,e,n,r){if(""===t)return"?"===e[0]?this.indentate(r)+"<"+e+n+"?"+this.tagEndChar:this.indentate(r)+"<"+e+n+this.closeTag(e)+this.tagEndChar;{let i="</"+e+this.tagEndChar,s="";return"?"===e[0]&&(s="?",i=""),!n&&""!==n||-1!==t.indexOf("<")?!1!==this.options.commentPropName&&e===this.options.commentPropName&&0===s.length?this.indentate(r)+`\x3c!--${t}--\x3e`+this.newLine:this.indentate(r)+"<"+e+n+s+this.tagEndChar+t+this.indentate(r)+i:this.indentate(r)+"<"+e+n+s+">"+t+i}},r.prototype.closeTag=function(t){let e="";return-1!==this.options.unpairedTags.indexOf(t)?this.options.suppressUnpairedNode||(e="/"):e=this.options.suppressEmptyNode?"/":`></${t}`,e},r.prototype.buildTextValNode=function(t,e,n,r){if(!1!==this.options.cdataPropName&&e===this.options.cdataPropName)return this.indentate(r)+`<![CDATA[${t}]]>`+this.newLine;if(!1!==this.options.commentPropName&&e===this.options.commentPropName)return this.indentate(r)+`\x3c!--${t}--\x3e`+this.newLine;if("?"===e[0])return this.indentate(r)+"<"+e+n+"?"+this.tagEndChar;{let i=this.options.tagValueProcessor(e,t);return i=this.replaceEntitiesValue(i),""===i?this.indentate(r)+"<"+e+n+this.closeTag(e)+this.tagEndChar:this.indentate(r)+"<"+e+n+">"+i+"</"+e+this.tagEndChar}},r.prototype.replaceEntitiesValue=function(t){if(t&&t.length>0&&this.options.processEntities)for(let e=0;e<this.options.entities.length;e++){const n=this.options.entities[e];t=t.replace(n.regex,n.val)}return t},B=r}();return H={XMLParser:e,XMLValidator:t,XMLBuilder:n}}();class J{_view;constructor(t){Q(t),this._view=t}get id(){return this._view.id}get name(){return this._view.name}get caption(){return this._view.caption}get emptyTitle(){return this._view.emptyTitle}get emptyCaption(){return this._view.emptyCaption}get getContents(){return this._view.getContents}get icon(){return this._view.icon}set icon(t){this._view.icon=t}get order(){return this._view.order}set order(t){this._view.order=t}get params(){return this._view.params}set params(t){this._view.params=t}get columns(){return this._view.columns}get emptyView(){return this._view.emptyView}get parent(){return this._view.parent}get sticky(){return this._view.sticky}get expanded(){return this._view.expanded}set expanded(t){this._view.expanded=t}get defaultSortKey(){return this._view.defaultSortKey}get loadChildViews(){return this._view.loadChildViews}}const Q=function(t){if(!t.id||"string"!=typeof t.id)throw new Error("View id is required and must be a string");if(!t.name||"string"!=typeof t.name)throw new Error("View name is required and must be a string");if("caption"in t&&"string"!=typeof t.caption)throw new Error("View caption must be a string");if(!t.getContents||"function"!=typeof t.getContents)throw new Error("View getContents is required and must be a function");if(!t.icon||"string"!=typeof t.icon||!function(t){if("string"!=typeof t)throw new TypeError(`Expected a \`string\`, got \`${typeof t}\``);if(0===(t=t.trim()).length)return!1;if(!0!==z.XMLValidator.validate(t))return!1;let e;const n=new z.XMLParser;try{e=n.parse(t)}catch{return!1}return!!e&&!!Object.keys(e).some((t=>"svg"===t.toLowerCase()))}(t.icon))throw new Error("View icon is required and must be a valid svg string");if("order"in t&&"number"!=typeof t.order)throw new Error("View order must be a number");if(t.columns&&t.columns.forEach((t=>{if(!(t instanceof m))throw new Error("View columns must be an array of Column. Invalid column found")})),t.emptyView&&"function"!=typeof t.emptyView)throw new Error("View emptyView must be a function");if(t.parent&&"string"!=typeof t.parent)throw new Error("View parent must be a string");if("sticky"in t&&"boolean"!=typeof t.sticky)throw new Error("View sticky must be a boolean");if("expanded"in t&&"boolean"!=typeof t.expanded)throw new Error("View expanded must be a boolean");if(t.defaultSortKey&&"string"!=typeof t.defaultSortKey)throw new Error("View defaultSortKey must be a string");if(t.loadChildViews&&"function"!=typeof t.loadChildViews)throw new Error("View loadChildViews must be a function");return!0};var tt,et,nt,rt;function it(){if(et)return tt;et=1;const t="object"==typeof o&&o.env&&o.env.NODE_DEBUG&&/\bsemver\b/i.test(o.env.NODE_DEBUG)?(...t)=>console.error("SEMVER",...t):()=>{};return tt=t}function st(){if(rt)return nt;rt=1;const t=Number.MAX_SAFE_INTEGER||9007199254740991;return nt={MAX_LENGTH:256,MAX_SAFE_COMPONENT_LENGTH:16,MAX_SAFE_BUILD_LENGTH:250,MAX_SAFE_INTEGER:t,RELEASE_TYPES:["major","premajor","minor","preminor","patch","prepatch","prerelease"],SEMVER_SPEC_VERSION:"2.0.0",FLAG_INCLUDE_PRERELEASE:1,FLAG_LOOSE:2}}var ot,at,lt,ut,ct,dt,ht,ft,pt,gt,Et,mt,Nt,wt={exports:{}};function At(){if(ht)return dt;ht=1;const t=it(),{MAX_LENGTH:e,MAX_SAFE_INTEGER:n}=st(),{safeRe:r,t:i}=(ot||(ot=1,function(t,e){const{MAX_SAFE_COMPONENT_LENGTH:n,MAX_SAFE_BUILD_LENGTH:r,MAX_LENGTH:i}=st(),s=it(),o=(e=t.exports={}).re=[],a=e.safeRe=[],l=e.src=[],u=e.t={};let c=0;const d="[a-zA-Z0-9-]",h=[["\\s",1],["\\d",i],[d,r]],f=(t,e,n)=>{const r=(t=>{for(const[e,n]of h)t=t.split(`${e}*`).join(`${e}{0,${n}}`).split(`${e}+`).join(`${e}{1,${n}}`);return t})(e),i=c++;s(t,i,e),u[t]=i,l[i]=e,o[i]=new RegExp(e,n?"g":void 0),a[i]=new RegExp(r,n?"g":void 0)};f("NUMERICIDENTIFIER","0|[1-9]\\d*"),f("NUMERICIDENTIFIERLOOSE","\\d+"),f("NONNUMERICIDENTIFIER",`\\d*[a-zA-Z-]${d}*`),f("MAINVERSION",`(${l[u.NUMERICIDENTIFIER]})\\.(${l[u.NUMERICIDENTIFIER]})\\.(${l[u.NUMERICIDENTIFIER]})`),f("MAINVERSIONLOOSE",`(${l[u.NUMERICIDENTIFIERLOOSE]})\\.(${l[u.NUMERICIDENTIFIERLOOSE]})\\.(${l[u.NUMERICIDENTIFIERLOOSE]})`),f("PRERELEASEIDENTIFIER",`(?:${l[u.NUMERICIDENTIFIER]}|${l[u.NONNUMERICIDENTIFIER]})`),f("PRERELEASEIDENTIFIERLOOSE",`(?:${l[u.NUMERICIDENTIFIERLOOSE]}|${l[u.NONNUMERICIDENTIFIER]})`),f("PRERELEASE",`(?:-(${l[u.PRERELEASEIDENTIFIER]}(?:\\.${l[u.PRERELEASEIDENTIFIER]})*))`),f("PRERELEASELOOSE",`(?:-?(${l[u.PRERELEASEIDENTIFIERLOOSE]}(?:\\.${l[u.PRERELEASEIDENTIFIERLOOSE]})*))`),f("BUILDIDENTIFIER",`${d}+`),f("BUILD",`(?:\\+(${l[u.BUILDIDENTIFIER]}(?:\\.${l[u.BUILDIDENTIFIER]})*))`),f("FULLPLAIN",`v?${l[u.MAINVERSION]}${l[u.PRERELEASE]}?${l[u.BUILD]}?`),f("FULL",`^${l[u.FULLPLAIN]}$`),f("LOOSEPLAIN",`[v=\\s]*${l[u.MAINVERSIONLOOSE]}${l[u.PRERELEASELOOSE]}?${l[u.BUILD]}?`),f("LOOSE",`^${l[u.LOOSEPLAIN]}$`),f("GTLT","((?:<|>)?=?)"),f("XRANGEIDENTIFIERLOOSE",`${l[u.NUMERICIDENTIFIERLOOSE]}|x|X|\\*`),f("XRANGEIDENTIFIER",`${l[u.NUMERICIDENTIFIER]}|x|X|\\*`),f("XRANGEPLAIN",`[v=\\s]*(${l[u.XRANGEIDENTIFIER]})(?:\\.(${l[u.XRANGEIDENTIFIER]})(?:\\.(${l[u.XRANGEIDENTIFIER]})(?:${l[u.PRERELEASE]})?${l[u.BUILD]}?)?)?`),f("XRANGEPLAINLOOSE",`[v=\\s]*(${l[u.XRANGEIDENTIFIERLOOSE]})(?:\\.(${l[u.XRANGEIDENTIFIERLOOSE]})(?:\\.(${l[u.XRANGEIDENTIFIERLOOSE]})(?:${l[u.PRERELEASELOOSE]})?${l[u.BUILD]}?)?)?`),f("XRANGE",`^${l[u.GTLT]}\\s*${l[u.XRANGEPLAIN]}$`),f("XRANGELOOSE",`^${l[u.GTLT]}\\s*${l[u.XRANGEPLAINLOOSE]}$`),f("COERCEPLAIN",`(^|[^\\d])(\\d{1,${n}})(?:\\.(\\d{1,${n}}))?(?:\\.(\\d{1,${n}}))?`),f("COERCE",`${l[u.COERCEPLAIN]}(?:$|[^\\d])`),f("COERCEFULL",l[u.COERCEPLAIN]+`(?:${l[u.PRERELEASE]})?(?:${l[u.BUILD]})?(?:$|[^\\d])`),f("COERCERTL",l[u.COERCE],!0),f("COERCERTLFULL",l[u.COERCEFULL],!0),f("LONETILDE","(?:~>?)"),f("TILDETRIM",`(\\s*)${l[u.LONETILDE]}\\s+`,!0),e.tildeTrimReplace="$1~",f("TILDE",`^${l[u.LONETILDE]}${l[u.XRANGEPLAIN]}$`),f("TILDELOOSE",`^${l[u.LONETILDE]}${l[u.XRANGEPLAINLOOSE]}$`),f("LONECARET","(?:\\^)"),f("CARETTRIM",`(\\s*)${l[u.LONECARET]}\\s+`,!0),e.caretTrimReplace="$1^",f("CARET",`^${l[u.LONECARET]}${l[u.XRANGEPLAIN]}$`),f("CARETLOOSE",`^${l[u.LONECARET]}${l[u.XRANGEPLAINLOOSE]}$`),f("COMPARATORLOOSE",`^${l[u.GTLT]}\\s*(${l[u.LOOSEPLAIN]})$|^$`),f("COMPARATOR",`^${l[u.GTLT]}\\s*(${l[u.FULLPLAIN]})$|^$`),f("COMPARATORTRIM",`(\\s*)${l[u.GTLT]}\\s*(${l[u.LOOSEPLAIN]}|${l[u.XRANGEPLAIN]})`,!0),e.comparatorTrimReplace="$1$2$3",f("HYPHENRANGE",`^\\s*(${l[u.XRANGEPLAIN]})\\s+-\\s+(${l[u.XRANGEPLAIN]})\\s*$`),f("HYPHENRANGELOOSE",`^\\s*(${l[u.XRANGEPLAINLOOSE]})\\s+-\\s+(${l[u.XRANGEPLAINLOOSE]})\\s*$`),f("STAR","(<|>)?=?\\s*\\*"),f("GTE0","^\\s*>=\\s*0\\.0\\.0\\s*$"),f("GTE0PRE","^\\s*>=\\s*0\\.0\\.0-0\\s*$")}(wt,wt.exports)),wt.exports),s=function(){if(lt)return at;lt=1;const t=Object.freeze({loose:!0}),e=Object.freeze({});return at=n=>n?"object"!=typeof n?t:n:e}(),{compareIdentifiers:o}=function(){if(ct)return ut;ct=1;const t=/^[0-9]+$/,e=(e,n)=>{const r=t.test(e),i=t.test(n);return r&&i&&(e=+e,n=+n),e===n?0:r&&!i?-1:i&&!r?1:e<n?-1:1};return ut={compareIdentifiers:e,rcompareIdentifiers:(t,n)=>e(n,t)}}();class a{constructor(o,l){if(l=s(l),o instanceof a){if(o.loose===!!l.loose&&o.includePrerelease===!!l.includePrerelease)return o;o=o.version}else if("string"!=typeof o)throw new TypeError(`Invalid version. Must be a string. Got type "${typeof o}".`);if(o.length>e)throw new TypeError(`version is longer than ${e} characters`);t("SemVer",o,l),this.options=l,this.loose=!!l.loose,this.includePrerelease=!!l.includePrerelease;const u=o.trim().match(l.loose?r[i.LOOSE]:r[i.FULL]);if(!u)throw new TypeError(`Invalid Version: ${o}`);if(this.raw=o,this.major=+u[1],this.minor=+u[2],this.patch=+u[3],this.major>n||this.major<0)throw new TypeError("Invalid major version");if(this.minor>n||this.minor<0)throw new TypeError("Invalid minor version");if(this.patch>n||this.patch<0)throw new TypeError("Invalid patch version");u[4]?this.prerelease=u[4].split(".").map((t=>{if(/^[0-9]+$/.test(t)){const e=+t;if(e>=0&&e<n)return e}return t})):this.prerelease=[],this.build=u[5]?u[5].split("."):[],this.format()}format(){return this.version=`${this.major}.${this.minor}.${this.patch}`,this.prerelease.length&&(this.version+=`-${this.prerelease.join(".")}`),this.version}toString(){return this.version}compare(e){if(t("SemVer.compare",this.version,this.options,e),!(e instanceof a)){if("string"==typeof e&&e===this.version)return 0;e=new a(e,this.options)}return e.version===this.version?0:this.compareMain(e)||this.comparePre(e)}compareMain(t){return t instanceof a||(t=new a(t,this.options)),o(this.major,t.major)||o(this.minor,t.minor)||o(this.patch,t.patch)}comparePre(e){if(e instanceof a||(e=new a(e,this.options)),this.prerelease.length&&!e.prerelease.length)return-1;if(!this.prerelease.length&&e.prerelease.length)return 1;if(!this.prerelease.length&&!e.prerelease.length)return 0;let n=0;do{const r=this.prerelease[n],i=e.prerelease[n];if(t("prerelease compare",n,r,i),void 0===r&&void 0===i)return 0;if(void 0===i)return 1;if(void 0===r)return-1;if(r!==i)return o(r,i)}while(++n)}compareBuild(e){e instanceof a||(e=new a(e,this.options));let n=0;do{const r=this.build[n],i=e.build[n];if(t("build compare",n,r,i),void 0===r&&void 0===i)return 0;if(void 0===i)return 1;if(void 0===r)return-1;if(r!==i)return o(r,i)}while(++n)}inc(t,e,n){switch(t){case"premajor":this.prerelease.length=0,this.patch=0,this.minor=0,this.major++,this.inc("pre",e,n);break;case"preminor":this.prerelease.length=0,this.patch=0,this.minor++,this.inc("pre",e,n);break;case"prepatch":this.prerelease.length=0,this.inc("patch",e,n),this.inc("pre",e,n);break;case"prerelease":0===this.prerelease.length&&this.inc("patch",e,n),this.inc("pre",e,n);break;case"major":0===this.minor&&0===this.patch&&0!==this.prerelease.length||this.major++,this.minor=0,this.patch=0,this.prerelease=[];break;case"minor":0===this.patch&&0!==this.prerelease.length||this.minor++,this.patch=0,this.prerelease=[];break;case"patch":0===this.prerelease.length&&this.patch++,this.prerelease=[];break;case"pre":{const t=Number(n)?1:0;if(!e&&!1===n)throw new Error("invalid increment argument: identifier is empty");if(0===this.prerelease.length)this.prerelease=[t];else{let r=this.prerelease.length;for(;--r>=0;)"number"==typeof this.prerelease[r]&&(this.prerelease[r]++,r=-2);if(-1===r){if(e===this.prerelease.join(".")&&!1===n)throw new Error("invalid increment argument: identifier already exists");this.prerelease.push(t)}}if(e){let r=[e,t];!1===n&&(r=[e]),0===o(this.prerelease[0],e)?isNaN(this.prerelease[1])&&(this.prerelease=r):this.prerelease=r}break}default:throw new Error(`invalid increment argument: ${t}`)}return this.raw=this.format(),this.build.length&&(this.raw+=`+${this.build.join(".")}`),this}}return dt=a}!function(){if(Et)return gt;Et=1;const t=function(){if(pt)return ft;pt=1;const t=At();return ft=(e,n,r=!1)=>{if(e instanceof t)return e;try{return new t(e,n)}catch(t){if(!r)return null;throw t}}}();gt=(e,n)=>{const r=t(e,n);return r?r.version:null}}(),function(){if(Nt)return mt;Nt=1;const t=At();mt=(e,n)=>new t(e,n).major}(),s.m},64755:(t,e,n)=>{n.d(e,{A:()=>a});var r=n(71354),i=n.n(r),s=n(76314),o=n.n(s)()(i());o.push([t.id,"/*!\n * SPDX-FileCopyrightText: 2023 Nextcloud GmbH and Nextcloud contributors\n * SPDX-License-Identifier: AGPL-3.0-or-later\n */.files-list__row-status{display:flex;min-width:44px;justify-content:center;align-items:center;height:100%;text-overflow:ellipsis;white-space:nowrap;overflow:hidden}.files-list__row-status svg{width:24px;height:24px}.files-list__row-status svg path{fill:currentColor}.files-list__row-status--error,.files-list__row-status--warning{position:absolute;display:block;top:0;inset-inline:0;bottom:0;opacity:.1;z-index:-1}.files-list__row-status--error{background:var(--color-error)}.files-list__row-status--warning{background:var(--color-warning)}","",{version:3,sources:["webpack://./apps/files_external/src/css/fileEntryStatus.scss"],names:[],mappings:"AAAA;;;EAAA,CAIA,wBACC,YAAA,CACA,cAAA,CACA,sBAAA,CACA,kBAAA,CACA,WAAA,CACA,sBAAA,CACA,kBAAA,CACA,eAAA,CAEA,4BACC,UAAA,CACA,WAAA,CAEA,iCACC,iBAAA,CAIF,gEAEC,iBAAA,CACA,aAAA,CACA,KAAA,CACA,cAAA,CACA,QAAA,CACA,UAAA,CACA,UAAA,CAGD,+BACC,6BAAA,CAGD,iCACC,+BAAA",sourcesContent:["/*!\n * SPDX-FileCopyrightText: 2023 Nextcloud GmbH and Nextcloud contributors\n * SPDX-License-Identifier: AGPL-3.0-or-later\n */\n.files-list__row-status {\n\tdisplay: flex;\n\tmin-width: 44px;\n\tjustify-content: center;\n\talign-items: center;\n\theight: 100%;\n\ttext-overflow: ellipsis;\n\twhite-space: nowrap;\n\toverflow: hidden;\n\n\tsvg {\n\t\twidth: 24px;\n\t\theight: 24px;\n\n\t\tpath {\n\t\t\tfill: currentColor;\n\t\t}\n\t}\n\n\t&--error,\n\t&--warning {\n\t\tposition: absolute;\n\t\tdisplay: block;\n\t\ttop: 0;\n\t\tinset-inline: 0;\n\t\tbottom: 0;\n\t\topacity: .1;\n\t\tz-index: -1;\n\t}\n\n\t&--error {\n\t\tbackground: var(--color-error);\n\t}\n\n\t&--warning {\n\t\tbackground: var(--color-warning);\n\t}\n}\n"],sourceRoot:""}]);const a=o}},i={};function s(t){var e=i[t];if(void 0!==e)return e.exports;var n=i[t]={id:t,loaded:!1,exports:{}};return r[t].call(n.exports,n,n.exports,s),n.loaded=!0,n.exports}s.m=r,t=[],s.O=(e,n,r,i)=>{if(!n){var o=1/0;for(c=0;c<t.length;c++){n=t[c][0],r=t[c][1],i=t[c][2];for(var a=!0,l=0;l<n.length;l++)(!1&i||o>=i)&&Object.keys(s.O).every((t=>s.O[t](n[l])))?n.splice(l--,1):(a=!1,i<o&&(o=i));if(a){t.splice(c--,1);var u=r();void 0!==u&&(e=u)}}return e}i=i||0;for(var c=t.length;c>0&&t[c-1][2]>i;c--)t[c]=t[c-1];t[c]=[n,r,i]},s.n=t=>{var e=t&&t.__esModule?()=>t.default:()=>t;return s.d(e,{a:e}),e},s.d=(t,e)=>{for(var n in e)s.o(e,n)&&!s.o(t,n)&&Object.defineProperty(t,n,{enumerable:!0,get:e[n]})},s.f={},s.e=t=>Promise.all(Object.keys(s.f).reduce(((e,n)=>(s.f[n](t,e),e)),[])),s.u=t=>t+"-"+t+".js?v="+{1937:"d3caf98e2fb49c6646d8",2441:"838daa00939c448c01c5",4040:"d08b5d1945040c130b7e",5862:"18c97d281a8207f0ce8d",8289:"deac5484408b625daa58"}[t],s.g=function(){if("object"==typeof globalThis)return globalThis;try{return this||new Function("return this")()}catch(t){if("object"==typeof window)return window}}(),s.o=(t,e)=>Object.prototype.hasOwnProperty.call(t,e),e={},n="nextcloud:",s.l=(t,r,i,o)=>{if(e[t])e[t].push(r);else{var a,l;if(void 0!==i)for(var u=document.getElementsByTagName("script"),c=0;c<u.length;c++){var d=u[c];if(d.getAttribute("src")==t||d.getAttribute("data-webpack")==n+i){a=d;break}}a||(l=!0,(a=document.createElement("script")).charset="utf-8",a.timeout=120,s.nc&&a.setAttribute("nonce",s.nc),a.setAttribute("data-webpack",n+i),a.src=t),e[t]=[r];var h=(n,r)=>{a.onerror=a.onload=null,clearTimeout(f);var i=e[t];if(delete e[t],a.parentNode&&a.parentNode.removeChild(a),i&&i.forEach((t=>t(r))),n)return n(r)},f=setTimeout(h.bind(null,void 0,{type:"timeout",target:a}),12e4);a.onerror=h.bind(null,a.onerror),a.onload=h.bind(null,a.onload),l&&document.head.appendChild(a)}},s.r=t=>{"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(t,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(t,"__esModule",{value:!0})},s.nmd=t=>(t.paths=[],t.children||(t.children=[]),t),s.j=1873,(()=>{var t;s.g.importScripts&&(t=s.g.location+"");var e=s.g.document;if(!t&&e&&(e.currentScript&&"SCRIPT"===e.currentScript.tagName.toUpperCase()&&(t=e.currentScript.src),!t)){var n=e.getElementsByTagName("script");if(n.length)for(var r=n.length-1;r>-1&&(!t||!/^http(s?):/.test(t));)t=n[r--].src}if(!t)throw new Error("Automatic publicPath is not supported in this browser");t=t.replace(/^blob:/,"").replace(/#.*$/,"").replace(/\?.*$/,"").replace(/\/[^\/]+$/,"/"),s.p=t})(),(()=>{s.b=document.baseURI||self.location.href;var t={1873:0};s.f.j=(e,n)=>{var r=s.o(t,e)?t[e]:void 0;if(0!==r)if(r)n.push(r[2]);else{var i=new Promise(((n,i)=>r=t[e]=[n,i]));n.push(r[2]=i);var o=s.p+s.u(e),a=new Error;s.l(o,(n=>{if(s.o(t,e)&&(0!==(r=t[e])&&(t[e]=void 0),r)){var i=n&&("load"===n.type?"missing":n.type),o=n&&n.target&&n.target.src;a.message="Loading chunk "+e+" failed.\n("+i+": "+o+")",a.name="ChunkLoadError",a.type=i,a.request=o,r[1](a)}}),"chunk-"+e,e)}},s.O.j=e=>0===t[e];var e=(e,n)=>{var r,i,o=n[0],a=n[1],l=n[2],u=0;if(o.some((e=>0!==t[e]))){for(r in a)s.o(a,r)&&(s.m[r]=a[r]);if(l)var c=l(s)}for(e&&e(n);u<o.length;u++)i=o[u],s.o(t,i)&&t[i]&&t[i][0](),t[i]=0;return s.O(c)},n=self.webpackChunknextcloud=self.webpackChunknextcloud||[];n.forEach(e.bind(null,0)),n.push=e.bind(null,n.push.bind(n))})(),s.nc=void 0;var o=s.O(void 0,[4208],(()=>s(26436)));o=s.O(o)})();
-//# sourceMappingURL=files_external-init.js.map?v=d0f2a137de5db399bc45
+/******/ (() => { // webpackBootstrap
+/******/ 	"use strict";
+/******/ 	var __webpack_modules__ = ({
+
+/***/ "./apps/files_external/src/actions/enterCredentialsAction.ts":
+/*!*******************************************************************!*\
+  !*** ./apps/files_external/src/actions/enterCredentialsAction.ts ***!
+  \*******************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   ACTION_CREDENTIALS_EXTERNAL_STORAGE: () => (/* binding */ ACTION_CREDENTIALS_EXTERNAL_STORAGE),
+/* harmony export */   action: () => (/* binding */ action)
+/* harmony export */ });
+/* harmony import */ var _nextcloud_password_confirmation__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @nextcloud/password-confirmation */ "./node_modules/@nextcloud/password-confirmation/dist/index.mjs");
+/* harmony import */ var _nextcloud_router__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @nextcloud/router */ "./node_modules/@nextcloud/router/dist/index.mjs");
+/* harmony import */ var _nextcloud_dialogs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @nextcloud/dialogs */ "./node_modules/@nextcloud/dialogs/dist/index.mjs");
+/* harmony import */ var _nextcloud_l10n__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @nextcloud/l10n */ "./node_modules/@nextcloud/l10n/dist/index.mjs");
+/* harmony import */ var _nextcloud_axios__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @nextcloud/axios */ "./node_modules/@nextcloud/axios/dist/index.mjs");
+/* harmony import */ var _mdi_svg_svg_login_svg_raw__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @mdi/svg/svg/login.svg?raw */ "./node_modules/@mdi/svg/svg/login.svg?raw");
+/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.runtime.esm.js");
+/* harmony import */ var _nextcloud_files__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @nextcloud/files */ "./node_modules/@nextcloud/files/dist/index.mjs");
+/* harmony import */ var _utils_credentialsUtils__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../utils/credentialsUtils */ "./apps/files_external/src/utils/credentialsUtils.ts");
+/* harmony import */ var _utils_externalStorageUtils__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../utils/externalStorageUtils */ "./apps/files_external/src/utils/externalStorageUtils.ts");
+
+
+
+
+
+
+
+
+
+
+// Add password confirmation interceptors as
+// the backend requires the user to confirm their password
+(0,_nextcloud_password_confirmation__WEBPACK_IMPORTED_MODULE_0__.addPasswordConfirmationInterceptors)(_nextcloud_axios__WEBPACK_IMPORTED_MODULE_4__["default"]);
+/**
+ * Set credentials for external storage
+ *
+ * @param node The node for which to set the credentials
+ * @param login The username
+ * @param password The password
+ */
+async function setCredentials(node, login, password) {
+  const configResponse = await _nextcloud_axios__WEBPACK_IMPORTED_MODULE_4__["default"].request({
+    method: 'PUT',
+    url: (0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_1__.generateUrl)('apps/files_external/userglobalstorages/{id}', {
+      id: node.attributes.id
+    }),
+    confirmPassword: _nextcloud_password_confirmation__WEBPACK_IMPORTED_MODULE_0__.PwdConfirmationMode.Strict,
+    data: {
+      backendOptions: {
+        user: login,
+        password
+      }
+    }
+  });
+  const config = configResponse.data;
+  if (config.status !== _utils_credentialsUtils__WEBPACK_IMPORTED_MODULE_7__.STORAGE_STATUS.SUCCESS) {
+    (0,_nextcloud_dialogs__WEBPACK_IMPORTED_MODULE_2__.showError)((0,_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_3__.translate)('files_external', 'Unable to update this external storage config. {statusMessage}', {
+      statusMessage: config?.statusMessage || ''
+    }));
+    return null;
+  }
+  // Success update config attribute
+  (0,_nextcloud_dialogs__WEBPACK_IMPORTED_MODULE_2__.showSuccess)((0,_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_3__.translate)('files_external', 'New configuration successfully saved'));
+  vue__WEBPACK_IMPORTED_MODULE_9__["default"].set(node.attributes, 'config', config);
+  return true;
+}
+const ACTION_CREDENTIALS_EXTERNAL_STORAGE = 'credentials-external-storage';
+const action = new _nextcloud_files__WEBPACK_IMPORTED_MODULE_6__.FileAction({
+  id: ACTION_CREDENTIALS_EXTERNAL_STORAGE,
+  displayName: () => (0,_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_3__.translate)('files', 'Enter missing credentials'),
+  iconSvgInline: () => _mdi_svg_svg_login_svg_raw__WEBPACK_IMPORTED_MODULE_5__,
+  enabled: nodes => {
+    // Only works on single node
+    if (nodes.length !== 1) {
+      return false;
+    }
+    const node = nodes[0];
+    if (!(0,_utils_externalStorageUtils__WEBPACK_IMPORTED_MODULE_8__.isNodeExternalStorage)(node)) {
+      return false;
+    }
+    const config = node.attributes?.config || {};
+    if ((0,_utils_credentialsUtils__WEBPACK_IMPORTED_MODULE_7__.isMissingAuthConfig)(config)) {
+      return true;
+    }
+    return false;
+  },
+  async exec(node) {
+    const {
+      login,
+      password
+    } = await new Promise(resolve => (0,_nextcloud_dialogs__WEBPACK_IMPORTED_MODULE_2__.spawnDialog)((0,vue__WEBPACK_IMPORTED_MODULE_9__.defineAsyncComponent)(() => Promise.all(/*! import() */[__webpack_require__.e("core-common"), __webpack_require__.e("apps_files_external_src_views_CredentialsDialog_vue")]).then(__webpack_require__.bind(__webpack_require__, /*! ../views/CredentialsDialog.vue */ "./apps/files_external/src/views/CredentialsDialog.vue"))), {}, args => {
+      resolve(args);
+    }));
+    if (login && password) {
+      try {
+        await setCredentials(node, login, password);
+        (0,_nextcloud_dialogs__WEBPACK_IMPORTED_MODULE_2__.showSuccess)((0,_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_3__.translate)('files_external', 'Credentials successfully set'));
+      } catch (error) {
+        (0,_nextcloud_dialogs__WEBPACK_IMPORTED_MODULE_2__.showError)((0,_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_3__.translate)('files_external', 'Error while setting credentials: {error}', {
+          error: error.message
+        }));
+      }
+    }
+    return null;
+  },
+  // Before openFolderAction
+  order: -1000,
+  default: _nextcloud_files__WEBPACK_IMPORTED_MODULE_6__.DefaultType.DEFAULT,
+  inline: () => true
+});
+
+/***/ }),
+
+/***/ "./apps/files_external/src/actions/inlineStorageCheckAction.ts":
+/*!*********************************************************************!*\
+  !*** ./apps/files_external/src/actions/inlineStorageCheckAction.ts ***!
+  \*********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   action: () => (/* binding */ action)
+/* harmony export */ });
+/* harmony import */ var _nextcloud_files__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @nextcloud/files */ "./node_modules/@nextcloud/files/dist/index.mjs");
+/* harmony import */ var _nextcloud_dialogs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @nextcloud/dialogs */ "./node_modules/@nextcloud/dialogs/dist/index.mjs");
+/* harmony import */ var _nextcloud_l10n__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @nextcloud/l10n */ "./node_modules/@nextcloud/l10n/dist/index.mjs");
+/* harmony import */ var _mdi_svg_svg_alert_circle_svg_raw__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @mdi/svg/svg/alert-circle.svg?raw */ "./node_modules/@mdi/svg/svg/alert-circle.svg?raw");
+/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.runtime.esm.js");
+/* harmony import */ var _css_fileEntryStatus_scss__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../css/fileEntryStatus.scss */ "./apps/files_external/src/css/fileEntryStatus.scss");
+/* harmony import */ var _services_externalStorage__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../services/externalStorage */ "./apps/files_external/src/services/externalStorage.ts");
+/* harmony import */ var _utils_credentialsUtils__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../utils/credentialsUtils */ "./apps/files_external/src/utils/credentialsUtils.ts");
+/* harmony import */ var _utils_externalStorageUtils__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../utils/externalStorageUtils */ "./apps/files_external/src/utils/externalStorageUtils.ts");
+
+
+
+
+
+
+
+
+
+const action = new _nextcloud_files__WEBPACK_IMPORTED_MODULE_0__.FileAction({
+  id: 'check-external-storage',
+  displayName: () => '',
+  iconSvgInline: () => '',
+  enabled: nodes => {
+    return nodes.every(node => (0,_utils_externalStorageUtils__WEBPACK_IMPORTED_MODULE_7__.isNodeExternalStorage)(node) === true);
+  },
+  exec: async () => null,
+  /**
+   * Use this function to check the storage availability
+   * We then update the node attributes directly.
+   *
+   * @param node The node to render inline
+   */
+  async renderInline(node) {
+    const span = document.createElement('span');
+    span.className = 'files-list__row-status';
+    span.innerHTML = (0,_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_2__.translate)('files_external', 'Checking storage …');
+    let config = null;
+    (0,_services_externalStorage__WEBPACK_IMPORTED_MODULE_5__.getStatus)(node.attributes.id, node.attributes.scope === 'system').then(response => {
+      config = response.data;
+      vue__WEBPACK_IMPORTED_MODULE_8__["default"].set(node.attributes, 'config', config);
+      if (config.status !== _utils_credentialsUtils__WEBPACK_IMPORTED_MODULE_6__.STORAGE_STATUS.SUCCESS) {
+        throw new Error(config?.statusMessage || (0,_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_2__.translate)('files_external', 'There was an error with this external storage.'));
+      }
+      span.remove();
+    }).catch(error => {
+      // If axios failed or if something else prevented
+      // us from getting the config
+      if (error.response && !config) {
+        (0,_nextcloud_dialogs__WEBPACK_IMPORTED_MODULE_1__.showWarning)((0,_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_2__.translate)('files_external', 'We were unable to check the external storage {basename}', {
+          basename: node.basename
+        }));
+      }
+      // Reset inline status
+      span.innerHTML = '';
+      // Checking if we really have an error
+      const isWarning = !config ? false : (0,_utils_credentialsUtils__WEBPACK_IMPORTED_MODULE_6__.isMissingAuthConfig)(config);
+      const overlay = document.createElement('span');
+      overlay.classList.add(`files-list__row-status--${isWarning ? 'warning' : 'error'}`);
+      // Only show an icon for errors, warning like missing credentials
+      // have a dedicated inline action button
+      if (!isWarning) {
+        span.innerHTML = _mdi_svg_svg_alert_circle_svg_raw__WEBPACK_IMPORTED_MODULE_3__;
+        span.title = error.message;
+      }
+      span.prepend(overlay);
+    });
+    return span;
+  },
+  order: 10
+});
+
+/***/ }),
+
+/***/ "./apps/files_external/src/actions/openInFilesAction.ts":
+/*!**************************************************************!*\
+  !*** ./apps/files_external/src/actions/openInFilesAction.ts ***!
+  \**************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   action: () => (/* binding */ action)
+/* harmony export */ });
+/* harmony import */ var _nextcloud_router__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @nextcloud/router */ "./node_modules/@nextcloud/router/dist/index.mjs");
+/* harmony import */ var _nextcloud_l10n__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @nextcloud/l10n */ "./node_modules/@nextcloud/l10n/dist/index.mjs");
+/* harmony import */ var _nextcloud_files__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @nextcloud/files */ "./node_modules/@nextcloud/files/dist/index.mjs");
+/* harmony import */ var _utils_credentialsUtils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utils/credentialsUtils */ "./apps/files_external/src/utils/credentialsUtils.ts");
+/* harmony import */ var _nextcloud_auth__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @nextcloud/auth */ "./node_modules/@nextcloud/auth/dist/index.mjs");
+
+
+
+
+
+const action = new _nextcloud_files__WEBPACK_IMPORTED_MODULE_2__.FileAction({
+  id: 'open-in-files-external-storage',
+  displayName: nodes => {
+    const config = nodes?.[0]?.attributes?.config || {
+      status: _utils_credentialsUtils__WEBPACK_IMPORTED_MODULE_3__.STORAGE_STATUS.INDETERMINATE
+    };
+    if (config.status !== _utils_credentialsUtils__WEBPACK_IMPORTED_MODULE_3__.STORAGE_STATUS.SUCCESS) {
+      return (0,_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_1__.translate)('files_external', 'Examine this faulty external storage configuration');
+    }
+    return (0,_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_1__.translate)('files', 'Open in Files');
+  },
+  iconSvgInline: () => '',
+  enabled: (nodes, view) => view.id === 'extstoragemounts',
+  async exec(node) {
+    const config = node.attributes.config;
+    if (config?.status !== _utils_credentialsUtils__WEBPACK_IMPORTED_MODULE_3__.STORAGE_STATUS.SUCCESS) {
+      window.OC.dialogs.confirm((0,_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_1__.translate)('files_external', 'There was an error with this external storage. Do you want to review this mount point config in the settings page?'), (0,_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_1__.translate)('files_external', 'External mount error'), redirect => {
+        if (redirect === true) {
+          const scope = (0,_nextcloud_auth__WEBPACK_IMPORTED_MODULE_4__.getCurrentUser)()?.isAdmin ? 'admin' : 'user';
+          window.location.href = (0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_0__.generateUrl)(`/settings/${scope}/externalstorages`);
+        }
+      });
+      return null;
+    }
+    // Do not use fileid as we don't have that information
+    // from the external storage api
+    window.OCP.Files.Router.goToRoute(null,
+    // use default route
+    {
+      view: 'files'
+    }, {
+      dir: node.path
+    });
+    return null;
+  },
+  // Before openFolderAction
+  order: -1000,
+  default: _nextcloud_files__WEBPACK_IMPORTED_MODULE_2__.DefaultType.HIDDEN
+});
+
+/***/ }),
+
+/***/ "./apps/files_external/src/css/fileEntryStatus.scss":
+/*!**********************************************************!*\
+  !*** ./apps/files_external/src/css/fileEntryStatus.scss ***!
+  \**********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! !../../../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */ "./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! !../../../../node_modules/style-loader/dist/runtime/styleDomAPI.js */ "./node_modules/style-loader/dist/runtime/styleDomAPI.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! !../../../../node_modules/style-loader/dist/runtime/insertBySelector.js */ "./node_modules/style-loader/dist/runtime/insertBySelector.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! !../../../../node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js */ "./node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! !../../../../node_modules/style-loader/dist/runtime/insertStyleElement.js */ "./node_modules/style-loader/dist/runtime/insertStyleElement.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! !../../../../node_modules/style-loader/dist/runtime/styleTagTransform.js */ "./node_modules/style-loader/dist/runtime/styleTagTransform.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _node_modules_css_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_fileEntryStatus_scss__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! !!../../../../node_modules/css-loader/dist/cjs.js!../../../../node_modules/sass-loader/dist/cjs.js!./fileEntryStatus.scss */ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./apps/files_external/src/css/fileEntryStatus.scss");
+
+      
+      
+      
+      
+      
+      
+      
+      
+      
+
+var options = {};
+
+options.styleTagTransform = (_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default());
+options.setAttributes = (_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default());
+options.insert = _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default().bind(null, "head");
+options.domAPI = (_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default());
+options.insertStyleElement = (_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default());
+
+var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_fileEntryStatus_scss__WEBPACK_IMPORTED_MODULE_6__["default"], options);
+
+
+
+
+       /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_fileEntryStatus_scss__WEBPACK_IMPORTED_MODULE_6__["default"] && _node_modules_css_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_fileEntryStatus_scss__WEBPACK_IMPORTED_MODULE_6__["default"].locals ? _node_modules_css_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_fileEntryStatus_scss__WEBPACK_IMPORTED_MODULE_6__["default"].locals : undefined);
+
+
+/***/ }),
+
+/***/ "./apps/files_external/src/init.ts":
+/*!*****************************************!*\
+  !*** ./apps/files_external/src/init.ts ***!
+  \*****************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _nextcloud_initial_state__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @nextcloud/initial-state */ "./node_modules/@nextcloud/initial-state/dist/index.mjs");
+/* harmony import */ var _nextcloud_l10n__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @nextcloud/l10n */ "./node_modules/@nextcloud/l10n/dist/index.mjs");
+/* harmony import */ var _nextcloud_files__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @nextcloud/files */ "./node_modules/@nextcloud/files/dist/index.mjs");
+/* harmony import */ var _mdi_svg_svg_folder_network_svg_raw__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @mdi/svg/svg/folder-network.svg?raw */ "./node_modules/@mdi/svg/svg/folder-network.svg?raw");
+/* harmony import */ var _actions_enterCredentialsAction__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./actions/enterCredentialsAction */ "./apps/files_external/src/actions/enterCredentialsAction.ts");
+/* harmony import */ var _actions_inlineStorageCheckAction__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./actions/inlineStorageCheckAction */ "./apps/files_external/src/actions/inlineStorageCheckAction.ts");
+/* harmony import */ var _actions_openInFilesAction__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./actions/openInFilesAction */ "./apps/files_external/src/actions/openInFilesAction.ts");
+/* harmony import */ var _services_externalStorage__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./services/externalStorage */ "./apps/files_external/src/services/externalStorage.ts");
+/**
+ * SPDX-FileCopyrightText: 2023 Nextcloud GmbH and Nextcloud contributors
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
+
+
+
+
+
+
+
+const allowUserMounting = (0,_nextcloud_initial_state__WEBPACK_IMPORTED_MODULE_0__.loadState)('files_external', 'allowUserMounting', false);
+// Register view
+const Navigation = (0,_nextcloud_files__WEBPACK_IMPORTED_MODULE_2__.getNavigation)();
+Navigation.register(new _nextcloud_files__WEBPACK_IMPORTED_MODULE_2__.View({
+  id: 'extstoragemounts',
+  name: (0,_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_1__.translate)('files_external', 'External storage'),
+  caption: (0,_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_1__.translate)('files_external', 'List of external storage.'),
+  emptyCaption: allowUserMounting ? (0,_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_1__.translate)('files_external', 'There is no external storage configured. You can configure them in your Personal settings.') : (0,_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_1__.translate)('files_external', 'There is no external storage configured and you don\'t have the permission to configure them.'),
+  emptyTitle: (0,_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_1__.translate)('files_external', 'No external storage'),
+  icon: _mdi_svg_svg_folder_network_svg_raw__WEBPACK_IMPORTED_MODULE_3__,
+  order: 30,
+  columns: [new _nextcloud_files__WEBPACK_IMPORTED_MODULE_2__.Column({
+    id: 'storage-type',
+    title: (0,_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_1__.translate)('files_external', 'Storage type'),
+    render(node) {
+      const backend = node.attributes?.backend || (0,_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_1__.translate)('files_external', 'Unknown');
+      const span = document.createElement('span');
+      span.textContent = backend;
+      return span;
+    }
+  }), new _nextcloud_files__WEBPACK_IMPORTED_MODULE_2__.Column({
+    id: 'scope',
+    title: (0,_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_1__.translate)('files_external', 'Scope'),
+    render(node) {
+      const span = document.createElement('span');
+      let scope = (0,_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_1__.translate)('files_external', 'Personal');
+      if (node.attributes?.scope === 'system') {
+        scope = (0,_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_1__.translate)('files_external', 'System');
+      }
+      span.textContent = scope;
+      return span;
+    }
+  })],
+  getContents: _services_externalStorage__WEBPACK_IMPORTED_MODULE_7__.getContents
+}));
+// Register actions
+(0,_nextcloud_files__WEBPACK_IMPORTED_MODULE_2__.registerFileAction)(_actions_enterCredentialsAction__WEBPACK_IMPORTED_MODULE_4__.action);
+(0,_nextcloud_files__WEBPACK_IMPORTED_MODULE_2__.registerFileAction)(_actions_inlineStorageCheckAction__WEBPACK_IMPORTED_MODULE_5__.action);
+(0,_nextcloud_files__WEBPACK_IMPORTED_MODULE_2__.registerFileAction)(_actions_openInFilesAction__WEBPACK_IMPORTED_MODULE_6__.action);
+
+/***/ }),
+
+/***/ "./apps/files_external/src/services/externalStorage.ts":
+/*!*************************************************************!*\
+  !*** ./apps/files_external/src/services/externalStorage.ts ***!
+  \*************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   getContents: () => (/* binding */ getContents),
+/* harmony export */   getStatus: () => (/* binding */ getStatus),
+/* harmony export */   rootPath: () => (/* binding */ rootPath)
+/* harmony export */ });
+/* harmony import */ var _nextcloud_files__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @nextcloud/files */ "./node_modules/@nextcloud/files/dist/index.mjs");
+/* harmony import */ var _nextcloud_router__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @nextcloud/router */ "./node_modules/@nextcloud/router/dist/index.mjs");
+/* harmony import */ var _nextcloud_auth__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @nextcloud/auth */ "./node_modules/@nextcloud/auth/dist/index.mjs");
+/* harmony import */ var _nextcloud_axios__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @nextcloud/axios */ "./node_modules/@nextcloud/axios/dist/index.mjs");
+/* harmony import */ var _utils_credentialsUtils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../utils/credentialsUtils */ "./apps/files_external/src/utils/credentialsUtils.ts");
+
+
+
+
+
+const rootPath = `/files/${(0,_nextcloud_auth__WEBPACK_IMPORTED_MODULE_2__.getCurrentUser)()?.uid}`;
+const entryToFolder = ocsEntry => {
+  const path = (ocsEntry.path + '/' + ocsEntry.name).replace(/^\//gm, '');
+  return new _nextcloud_files__WEBPACK_IMPORTED_MODULE_0__.Folder({
+    id: ocsEntry.id,
+    source: (0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_1__.generateRemoteUrl)('dav' + rootPath + '/' + path),
+    root: rootPath,
+    owner: (0,_nextcloud_auth__WEBPACK_IMPORTED_MODULE_2__.getCurrentUser)()?.uid || null,
+    permissions: ocsEntry.config.status !== _utils_credentialsUtils__WEBPACK_IMPORTED_MODULE_4__.STORAGE_STATUS.SUCCESS ? _nextcloud_files__WEBPACK_IMPORTED_MODULE_0__.Permission.NONE : ocsEntry?.permissions || _nextcloud_files__WEBPACK_IMPORTED_MODULE_0__.Permission.READ,
+    attributes: {
+      displayName: path,
+      ...ocsEntry
+    }
+  });
+};
+const getContents = async () => {
+  const response = await _nextcloud_axios__WEBPACK_IMPORTED_MODULE_3__["default"].get((0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_1__.generateOcsUrl)('apps/files_external/api/v1/mounts'));
+  const contents = response.data.ocs.data.map(entryToFolder);
+  return {
+    folder: new _nextcloud_files__WEBPACK_IMPORTED_MODULE_0__.Folder({
+      id: 0,
+      source: (0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_1__.generateRemoteUrl)('dav' + rootPath),
+      root: rootPath,
+      owner: (0,_nextcloud_auth__WEBPACK_IMPORTED_MODULE_2__.getCurrentUser)()?.uid || null,
+      permissions: _nextcloud_files__WEBPACK_IMPORTED_MODULE_0__.Permission.READ
+    }),
+    contents
+  };
+};
+const getStatus = function (id) {
+  let global = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+  const type = global ? 'userglobalstorages' : 'userstorages';
+  return _nextcloud_axios__WEBPACK_IMPORTED_MODULE_3__["default"].get((0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_1__.generateUrl)(`apps/files_external/${type}/${id}?testOnly=false`));
+};
+
+/***/ }),
+
+/***/ "./apps/files_external/src/utils/credentialsUtils.ts":
+/*!***********************************************************!*\
+  !*** ./apps/files_external/src/utils/credentialsUtils.ts ***!
+  \***********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   STORAGE_STATUS: () => (/* binding */ STORAGE_STATUS),
+/* harmony export */   isMissingAuthConfig: () => (/* binding */ isMissingAuthConfig)
+/* harmony export */ });
+// @see https://github.com/nextcloud/server/blob/ac2bc2384efe3c15ff987b87a7432bc60d545c67/lib/public/Files/StorageNotAvailableException.php#L41
+var STORAGE_STATUS;
+(function (STORAGE_STATUS) {
+  STORAGE_STATUS[STORAGE_STATUS["SUCCESS"] = 0] = "SUCCESS";
+  STORAGE_STATUS[STORAGE_STATUS["ERROR"] = 1] = "ERROR";
+  STORAGE_STATUS[STORAGE_STATUS["INDETERMINATE"] = 2] = "INDETERMINATE";
+  STORAGE_STATUS[STORAGE_STATUS["INCOMPLETE_CONF"] = 3] = "INCOMPLETE_CONF";
+  STORAGE_STATUS[STORAGE_STATUS["UNAUTHORIZED"] = 4] = "UNAUTHORIZED";
+  STORAGE_STATUS[STORAGE_STATUS["TIMEOUT"] = 5] = "TIMEOUT";
+  STORAGE_STATUS[STORAGE_STATUS["NETWORK_ERROR"] = 6] = "NETWORK_ERROR";
+})(STORAGE_STATUS || (STORAGE_STATUS = {}));
+const isMissingAuthConfig = function (config) {
+  // If we don't know the status, assume it is ok
+  if (!config.status || config.status === STORAGE_STATUS.SUCCESS) {
+    return false;
+  }
+  return config.userProvided || config.authMechanism === 'password::global::user';
+};
+
+/***/ }),
+
+/***/ "./apps/files_external/src/utils/externalStorageUtils.ts":
+/*!***************************************************************!*\
+  !*** ./apps/files_external/src/utils/externalStorageUtils.ts ***!
+  \***************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   isNodeExternalStorage: () => (/* binding */ isNodeExternalStorage)
+/* harmony export */ });
+/* harmony import */ var _nextcloud_files__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @nextcloud/files */ "./node_modules/@nextcloud/files/dist/index.mjs");
+/**
+ * SPDX-FileCopyrightText: 2023 Nextcloud GmbH and Nextcloud contributors
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
+const isNodeExternalStorage = function (node) {
+  // Not a folder, not a storage
+  if (node.type === _nextcloud_files__WEBPACK_IMPORTED_MODULE_0__.FileType.File) {
+    return false;
+  }
+  // No backend or scope, not a storage
+  const attributes = node.attributes;
+  if (!attributes.scope || !attributes.backend) {
+    return false;
+  }
+  // Specific markers that we're sure are ext storage only
+  return attributes.scope === 'personal' || attributes.scope === 'system';
+};
+
+/***/ }),
+
+/***/ "./node_modules/@mdi/svg/svg/alert-circle.svg?raw":
+/*!********************************************************!*\
+  !*** ./node_modules/@mdi/svg/svg/alert-circle.svg?raw ***!
+  \********************************************************/
+/***/ ((module) => {
+
+module.exports = "<svg xmlns=\"http://www.w3.org/2000/svg\" id=\"mdi-alert-circle\" viewBox=\"0 0 24 24\"><path d=\"M13,13H11V7H13M13,17H11V15H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z\" /></svg>";
+
+/***/ }),
+
+/***/ "./node_modules/@mdi/svg/svg/folder-network.svg?raw":
+/*!**********************************************************!*\
+  !*** ./node_modules/@mdi/svg/svg/folder-network.svg?raw ***!
+  \**********************************************************/
+/***/ ((module) => {
+
+module.exports = "<svg xmlns=\"http://www.w3.org/2000/svg\" id=\"mdi-folder-network\" viewBox=\"0 0 24 24\"><path d=\"M3,15V5A2,2 0 0,1 5,3H11L13,5H19A2,2 0 0,1 21,7V15A2,2 0 0,1 19,17H13V19H14A1,1 0 0,1 15,20H22V22H15A1,1 0 0,1 14,23H10A1,1 0 0,1 9,22H2V20H9A1,1 0 0,1 10,19H11V17H5A2,2 0 0,1 3,15Z\" /></svg>";
+
+/***/ }),
+
+/***/ "./node_modules/@mdi/svg/svg/login.svg?raw":
+/*!*************************************************!*\
+  !*** ./node_modules/@mdi/svg/svg/login.svg?raw ***!
+  \*************************************************/
+/***/ ((module) => {
+
+module.exports = "<svg xmlns=\"http://www.w3.org/2000/svg\" id=\"mdi-login\" viewBox=\"0 0 24 24\"><path d=\"M11 7L9.6 8.4L12.2 11H2V13H12.2L9.6 15.6L11 17L16 12L11 7M20 19H12V21H20C21.1 21 22 20.1 22 19V5C22 3.9 21.1 3 20 3H12V5H20V19Z\" /></svg>";
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./apps/files_external/src/css/fileEntryStatus.scss":
+/*!***************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./apps/files_external/src/css/fileEntryStatus.scss ***!
+  \***************************************************************************************************************************************/
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../../node_modules/css-loader/dist/runtime/noSourceMaps.js */ "./node_modules/css-loader/dist/runtime/noSourceMaps.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
+// Imports
+
+
+var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, `/*!
+ * SPDX-FileCopyrightText: 2023 Nextcloud GmbH and Nextcloud contributors
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+.files-list__row-status {
+  display: flex;
+  min-width: 44px;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.files-list__row-status svg {
+  width: 24px;
+  height: 24px;
+}
+.files-list__row-status svg path {
+  fill: currentColor;
+}
+.files-list__row-status--error, .files-list__row-status--warning {
+  position: absolute;
+  display: block;
+  top: 0;
+  inset-inline: 0;
+  bottom: 0;
+  opacity: 0.1;
+  z-index: -1;
+}
+.files-list__row-status--error {
+  background: var(--color-error);
+}
+.files-list__row-status--warning {
+  background: var(--color-warning);
+}`, ""]);
+// Exports
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+
+
+/***/ })
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			id: moduleId,
+/******/ 			loaded: false,
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Flag the module as loaded
+/******/ 		module.loaded = true;
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = __webpack_modules__;
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/chunk loaded */
+/******/ 	(() => {
+/******/ 		var deferred = [];
+/******/ 		__webpack_require__.O = (result, chunkIds, fn, priority) => {
+/******/ 			if(chunkIds) {
+/******/ 				priority = priority || 0;
+/******/ 				for(var i = deferred.length; i > 0 && deferred[i - 1][2] > priority; i--) deferred[i] = deferred[i - 1];
+/******/ 				deferred[i] = [chunkIds, fn, priority];
+/******/ 				return;
+/******/ 			}
+/******/ 			var notFulfilled = Infinity;
+/******/ 			for (var i = 0; i < deferred.length; i++) {
+/******/ 				var chunkIds = deferred[i][0];
+/******/ 				var fn = deferred[i][1];
+/******/ 				var priority = deferred[i][2];
+/******/ 				var fulfilled = true;
+/******/ 				for (var j = 0; j < chunkIds.length; j++) {
+/******/ 					if ((priority & 1 === 0 || notFulfilled >= priority) && Object.keys(__webpack_require__.O).every((key) => (__webpack_require__.O[key](chunkIds[j])))) {
+/******/ 						chunkIds.splice(j--, 1);
+/******/ 					} else {
+/******/ 						fulfilled = false;
+/******/ 						if(priority < notFulfilled) notFulfilled = priority;
+/******/ 					}
+/******/ 				}
+/******/ 				if(fulfilled) {
+/******/ 					deferred.splice(i--, 1)
+/******/ 					var r = fn();
+/******/ 					if (r !== undefined) result = r;
+/******/ 				}
+/******/ 			}
+/******/ 			return result;
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/compat get default export */
+/******/ 	(() => {
+/******/ 		// getDefaultExport function for compatibility with non-harmony modules
+/******/ 		__webpack_require__.n = (module) => {
+/******/ 			var getter = module && module.__esModule ?
+/******/ 				() => (module['default']) :
+/******/ 				() => (module);
+/******/ 			__webpack_require__.d(getter, { a: getter });
+/******/ 			return getter;
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	(() => {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__webpack_require__.d = (exports, definition) => {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/ensure chunk */
+/******/ 	(() => {
+/******/ 		__webpack_require__.f = {};
+/******/ 		// This file contains only the entry chunk.
+/******/ 		// The chunk loading function for additional chunks
+/******/ 		__webpack_require__.e = (chunkId) => {
+/******/ 			return Promise.all(Object.keys(__webpack_require__.f).reduce((promises, key) => {
+/******/ 				__webpack_require__.f[key](chunkId, promises);
+/******/ 				return promises;
+/******/ 			}, []));
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/get javascript chunk filename */
+/******/ 	(() => {
+/******/ 		// This function allow to reference async chunks
+/******/ 		__webpack_require__.u = (chunkId) => {
+/******/ 			// return url for filenames based on template
+/******/ 			return "" + chunkId + "-" + chunkId + ".js?v=" + {"node_modules_nextcloud_dialogs_dist_chunks_index-Ly0obkwS_mjs":"859391c9af31fafd5b72","apps_files_external_src_views_CredentialsDialog_vue":"6889efacdcadbd5e14ce","data_image_svg_xml_3c_21--_20-_20SPDX-FileCopyrightText_202020_20Google_20Inc_20-_20SPDX-Lice-4c340f":"2eddb4f5722e194258dc","node_modules_nextcloud_dialogs_dist_chunks_FilePicker-CSmrMOEO_mjs":"8050380b932c3e7fe5c6","node_modules_rehype-highlight_index_js":"3c5c32c691780bf457a0"}[chunkId] + "";
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/global */
+/******/ 	(() => {
+/******/ 		__webpack_require__.g = (function() {
+/******/ 			if (typeof globalThis === 'object') return globalThis;
+/******/ 			try {
+/******/ 				return this || new Function('return this')();
+/******/ 			} catch (e) {
+/******/ 				if (typeof window === 'object') return window;
+/******/ 			}
+/******/ 		})();
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	(() => {
+/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/load script */
+/******/ 	(() => {
+/******/ 		var inProgress = {};
+/******/ 		var dataWebpackPrefix = "nextcloud:";
+/******/ 		// loadScript function to load a script via script tag
+/******/ 		__webpack_require__.l = (url, done, key, chunkId) => {
+/******/ 			if(inProgress[url]) { inProgress[url].push(done); return; }
+/******/ 			var script, needAttach;
+/******/ 			if(key !== undefined) {
+/******/ 				var scripts = document.getElementsByTagName("script");
+/******/ 				for(var i = 0; i < scripts.length; i++) {
+/******/ 					var s = scripts[i];
+/******/ 					if(s.getAttribute("src") == url || s.getAttribute("data-webpack") == dataWebpackPrefix + key) { script = s; break; }
+/******/ 				}
+/******/ 			}
+/******/ 			if(!script) {
+/******/ 				needAttach = true;
+/******/ 				script = document.createElement('script');
+/******/ 		
+/******/ 				script.charset = 'utf-8';
+/******/ 				script.timeout = 120;
+/******/ 				if (__webpack_require__.nc) {
+/******/ 					script.setAttribute("nonce", __webpack_require__.nc);
+/******/ 				}
+/******/ 				script.setAttribute("data-webpack", dataWebpackPrefix + key);
+/******/ 		
+/******/ 				script.src = url;
+/******/ 			}
+/******/ 			inProgress[url] = [done];
+/******/ 			var onScriptComplete = (prev, event) => {
+/******/ 				// avoid mem leaks in IE.
+/******/ 				script.onerror = script.onload = null;
+/******/ 				clearTimeout(timeout);
+/******/ 				var doneFns = inProgress[url];
+/******/ 				delete inProgress[url];
+/******/ 				script.parentNode && script.parentNode.removeChild(script);
+/******/ 				doneFns && doneFns.forEach((fn) => (fn(event)));
+/******/ 				if(prev) return prev(event);
+/******/ 			}
+/******/ 			var timeout = setTimeout(onScriptComplete.bind(null, undefined, { type: 'timeout', target: script }), 120000);
+/******/ 			script.onerror = onScriptComplete.bind(null, script.onerror);
+/******/ 			script.onload = onScriptComplete.bind(null, script.onload);
+/******/ 			needAttach && document.head.appendChild(script);
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	(() => {
+/******/ 		// define __esModule on exports
+/******/ 		__webpack_require__.r = (exports) => {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/node module decorator */
+/******/ 	(() => {
+/******/ 		__webpack_require__.nmd = (module) => {
+/******/ 			module.paths = [];
+/******/ 			if (!module.children) module.children = [];
+/******/ 			return module;
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/publicPath */
+/******/ 	(() => {
+/******/ 		var scriptUrl;
+/******/ 		if (__webpack_require__.g.importScripts) scriptUrl = __webpack_require__.g.location + "";
+/******/ 		var document = __webpack_require__.g.document;
+/******/ 		if (!scriptUrl && document) {
+/******/ 			if (document.currentScript && document.currentScript.tagName.toUpperCase() === 'SCRIPT')
+/******/ 				scriptUrl = document.currentScript.src;
+/******/ 			if (!scriptUrl) {
+/******/ 				var scripts = document.getElementsByTagName("script");
+/******/ 				if(scripts.length) {
+/******/ 					var i = scripts.length - 1;
+/******/ 					while (i > -1 && (!scriptUrl || !/^http(s?):/.test(scriptUrl))) scriptUrl = scripts[i--].src;
+/******/ 				}
+/******/ 			}
+/******/ 		}
+/******/ 		// When supporting browsers where an automatic publicPath is not supported you must specify an output.publicPath manually via configuration
+/******/ 		// or pass an empty string ("") and set the __webpack_public_path__ variable from your code to use your own logic.
+/******/ 		if (!scriptUrl) throw new Error("Automatic publicPath is not supported in this browser");
+/******/ 		scriptUrl = scriptUrl.replace(/^blob:/, "").replace(/#.*$/, "").replace(/\?.*$/, "").replace(/\/[^\/]+$/, "/");
+/******/ 		__webpack_require__.p = scriptUrl;
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/jsonp chunk loading */
+/******/ 	(() => {
+/******/ 		__webpack_require__.b = document.baseURI || self.location.href;
+/******/ 		
+/******/ 		// object to store loaded and loading chunks
+/******/ 		// undefined = chunk not loaded, null = chunk preloaded/prefetched
+/******/ 		// [resolve, reject, Promise] = chunk loading, 0 = chunk loaded
+/******/ 		var installedChunks = {
+/******/ 			"files_external-init": 0
+/******/ 		};
+/******/ 		
+/******/ 		__webpack_require__.f.j = (chunkId, promises) => {
+/******/ 				// JSONP chunk loading for javascript
+/******/ 				var installedChunkData = __webpack_require__.o(installedChunks, chunkId) ? installedChunks[chunkId] : undefined;
+/******/ 				if(installedChunkData !== 0) { // 0 means "already installed".
+/******/ 		
+/******/ 					// a Promise means "currently loading".
+/******/ 					if(installedChunkData) {
+/******/ 						promises.push(installedChunkData[2]);
+/******/ 					} else {
+/******/ 						if(true) { // all chunks have JS
+/******/ 							// setup Promise in chunk cache
+/******/ 							var promise = new Promise((resolve, reject) => (installedChunkData = installedChunks[chunkId] = [resolve, reject]));
+/******/ 							promises.push(installedChunkData[2] = promise);
+/******/ 		
+/******/ 							// start chunk loading
+/******/ 							var url = __webpack_require__.p + __webpack_require__.u(chunkId);
+/******/ 							// create error before stack unwound to get useful stacktrace later
+/******/ 							var error = new Error();
+/******/ 							var loadingEnded = (event) => {
+/******/ 								if(__webpack_require__.o(installedChunks, chunkId)) {
+/******/ 									installedChunkData = installedChunks[chunkId];
+/******/ 									if(installedChunkData !== 0) installedChunks[chunkId] = undefined;
+/******/ 									if(installedChunkData) {
+/******/ 										var errorType = event && (event.type === 'load' ? 'missing' : event.type);
+/******/ 										var realSrc = event && event.target && event.target.src;
+/******/ 										error.message = 'Loading chunk ' + chunkId + ' failed.\n(' + errorType + ': ' + realSrc + ')';
+/******/ 										error.name = 'ChunkLoadError';
+/******/ 										error.type = errorType;
+/******/ 										error.request = realSrc;
+/******/ 										installedChunkData[1](error);
+/******/ 									}
+/******/ 								}
+/******/ 							};
+/******/ 							__webpack_require__.l(url, loadingEnded, "chunk-" + chunkId, chunkId);
+/******/ 						}
+/******/ 					}
+/******/ 				}
+/******/ 		};
+/******/ 		
+/******/ 		// no prefetching
+/******/ 		
+/******/ 		// no preloaded
+/******/ 		
+/******/ 		// no HMR
+/******/ 		
+/******/ 		// no HMR manifest
+/******/ 		
+/******/ 		__webpack_require__.O.j = (chunkId) => (installedChunks[chunkId] === 0);
+/******/ 		
+/******/ 		// install a JSONP callback for chunk loading
+/******/ 		var webpackJsonpCallback = (parentChunkLoadingFunction, data) => {
+/******/ 			var chunkIds = data[0];
+/******/ 			var moreModules = data[1];
+/******/ 			var runtime = data[2];
+/******/ 			// add "moreModules" to the modules object,
+/******/ 			// then flag all "chunkIds" as loaded and fire callback
+/******/ 			var moduleId, chunkId, i = 0;
+/******/ 			if(chunkIds.some((id) => (installedChunks[id] !== 0))) {
+/******/ 				for(moduleId in moreModules) {
+/******/ 					if(__webpack_require__.o(moreModules, moduleId)) {
+/******/ 						__webpack_require__.m[moduleId] = moreModules[moduleId];
+/******/ 					}
+/******/ 				}
+/******/ 				if(runtime) var result = runtime(__webpack_require__);
+/******/ 			}
+/******/ 			if(parentChunkLoadingFunction) parentChunkLoadingFunction(data);
+/******/ 			for(;i < chunkIds.length; i++) {
+/******/ 				chunkId = chunkIds[i];
+/******/ 				if(__webpack_require__.o(installedChunks, chunkId) && installedChunks[chunkId]) {
+/******/ 					installedChunks[chunkId][0]();
+/******/ 				}
+/******/ 				installedChunks[chunkId] = 0;
+/******/ 			}
+/******/ 			return __webpack_require__.O(result);
+/******/ 		}
+/******/ 		
+/******/ 		var chunkLoadingGlobal = self["webpackChunknextcloud"] = self["webpackChunknextcloud"] || [];
+/******/ 		chunkLoadingGlobal.forEach(webpackJsonpCallback.bind(null, 0));
+/******/ 		chunkLoadingGlobal.push = webpackJsonpCallback.bind(null, chunkLoadingGlobal.push.bind(chunkLoadingGlobal));
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/nonce */
+/******/ 	(() => {
+/******/ 		__webpack_require__.nc = undefined;
+/******/ 	})();
+/******/ 	
+/************************************************************************/
+/******/ 	
+/******/ 	// startup
+/******/ 	// Load entry module and return exports
+/******/ 	// This entry module depends on other loaded chunks and execution need to be delayed
+/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, ["core-common"], () => (__webpack_require__("./apps/files_external/src/init.ts")))
+/******/ 	__webpack_exports__ = __webpack_require__.O(__webpack_exports__);
+/******/ 	
+/******/ })()
+;
+//# sourceMappingURL=files_external-init.js.map?v=991139de720bbe17b579

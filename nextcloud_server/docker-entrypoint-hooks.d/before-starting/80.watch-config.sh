@@ -5,8 +5,8 @@ if [ "$NEXTCLOUD_ORIGINAL_MODE" = "true" ]; then
 fi
 
 # 定義來源與目標目錄
-SRC="/html/apps/"
-DEST="/var/www/html/apps/"
+SRC="/html/config.php"
+DEST="/var/www/html/config/config.php"
 
 # 檢查 inotify-tools 是否安裝
 if ! command -v inotifywait &> /dev/null; then
@@ -14,24 +14,18 @@ if ! command -v inotifywait &> /dev/null; then
     exit 1
 fi
 
-# 檢查目標目錄是否存在
-if [ ! -d "$DEST" ]; then
-    echo "目標目錄 $DEST 不存在，取消執行！"
-    exit 1
-fi
-
-watch_apps() {
+watch_config() {
 
   sleep 10
 
-  rsync -a --delete "$SRC" "$DEST"
+ cp -f "$SRC" "$DEST"
   # 監控目錄變更
   inotifywait -m -r -e modify,create,delete,move "$SRC" --format '%w%f' | while read FILE
   do
       echo "檔案變更偵測到：$FILE，執行同步..."
-      rsync -a --delete "$SRC" "$DEST"
+      cp -f "$SRC" "$DEST"
     #   echo "同步完成！"
   done
 }
 
-watch_apps &
+watch_config &

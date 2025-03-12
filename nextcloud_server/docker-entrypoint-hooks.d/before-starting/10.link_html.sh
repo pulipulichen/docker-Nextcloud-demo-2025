@@ -17,7 +17,7 @@ fi
 # TARGET_DIRS=("core" "config")
 
 # TARGET_DIRS=("core" "dist" "apps")
-TARGET_DIRS=("core" "dist" "custom_theme")
+TARGET_DIRS=("core" "dist" "custom_theme" "external_site")
 
 # 迭代處理每個目錄
 for DIR in "${TARGET_DIRS[@]}"; do
@@ -38,7 +38,6 @@ for DIR in "${TARGET_DIRS[@]}"; do
             # chown www-data:www-data -R /html/$DIR
             echo "Linking is successful: /html/$DIR -> /var/www/html/$DIR"
         fi
-            
     else
         echo "/html/$DIR is not existed. Skip."
     fi

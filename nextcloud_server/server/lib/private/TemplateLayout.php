@@ -285,8 +285,8 @@ class TemplateLayout extends \OC_Template {
 		if (!isset($user) || $user->getUID() != $_ENV['NEXTCLOUD_ADMIN_USER']) {
 			$this->append('cssfiles', '/custom_theme/css/guest-style.css'. '?v=' . substr($suffix, 3));
 		}
-		$this->append('cssfiles', '/custom_theme/css/global-style.css'. '?v=' . substr($suffix, 3));
-
+		$this->append('cssfiles', '/custom_theme/css/global-style.css'. '?v=' . substr($suffix, 3)); 
+		//
 		$request = \OCP\Server::get(IRequest::class);
 		if ($request->isUserAgent([Request::USER_AGENT_CLIENT_IOS, Request::USER_AGENT_SAFARI, Request::USER_AGENT_SAFARI_MOBILE])) {
 			// Prevent auto zoom with iOS but still allow user zoom

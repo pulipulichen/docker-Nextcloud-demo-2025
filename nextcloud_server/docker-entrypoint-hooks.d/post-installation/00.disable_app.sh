@@ -5,7 +5,7 @@
 /var/www/html/occ app:disable activity
 /var/www/html/occ app:disable app_api
 /var/www/html/occ app:disable bruteforcesettings
-/var/www/html/occ app:disable systemtags
+# /var/www/html/occ app:disable systemtags
 /var/www/html/occ app:disable comments
 /var/www/html/occ app:disable contactsinteraction
 /var/www/html/occ app:disable dashboard

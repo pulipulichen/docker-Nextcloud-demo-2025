@@ -116,8 +116,8 @@ class LoginController extends Controller {
 
 		// =========================================
 		// 強制訪客登入的功能
-		if ($this->userSession->isLoggedIn() == FALSE && (!isset($_GET['clear']) && !isset($_GET['redirect_url']))) {
-		// if ($this->userSession->isLoggedIn() == FALSE && (!isset($_GET['clear']))) {
+		// if ($this->userSession->isLoggedIn() == FALSE && (!isset($_GET['clear']) && !isset($_GET['redirect_url']))) {
+		if ($this->userSession->isLoggedIn() == FALSE && (!isset($_GET['clear']))) {
 			$data = new LoginData(
 				$this->request,
 				getenv('NEXTCLOUD_GUEST_EMAIL'),

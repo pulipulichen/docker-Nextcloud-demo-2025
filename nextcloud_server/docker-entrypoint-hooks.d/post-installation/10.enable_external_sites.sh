@@ -3,6 +3,8 @@
 /var/www/html/occ app:enable external
 
 if [ -n "$NEXTCLOUD_EXTERNAL_SITES" ]; then
+  cp -f /html/custom_apps/external/lib/SitesManager.php /var/www/html/custom_apps/external/lib/SitesManager.php
+
   /var/www/html/occ config:app:set external sites --value=$NEXTCLOUD_EXTERNAL_SITES
 fi
 

@@ -1,1 +1,1 @@
-處理APP MENU順序的問題：圖示問題克服。
+處理APP MENU順序的問題：apporder版本不合；先把metadata開起來吧。

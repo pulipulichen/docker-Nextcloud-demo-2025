@@ -21,7 +21,7 @@ if [ ! -d "$DEST" ]; then
 fi
 
 watch_lib() {
-  DIR=$1
+  local DIR=$1
 
   sleep 10
 

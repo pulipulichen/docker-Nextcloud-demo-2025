@@ -1,6 +1,7 @@
-FROM node:22.14.0-bookworm
+FROM pudding/docker-app:docker-nextcloud-compiler-20250313-0054
 
 RUN mkdir -p /src
+WORKDIR /src
 
 COPY ./nextcloud_compiler/src/.* /src/
 COPY ./nextcloud_compiler/src/*.js /src/

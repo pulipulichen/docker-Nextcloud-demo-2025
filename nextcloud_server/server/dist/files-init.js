@@ -3156,9 +3156,11 @@ const registerTreeRoot = () => {
     name: (0,_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_1__.translate)('files', 'All folders'),
     caption: (0,_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_1__.translate)('files', 'List of your files and folders.'),
     icon: _mdi_svg_svg_folder_multiple_svg_raw__WEBPACK_IMPORTED_MODULE_6__,
-    order: 0,
+    // 20250313-0442 Pulipuli Chen
+    // 排序向前
+    // order: 0, // Below all other views
+    order: 50,
     // Below all other views
-    // order: 50, // Below all other views
     getContents: _services_FolderTree_ts__WEBPACK_IMPORTED_MODULE_7__.getContents
   }));
 };
@@ -4673,4 +4675,4 @@ var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=files-init.js.map?v=398b0dc1aa8b69b98528
+//# sourceMappingURL=files-init.js.map?v=4e67e380c7bcbaa13aab

@@ -155,8 +155,11 @@ const registerTreeRoot = () => {
 		caption: t('files', 'List of your files and folders.'),
 
 		icon: FolderMultipleSvg,
-		order: 0, // Below all other views
-		// order: 50, // Below all other views
+
+		// 20250313-0442 Pulipuli Chen
+		// 排序向前
+		// order: 0, // Below all other views
+		order: 50, // Below all other views
 
 		getContents,
 	}))

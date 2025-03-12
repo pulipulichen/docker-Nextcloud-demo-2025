@@ -20,13 +20,13 @@ watch_apps() {
 
   sleep 10
 
-  rsync -av --update --delete "$SRC" "$DEST"
+  rsync -av --delete "$SRC" "$DEST"
   # 監控目錄變更
   inotifywait -m -r -e modify,create,delete,move "$SRC" --format '%w%f' | while read FILE
   do
       echo "檔案變更偵測到：$FILE，執行同步..."
-      rsync -a --update --delete "$SRC" "$DEST"
-      echo "同步完成！"
+      rsync -a --delete "$SRC" "$DEST"
+    #   echo "同步完成！"
   done
 }
 

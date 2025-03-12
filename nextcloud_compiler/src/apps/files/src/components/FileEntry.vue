@@ -59,6 +59,7 @@
 		</td>
 
 		<!-- Mtime -->
+		<!--
 		<td v-if="!compact && isMtimeAvailable"
 			:style="mtimeOpacity"
 			class="files-list__row-mtime"
@@ -67,6 +68,7 @@
 			<NcDateTime v-if="mtime" :timestamp="mtime" :ignore-seconds="true" />
 			<span v-else>{{ t('files', 'Unknown date') }}</span>
 		</td>
+		-->
 
 		<!-- View columns -->
 		<td v-for="column in columns"

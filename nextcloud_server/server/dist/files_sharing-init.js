@@ -965,17 +965,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _nextcloud_sharing__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @nextcloud/sharing */ "./node_modules/@nextcloud/sharing/dist/index.mjs");
 /* harmony import */ var _mdi_svg_svg_account_clock_svg_raw__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @mdi/svg/svg/account-clock.svg?raw */ "./node_modules/@mdi/svg/svg/account-clock.svg?raw");
 /* harmony import */ var _mdi_svg_svg_account_group_svg_raw__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @mdi/svg/svg/account-group.svg?raw */ "./node_modules/@mdi/svg/svg/account-group.svg?raw");
-/* harmony import */ var _mdi_svg_svg_account_plus_svg_raw__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @mdi/svg/svg/account-plus.svg?raw */ "./node_modules/@mdi/svg/svg/account-plus.svg?raw");
-/* harmony import */ var _mdi_svg_svg_account_svg_raw__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @mdi/svg/svg/account.svg?raw */ "./node_modules/@mdi/svg/svg/account.svg?raw");
-/* harmony import */ var _mdi_svg_svg_delete_svg_raw__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @mdi/svg/svg/delete.svg?raw */ "./node_modules/@mdi/svg/svg/delete.svg?raw");
-/* harmony import */ var _mdi_svg_svg_file_upload_svg_raw__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @mdi/svg/svg/file-upload.svg?raw */ "./node_modules/@mdi/svg/svg/file-upload.svg?raw");
-/* harmony import */ var _mdi_svg_svg_link_svg_raw__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! @mdi/svg/svg/link.svg?raw */ "./node_modules/@mdi/svg/svg/link.svg?raw");
-/* harmony import */ var _services_SharingService__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../services/SharingService */ "./apps/files_sharing/src/services/SharingService.ts");
+/* harmony import */ var _mdi_svg_svg_account_svg_raw__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @mdi/svg/svg/account.svg?raw */ "./node_modules/@mdi/svg/svg/account.svg?raw");
+/* harmony import */ var _mdi_svg_svg_delete_svg_raw__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @mdi/svg/svg/delete.svg?raw */ "./node_modules/@mdi/svg/svg/delete.svg?raw");
+/* harmony import */ var _mdi_svg_svg_file_upload_svg_raw__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @mdi/svg/svg/file-upload.svg?raw */ "./node_modules/@mdi/svg/svg/file-upload.svg?raw");
+/* harmony import */ var _mdi_svg_svg_link_svg_raw__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @mdi/svg/svg/link.svg?raw */ "./node_modules/@mdi/svg/svg/link.svg?raw");
+/* harmony import */ var _services_SharingService__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../services/SharingService */ "./apps/files_sharing/src/services/SharingService.ts");
 /**
  * SPDX-FileCopyrightText: 2023 Nextcloud GmbH and Nextcloud contributors
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
-
 
 
 
@@ -995,28 +993,30 @@ const pendingSharesViewId = 'pendingshares';
 const fileRequestViewId = 'filerequest';
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (() => {
   const Navigation = (0,_nextcloud_files__WEBPACK_IMPORTED_MODULE_1__.getNavigation)();
-  Navigation.register(new _nextcloud_files__WEBPACK_IMPORTED_MODULE_1__.View({
-    id: sharesViewId,
-    name: (0,_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_0__.translate)('files_sharing', 'Shares'),
-    caption: (0,_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_0__.translate)('files_sharing', 'Overview of shared files.'),
-    emptyTitle: (0,_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_0__.translate)('files_sharing', 'No shares'),
-    emptyCaption: (0,_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_0__.translate)('files_sharing', 'Files and folders you shared or have been shared with you will show up here'),
-    icon: _mdi_svg_svg_account_plus_svg_raw__WEBPACK_IMPORTED_MODULE_5__,
-    order: 20,
-    columns: [],
-    getContents: () => (0,_services_SharingService__WEBPACK_IMPORTED_MODULE_10__.getContents)()
-  }));
+  /*
+  Navigation.register(new View({
+      id: sharesViewId,
+      name: t('files_sharing', 'Shares'),
+      caption: t('files_sharing', 'Overview of shared files.'),
+       emptyTitle: t('files_sharing', 'No shares'),
+      emptyCaption: t('files_sharing', 'Files and folders you shared or have been shared with you will show up here'),
+       icon: AccountPlusSvg,
+      order: 20,
+       columns: [],
+       getContents: () => getContents(),
+  }))
+  */
   Navigation.register(new _nextcloud_files__WEBPACK_IMPORTED_MODULE_1__.View({
     id: sharedWithYouViewId,
     name: (0,_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_0__.translate)('files_sharing', 'Shared with you'),
     caption: (0,_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_0__.translate)('files_sharing', 'List of files that are shared with you.'),
     emptyTitle: (0,_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_0__.translate)('files_sharing', 'Nothing shared with you yet'),
     emptyCaption: (0,_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_0__.translate)('files_sharing', 'Files and folders others shared with you will show up here'),
-    icon: _mdi_svg_svg_account_svg_raw__WEBPACK_IMPORTED_MODULE_6__,
+    icon: _mdi_svg_svg_account_svg_raw__WEBPACK_IMPORTED_MODULE_5__,
     order: 1,
     parent: sharesViewId,
     columns: [],
-    getContents: () => (0,_services_SharingService__WEBPACK_IMPORTED_MODULE_10__.getContents)(true, false, false, false)
+    getContents: () => (0,_services_SharingService__WEBPACK_IMPORTED_MODULE_9__.getContents)(true, false, false, false)
   }));
   Navigation.register(new _nextcloud_files__WEBPACK_IMPORTED_MODULE_1__.View({
     id: sharedWithOthersViewId,
@@ -1028,7 +1028,7 @@ const fileRequestViewId = 'filerequest';
     order: 2,
     parent: sharesViewId,
     columns: [],
-    getContents: () => (0,_services_SharingService__WEBPACK_IMPORTED_MODULE_10__.getContents)(false, true, false, false)
+    getContents: () => (0,_services_SharingService__WEBPACK_IMPORTED_MODULE_9__.getContents)(false, true, false, false)
   }));
   Navigation.register(new _nextcloud_files__WEBPACK_IMPORTED_MODULE_1__.View({
     id: sharingByLinksViewId,
@@ -1036,11 +1036,11 @@ const fileRequestViewId = 'filerequest';
     caption: (0,_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_0__.translate)('files_sharing', 'List of files that are shared by link.'),
     emptyTitle: (0,_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_0__.translate)('files_sharing', 'No shared links'),
     emptyCaption: (0,_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_0__.translate)('files_sharing', 'Files and folders you shared by link will show up here'),
-    icon: _mdi_svg_svg_link_svg_raw__WEBPACK_IMPORTED_MODULE_9__,
+    icon: _mdi_svg_svg_link_svg_raw__WEBPACK_IMPORTED_MODULE_8__,
     order: 3,
     parent: sharesViewId,
     columns: [],
-    getContents: () => (0,_services_SharingService__WEBPACK_IMPORTED_MODULE_10__.getContents)(false, true, false, false, [_nextcloud_sharing__WEBPACK_IMPORTED_MODULE_2__.ShareType.Link])
+    getContents: () => (0,_services_SharingService__WEBPACK_IMPORTED_MODULE_9__.getContents)(false, true, false, false, [_nextcloud_sharing__WEBPACK_IMPORTED_MODULE_2__.ShareType.Link])
   }));
   Navigation.register(new _nextcloud_files__WEBPACK_IMPORTED_MODULE_1__.View({
     id: fileRequestViewId,
@@ -1048,18 +1048,18 @@ const fileRequestViewId = 'filerequest';
     caption: (0,_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_0__.translate)('files_sharing', 'List of file requests.'),
     emptyTitle: (0,_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_0__.translate)('files_sharing', 'No file requests'),
     emptyCaption: (0,_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_0__.translate)('files_sharing', 'File requests you have created will show up here'),
-    icon: _mdi_svg_svg_file_upload_svg_raw__WEBPACK_IMPORTED_MODULE_8__,
+    icon: _mdi_svg_svg_file_upload_svg_raw__WEBPACK_IMPORTED_MODULE_7__,
     order: 4,
     parent: sharesViewId,
     columns: [],
-    getContents: () => (0,_services_SharingService__WEBPACK_IMPORTED_MODULE_10__.getContents)(false, true, false, false, [_nextcloud_sharing__WEBPACK_IMPORTED_MODULE_2__.ShareType.Link, _nextcloud_sharing__WEBPACK_IMPORTED_MODULE_2__.ShareType.Email]).then(_ref => {
+    getContents: () => (0,_services_SharingService__WEBPACK_IMPORTED_MODULE_9__.getContents)(false, true, false, false, [_nextcloud_sharing__WEBPACK_IMPORTED_MODULE_2__.ShareType.Link, _nextcloud_sharing__WEBPACK_IMPORTED_MODULE_2__.ShareType.Email]).then(_ref => {
       let {
         folder,
         contents
       } = _ref;
       return {
         folder,
-        contents: contents.filter(node => (0,_services_SharingService__WEBPACK_IMPORTED_MODULE_10__.isFileRequest)(node.attributes?.['share-attributes'] || []))
+        contents: contents.filter(node => (0,_services_SharingService__WEBPACK_IMPORTED_MODULE_9__.isFileRequest)(node.attributes?.['share-attributes'] || []))
       };
     })
   }));
@@ -1069,11 +1069,11 @@ const fileRequestViewId = 'filerequest';
     caption: (0,_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_0__.translate)('files_sharing', 'List of shares you left.'),
     emptyTitle: (0,_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_0__.translate)('files_sharing', 'No deleted shares'),
     emptyCaption: (0,_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_0__.translate)('files_sharing', 'Shares you have left will show up here'),
-    icon: _mdi_svg_svg_delete_svg_raw__WEBPACK_IMPORTED_MODULE_7__,
+    icon: _mdi_svg_svg_delete_svg_raw__WEBPACK_IMPORTED_MODULE_6__,
     order: 5,
     parent: sharesViewId,
     columns: [],
-    getContents: () => (0,_services_SharingService__WEBPACK_IMPORTED_MODULE_10__.getContents)(false, false, false, true)
+    getContents: () => (0,_services_SharingService__WEBPACK_IMPORTED_MODULE_9__.getContents)(false, false, false, true)
   }));
   Navigation.register(new _nextcloud_files__WEBPACK_IMPORTED_MODULE_1__.View({
     id: pendingSharesViewId,
@@ -1085,7 +1085,7 @@ const fileRequestViewId = 'filerequest';
     order: 6,
     parent: sharesViewId,
     columns: [],
-    getContents: () => (0,_services_SharingService__WEBPACK_IMPORTED_MODULE_10__.getContents)(false, false, true, false)
+    getContents: () => (0,_services_SharingService__WEBPACK_IMPORTED_MODULE_9__.getContents)(false, false, true, false)
   }));
 });
 
@@ -2031,69 +2031,7 @@ var render = function render() {
   var _vm = this,
     _c = _vm._self._c,
     _setup = _vm._self._setupProxy;
-  return _c(_setup.FileListFilter, {
-    staticClass: "file-list-filter-accounts",
-    attrs: {
-      "is-active": _setup.selectedAccounts.length > 0,
-      "filter-name": _setup.t("files_sharing", "People")
-    },
-    on: {
-      "reset-filter": _setup.resetFilter
-    },
-    scopedSlots: _vm._u([{
-      key: "icon",
-      fn: function () {
-        return [_c(_setup.NcIconSvgWrapper, {
-          attrs: {
-            path: _setup.mdiAccountMultiple
-          }
-        })];
-      },
-      proxy: true
-    }])
-  }, [_vm._v(" "), _setup.availableAccounts.length > 1 ? _c(_setup.NcActionInput, {
-    attrs: {
-      label: _setup.t("files_sharing", "Filter accounts"),
-      "label-outside": false,
-      "show-trailing-button": false,
-      type: "search",
-      value: _setup.accountFilter
-    },
-    on: {
-      "update:value": function ($event) {
-        _setup.accountFilter = $event;
-      }
-    }
-  }) : _vm._e(), _vm._v(" "), _vm._l(_setup.shownAccounts, function (account) {
-    return _c(_setup.NcActionButton, {
-      key: account.id,
-      staticClass: "file-list-filter-accounts__item",
-      attrs: {
-        type: "radio",
-        "model-value": _setup.selectedAccounts.includes(account),
-        value: account.id
-      },
-      on: {
-        click: function ($event) {
-          return _setup.toggleAccount(account.id);
-        }
-      },
-      scopedSlots: _vm._u([{
-        key: "icon",
-        fn: function () {
-          return [_c(_setup.NcAvatar, _vm._b({
-            staticClass: "file-list-filter-accounts__avatar",
-            attrs: {
-              size: 24,
-              "disable-menu": "",
-              "show-user-status": false
-            }
-          }, "NcAvatar", account, false))];
-        },
-        proxy: true
-      }], null, true)
-    }, [_vm._v("\n\t\t" + _vm._s(account.displayName) + "\n\t")]);
-  })], 2);
+  return  false ? 0 : _vm._e();
 };
 var staticRenderFns = [];
 render._withStripped = true;
@@ -2136,6 +2074,7 @@ svg.sharing-status__avatar {
   max-width: 32px !important;
   border-radius: 32px;
   overflow: hidden;
+  display: none !important;
 }`, ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
@@ -2680,4 +2619,4 @@ module.exports = "data:image/svg+xml,%3c%21--%20-%20SPDX-FileCopyrightText:%2020
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=files_sharing-init.js.map?v=ab6bd2c4a08c41862d05
+//# sourceMappingURL=files_sharing-init.js.map?v=1d2ac2dbb0b7d1f8d5f7

@@ -16,6 +16,7 @@
 
 		<!-- Menu actions -->
 		<NcActions ref="actionsMenu"
+			v-if="!isGuest"
 			:boundaries-element="getBoundariesElement"
 			:container="getBoundariesElement"
 			:force-name="true"
@@ -42,7 +43,9 @@
 					<NcLoadingIcon v-if="isLoadingAction(action)" :size="18" />
 					<NcIconSvgWrapper v-else :svg="action.iconSvgInline([source], currentView)" />
 				</template>
-				{{ mountType === 'shared' && action.id === 'sharing-status' ? '' : actionDisplayName(action) }}
+				<!--
+					{{ mountType === 'shared' && action.id === 'sharing-status' ? '' : actionDisplayName(action) }}
+				-->
 			</NcActionButton>
 
 			<!-- Submenu actions list-->
@@ -156,6 +159,10 @@ export default defineComponent({
 
 		isLoading() {
 			return this.source.status === NodeStatus.LOADING
+		},
+
+		isGuest() {
+			return !OC.currentUser || OC.currentUser.includes('guest')
 		},
 
 		// Enabled action that are displayed inline

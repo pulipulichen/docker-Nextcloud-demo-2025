@@ -155,7 +155,8 @@ const registerTreeRoot = () => {
 		caption: t('files', 'List of your files and folders.'),
 
 		icon: FolderMultipleSvg,
-		order: 50, // Below all other views
+		order: 0, // Below all other views
+		// order: 50, // Below all other views
 
 		getContents,
 	}))

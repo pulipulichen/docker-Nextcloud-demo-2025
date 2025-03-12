@@ -6,5 +6,8 @@
 /nextcloud/server/dist/data_image*
 /nextcloud/server/dist/core_src*
 
-# /files
+/files
 !/files/.gitkeep
+!/files/README.md
+!/files/database/.gitkeep
+!/files/database/README.md

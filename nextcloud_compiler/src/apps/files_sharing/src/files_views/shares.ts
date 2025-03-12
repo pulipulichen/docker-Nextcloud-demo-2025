@@ -25,6 +25,7 @@ export const fileRequestViewId = 'filerequest'
 
 export default () => {
 	const Navigation = getNavigation()
+	/*
 	Navigation.register(new View({
 		id: sharesViewId,
 		name: t('files_sharing', 'Shares'),
@@ -40,6 +41,7 @@ export default () => {
 
 		getContents: () => getContents(),
 	}))
+	*/
 
 	Navigation.register(new View({
 		id: sharedWithYouViewId,

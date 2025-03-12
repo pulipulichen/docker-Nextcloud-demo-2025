@@ -25,7 +25,8 @@
 				type="text"
 				:label="t('core', 'Search apps, files, tags, messages') + '...'"
 				@update:value="debouncedFind" />
-			<div class="unified-search-modal__filters" data-cy-unified-search-filters>
+			<div class="unified-search-modal__filters" data-cy-unified-search-filters
+				v-if="false">
 				<NcActions :menu-name="t('core', 'Places')" :open.sync="providerActionMenuIsOpen" data-cy-unified-search-filter="places">
 					<template #icon>
 						<IconListBox :size="20" />

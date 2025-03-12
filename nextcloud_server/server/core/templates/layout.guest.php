@@ -58,6 +58,8 @@ p($theme->getTitle());
 		<?php
 		$longFooter = $theme->getLongFooter();
 ?>
+
+		<!--
 		<footer class="guest-box <?php if ($longFooter === '') {
 			p('hidden');
 		} ?>">
@@ -65,5 +67,6 @@ p($theme->getTitle());
 				<?php print_unescaped($longFooter); ?>
 			</p>
 		</footer>
+		-->
 	</body>
 </html>

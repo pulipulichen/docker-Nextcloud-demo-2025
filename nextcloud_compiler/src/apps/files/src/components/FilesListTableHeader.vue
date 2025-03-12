@@ -33,12 +33,14 @@
 		</th>
 
 		<!-- Mtime -->
+		<!--
 		<th v-if="isMtimeAvailable"
 			class="files-list__column files-list__row-mtime"
 			:class="{ 'files-list__column--sortable': isMtimeAvailable }"
 			:aria-sort="ariaSortForMode('mtime')">
 			<FilesListTableHeaderButton :name="t('files', 'Modified')" mode="mtime" />
 		</th>
+		-->
 
 		<!-- Custom views columns -->
 		<th v-for="column in columns"

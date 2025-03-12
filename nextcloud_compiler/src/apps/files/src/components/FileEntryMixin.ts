@@ -357,6 +357,13 @@ export default defineComponent({
 		},
 
 		openDetailsIfAvailable(event) {
+			if (OC.currentUser && OC.currentUser.includes('guest')) {
+					console.log("This is a guest user.");
+					return false
+			} else {
+					// console.log("This is a regular user.");
+			}
+
 			event.preventDefault()
 			event.stopPropagation()
 			if (sidebarAction?.enabled?.([this.source], this.currentView)) {

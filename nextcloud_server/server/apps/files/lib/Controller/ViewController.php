@@ -170,13 +170,20 @@ class ViewController extends Controller {
 			$storageInfo = $this->getStorageInfo();
 		}
 
-		// $this->initialState->provideInitialState('storageStats', $storageInfo);
-		$this->initialState->provideInitialState('config', $this->userConfig->getConfigs());
-		$this->initialState->provideInitialState('viewConfigs', $this->viewConfig->getConfigs());
+		// 如果使用者是 admin，那就顯示下面的內容
+		
+		if ($userId === $_ENV["NEXTCLOUD_ADMIN_USER"]) {
+      $this->initialState->provideInitialState('storageStats', $storageInfo);
+			$this->initialState->provideInitialState('config', $this->userConfig->getConfigs());
+			$this->initialState->provideInitialState('viewConfigs', $this->viewConfig->getConfigs());
 
-		// File sorting user config
-		$filesSortingConfig = json_decode($this->config->getUserValue($userId, 'files', 'files_sorting_configs', '{}'), true);
-		$this->initialState->provideInitialState('filesSortingConfig', $filesSortingConfig);
+			// File sorting user config
+			$filesSortingConfig = json_decode($this->config->getUserValue($userId, 'files', 'files_sorting_configs', '{}'), true);
+			$this->initialState->provideInitialState('filesSortingConfig', $filesSortingConfig);
+    }
+		// $this->initialState->provideInitialState('storageStats', $storageInfo);
+		
+
 
 		// Forbidden file characters (deprecated use capabilities)
 		// TODO: Remove with next release of `@nextcloud/files`

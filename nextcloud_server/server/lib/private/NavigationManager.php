@@ -202,7 +202,7 @@ class NavigationManager implements INavigationManager {
 		$this->init = true;
 
 		$l = $this->l10nFac->get('lib');
-		if ($this->config->getSystemValueBool('knowledgebaseenabled', true)) {
+		if ($this->config->getSystemValueBool('knowledgebaseenabled', true) && false) {
 			$this->add([
 				'type' => 'settings',
 				'id' => 'help',
@@ -215,6 +215,7 @@ class NavigationManager implements INavigationManager {
 
 		$this->defaultApp = $this->appManager->getDefaultAppForUser($this->userSession->getUser(), false);
 
+		
 		if ($this->userSession->isLoggedIn()) {
 			// Profile
 			$this->add([
@@ -229,7 +230,7 @@ class NavigationManager implements INavigationManager {
 			]);
 
 			// Accessibility settings
-			if ($this->appManager->isEnabledForUser('theming', $this->userSession->getUser())) {
+			if ($this->appManager->isEnabledForUser('theming', $this->userSession->getUser()) && $this->isAdmin()) {
 				$this->add([
 					'type' => 'settings',
 					'id' => 'accessibility_settings',
@@ -252,34 +253,40 @@ class NavigationManager implements INavigationManager {
 				]);
 
 				// Personal settings
-				$this->add([
-					'type' => 'settings',
-					'id' => 'settings',
-					'order' => 3,
-					'href' => $this->urlGenerator->linkToRoute('settings.PersonalSettings.index'),
-					'name' => $l->t('Personal settings'),
-					'icon' => $this->urlGenerator->imagePath('settings', 'personal.svg'),
-				]);
+				if ($this->isAdmin()) {
+					$this->add([
+						'type' => 'settings',
+						'id' => 'settings',
+						'order' => 3,
+						'href' => $this->urlGenerator->linkToRoute('settings.PersonalSettings.index'),
+						'name' => $l->t('Personal settings'),
+						'icon' => $this->urlGenerator->imagePath('settings', 'personal.svg'),
+					]);
+				}
 
 				// Admin settings
-				$this->add([
-					'type' => 'settings',
-					'id' => 'admin_settings',
-					'order' => 4,
-					'href' => $this->urlGenerator->linkToRoute('settings.AdminSettings.index', ['section' => 'overview']),
-					'name' => $l->t('Administration settings'),
-					'icon' => $this->urlGenerator->imagePath('settings', 'admin.svg'),
-				]);
+				if ($this->isAdmin()) {
+					$this->add([
+						'type' => 'settings',
+						'id' => 'admin_settings',
+						'order' => 4,
+						'href' => $this->urlGenerator->linkToRoute('settings.AdminSettings.index', ['section' => 'overview']),
+						'name' => $l->t('Administration settings'),
+						'icon' => $this->urlGenerator->imagePath('settings', 'admin.svg'),
+					]);
+				}
 			} else {
-				// Personal settings
-				$this->add([
-					'type' => 'settings',
-					'id' => 'settings',
-					'order' => 3,
-					'href' => $this->urlGenerator->linkToRoute('settings.PersonalSettings.index'),
-					'name' => $l->t('Settings'),
-					'icon' => $this->urlGenerator->imagePath('settings', 'admin.svg'),
-				]);
+				if ($this->isAdmin()) {
+					// Personal settings
+					$this->add([
+						'type' => 'settings',
+						'id' => 'settings',
+						'order' => 3,
+						'href' => $this->urlGenerator->linkToRoute('settings.PersonalSettings.index'),
+						'name' => $l->t('Settings'),
+						'icon' => $this->urlGenerator->imagePath('settings', 'admin.svg'),
+					]);
+				}
 			}
 
 			$logoutUrl = \OC_User::getLogoutUrl($this->urlGenerator);

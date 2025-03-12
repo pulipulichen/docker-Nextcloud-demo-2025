@@ -7,6 +7,7 @@
 	<NcHeaderMenu id="contactsmenu"
 		class="contactsmenu"
 		:aria-label="t('core', 'Search contacts')"
+		v-if="false"
 		@open="handleOpen">
 		<template #trigger>
 			<Contacts class="contactsmenu__trigger-icon" :size="20" />

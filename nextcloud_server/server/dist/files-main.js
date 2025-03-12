@@ -2304,6 +2304,12 @@ const actions = (0,_nextcloud_files__WEBPACK_IMPORTED_MODULE_1__.getFileActions)
       this.defaultFileAction.exec(this.source, this.currentView, this.currentDir);
     },
     openDetailsIfAvailable(event) {
+      if (OC.currentUser && OC.currentUser.includes('guest')) {
+        console.log("This is a guest user.");
+        return false;
+      } else {
+        // console.log("This is a regular user.");
+      }
       event.preventDefault();
       event.stopPropagation();
       if (_actions_sidebarAction_ts__WEBPACK_IMPORTED_MODULE_6__.action?.enabled?.([this.source], this.currentView)) {
@@ -7856,6 +7862,9 @@ __webpack_require__.r(__webpack_exports__);
     isLoading() {
       return this.source.status === _nextcloud_files__WEBPACK_IMPORTED_MODULE_0__.NodeStatus.LOADING;
     },
+    isGuest() {
+      return !OC.currentUser || OC.currentUser.includes('guest');
+    },
     // Enabled action that are displayed inline
     enabledInlineActions() {
       if (this.filesListWidth < 768 || this.gridMode) {
@@ -8481,6 +8490,9 @@ __webpack_require__.r(__webpack_exports__);
   computed: {
     isFavorite() {
       return this.source.attributes.favorite === 1;
+    },
+    isGuest() {
+      return !OC.currentUser || OC.currentUser.includes('guest');
     },
     userConfig() {
       return this.userConfigStore.userConfig;
@@ -11685,21 +11697,7 @@ var render = function render() {
     on: {
       click: _vm.openDetailsIfAvailable
     }
-  }, [_c("span", [_vm._v(_vm._s(_vm.size))])]) : _vm._e(), _vm._v(" "), !_vm.compact && _vm.isMtimeAvailable ? _c("td", {
-    staticClass: "files-list__row-mtime",
-    style: _vm.mtimeOpacity,
-    attrs: {
-      "data-cy-files-list-row-mtime": ""
-    },
-    on: {
-      click: _vm.openDetailsIfAvailable
-    }
-  }, [_vm.mtime ? _c("NcDateTime", {
-    attrs: {
-      timestamp: _vm.mtime,
-      "ignore-seconds": true
-    }
-  }) : _c("span", [_vm._v(_vm._s(_vm.t("files", "Unknown date")))])], 1) : _vm._e(), _vm._v(" "), _vm._l(_vm.columns, function (column) {
+  }, [_c("span", [_vm._v(_vm._s(_vm.size))])]) : _vm._e(), _vm._v(" "), _vm._l(_vm.columns, function (column) {
     return _c("td", {
       key: column.id,
       staticClass: "files-list__row-column-custom",
@@ -11851,7 +11849,7 @@ var render = function render() {
         source: _vm.source
       }
     });
-  }), _vm._v(" "), _c("NcActions", {
+  }), _vm._v(" "), !_vm.isGuest ? _c("NcActions", {
     ref: "actionsMenu",
     attrs: {
       "boundaries-element": _vm.getBoundariesElement,
@@ -11906,7 +11904,7 @@ var render = function render() {
         },
         proxy: true
       }], null, true)
-    }, [_vm._v("\n\t\t\t" + _vm._s(_vm.mountType === "shared" && action.id === "sharing-status" ? "" : _vm.actionDisplayName(action)) + "\n\t\t")]);
+    });
   }), _vm._v(" "), _vm.openedSubmenu && _vm.enabledSubmenuActions[_vm.openedSubmenu?.id] ? [_c("NcActionButton", {
     staticClass: "files-list__row-action-back",
     attrs: {
@@ -11955,7 +11953,7 @@ var render = function render() {
         proxy: true
       }], null, true)
     }, [_vm._v("\n\t\t\t\t" + _vm._s(_vm.actionDisplayName(action)) + "\n\t\t\t")]);
-  })] : _vm._e()], 2)], 2);
+  })] : _vm._e()], 2) : _vm._e()], 2);
 };
 var staticRenderFns = [];
 render._withStripped = true;
@@ -12108,7 +12106,7 @@ var render = function render() {
     _setup = _vm._self._setupProxy;
   return _c("span", {
     staticClass: "files-list__row-icon"
-  }, [_vm.source.type === "folder" ? [_vm.dragover ? _vm._m(0) : [_vm._m(1), _vm._v(" "), _vm.folderOverlay ? _c(_vm.folderOverlay, {
+  }, [_vm.source.type === "folder" ? [_vm.dragover ? _vm._m(0) : [_vm._m(1), _vm._v(" "), _vm.folderOverlay && !_vm.isGuest ? _c(_vm.folderOverlay, {
     tag: "OverlayIcon",
     staticClass: "files-list__row-icon-overlay"
   }) : _vm._e()]] : _vm.previewUrl ? _c("span", {
@@ -12485,19 +12483,6 @@ var render = function render() {
     attrs: {
       name: _vm.t("files", "Size"),
       mode: "size"
-    }
-  })], 1) : _vm._e(), _vm._v(" "), _vm.isMtimeAvailable ? _c("th", {
-    staticClass: "files-list__column files-list__row-mtime",
-    class: {
-      "files-list__column--sortable": _vm.isMtimeAvailable
-    },
-    attrs: {
-      "aria-sort": _vm.ariaSortForMode("mtime")
-    }
-  }, [_c("FilesListTableHeaderButton", {
-    attrs: {
-      name: _vm.t("files", "Modified"),
-      mode: "mtime"
     }
   })], 1) : _vm._e(), _vm._v(" "), _vm._l(_vm.columns, function (column) {
     return _c("th", {
@@ -13347,25 +13332,7 @@ var render = function render() {
       fn: function () {
         return [_c("ul", {
           staticClass: "app-navigation-entry__settings"
-        }, [_c("NavigationQuota"), _vm._v(" "), _c("NcAppNavigationItem", {
-          attrs: {
-            name: _vm.t("files", "Files settings"),
-            "data-cy-files-navigation-settings-button": ""
-          },
-          on: {
-            click: function ($event) {
-              $event.preventDefault();
-              $event.stopPropagation();
-              return _vm.openSettings.apply(null, arguments);
-            }
-          }
-        }, [_c("IconCog", {
-          attrs: {
-            slot: "icon",
-            size: 20
-          },
-          slot: "icon"
-        })], 1)], 1)];
+        }, [_c("NavigationQuota")], 1)];
       },
       proxy: true
     }])
@@ -18556,4 +18523,4 @@ __webpack_require__.r(__webpack_exports__);
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=files-main.js.map?v=5afe56adbed99e18b1aa
+//# sourceMappingURL=files-main.js.map?v=fdc378a4b8b79f8ffbc6

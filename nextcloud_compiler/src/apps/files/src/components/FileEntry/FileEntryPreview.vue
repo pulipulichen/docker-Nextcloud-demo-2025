@@ -9,7 +9,7 @@
 			<template v-else>
 				<FolderIcon v-once />
 				<OverlayIcon :is="folderOverlay"
-					v-if="folderOverlay"
+					v-if="folderOverlay && !isGuest"
 					class="files-list__row-icon-overlay" />
 			</template>
 		</template>
@@ -129,6 +129,10 @@ export default defineComponent({
 	computed: {
 		isFavorite(): boolean {
 			return this.source.attributes.favorite === 1
+		},
+
+		isGuest(): boolean {
+			return !OC.currentUser || OC.currentUser.includes('guest')
 		},
 
 		userConfig(): UserConfig {

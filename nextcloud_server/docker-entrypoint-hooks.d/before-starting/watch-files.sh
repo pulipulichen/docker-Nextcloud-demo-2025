@@ -36,7 +36,7 @@ watch_files() {
       echo "檔案變更偵測到：$FILE，執行同步..."
       rsync -a --update --delete "$SRC" "$DEST"
       /var/www/html/occ files:scan -- $NEXTCLOUD_ADMIN_USER
-      echo "同步完成！"
+    #   echo "同步完成！"
   done
 }
 

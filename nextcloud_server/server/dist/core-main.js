@@ -8457,111 +8457,7 @@ __webpack_require__.r(__webpack_exports__);
 var render = function render() {
   var _vm = this,
     _c = _vm._self._c;
-  return _c("NcHeaderMenu", {
-    staticClass: "contactsmenu",
-    attrs: {
-      id: "contactsmenu",
-      "aria-label": _vm.t("core", "Search contacts")
-    },
-    on: {
-      open: _vm.handleOpen
-    },
-    scopedSlots: _vm._u([{
-      key: "trigger",
-      fn: function () {
-        return [_c("Contacts", {
-          staticClass: "contactsmenu__trigger-icon",
-          attrs: {
-            size: 20
-          }
-        })];
-      },
-      proxy: true
-    }])
-  }, [_vm._v(" "), _c("div", {
-    staticClass: "contactsmenu__menu"
-  }, [_c("div", {
-    staticClass: "contactsmenu__menu__input-wrapper"
-  }, [_c("NcTextField", {
-    ref: "contactsMenuInput",
-    staticClass: "contactsmenu__menu__search",
-    attrs: {
-      id: "contactsmenu__menu__search",
-      value: _vm.searchTerm,
-      "trailing-button-icon": "close",
-      label: _vm.t("core", "Search contacts"),
-      "trailing-button-label": _vm.t("core", "Reset search"),
-      "show-trailing-button": _vm.searchTerm !== "",
-      placeholder: _vm.t("core", "Search contacts …")
-    },
-    on: {
-      "update:value": function ($event) {
-        _vm.searchTerm = $event;
-      },
-      input: _vm.onInputDebounced,
-      "trailing-button-click": _vm.onReset
-    }
-  })], 1), _vm._v(" "), _vm.error ? _c("NcEmptyContent", {
-    attrs: {
-      name: _vm.t("core", "Could not load your contacts")
-    },
-    scopedSlots: _vm._u([{
-      key: "icon",
-      fn: function () {
-        return [_c("Magnify")];
-      },
-      proxy: true
-    }], null, false, 931131664)
-  }) : _vm.loadingText ? _c("NcEmptyContent", {
-    attrs: {
-      name: _vm.loadingText
-    },
-    scopedSlots: _vm._u([{
-      key: "icon",
-      fn: function () {
-        return [_c("NcLoadingIcon")];
-      },
-      proxy: true
-    }])
-  }) : _vm.contacts.length === 0 ? _c("NcEmptyContent", {
-    attrs: {
-      name: _vm.t("core", "No contacts found")
-    },
-    scopedSlots: _vm._u([{
-      key: "icon",
-      fn: function () {
-        return [_c("Magnify")];
-      },
-      proxy: true
-    }])
-  }) : _c("div", {
-    staticClass: "contactsmenu__menu__content"
-  }, [_c("div", {
-    attrs: {
-      id: "contactsmenu-contacts"
-    }
-  }, [_c("ul", _vm._l(_vm.contacts, function (contact) {
-    return _c("Contact", {
-      key: contact.id,
-      attrs: {
-        contact: contact
-      }
-    });
-  }), 1)]), _vm._v(" "), _vm.contactsAppEnabled ? _c("div", {
-    staticClass: "contactsmenu__menu__content__footer"
-  }, [_c("NcButton", {
-    attrs: {
-      type: "tertiary",
-      href: _vm.contactsAppURL
-    }
-  }, [_vm._v("\n\t\t\t\t\t" + _vm._s(_vm.t("core", "Show all contacts")) + "\n\t\t\t\t")])], 1) : _vm.canInstallApp ? _c("div", {
-    staticClass: "contactsmenu__menu__content__footer"
-  }, [_c("NcButton", {
-    attrs: {
-      type: "tertiary",
-      href: _vm.contactsAppMgmtURL
-    }
-  }, [_vm._v("\n\t\t\t\t\t" + _vm._s(_vm.t("core", "Install the Contacts app")) + "\n\t\t\t\t")])], 1) : _vm._e()])], 1)]);
+  return  false ? 0 : _vm._e();
 };
 var staticRenderFns = [];
 render._withStripped = true;
@@ -68037,4 +67933,4 @@ module.exports = "data:image/gif;base64,R0lGODlhKAAoAIABAAAAAP///yH/C05FVFNDQVBF
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=core-main.js.map?v=30cf17b410238910b0ac
+//# sourceMappingURL=core-main.js.map?v=9c40cd6d30f5943a88e0

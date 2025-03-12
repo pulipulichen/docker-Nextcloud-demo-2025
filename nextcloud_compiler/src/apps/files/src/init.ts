@@ -54,17 +54,17 @@ registerTemplateEntries()
 
 // Register files views when not on public share
 if (isPublicShare() === false) {
-	registerFavoritesView()
+	// registerFavoritesView()
 	registerFilesView()
-	registerRecentView()
-	registerPersonalFilesView()
+// 	registerRecentView()
+	// registerPersonalFilesView()
 	registerFolderTreeView()
 }
 
 // Register file list filters
 registerHiddenFilesFilter()
 registerTypeFilter()
-registerModifiedFilter()
+// registerModifiedFilter()
 
 // Register preview service worker
 registerPreviewServiceWorker()

@@ -28,11 +28,13 @@
 				<NavigationQuota />
 
 				<!-- Files settings modal toggle-->
+				<!--
 				<NcAppNavigationItem :name="t('files', 'Files settings')"
 					data-cy-files-navigation-settings-button
 					@click.prevent.stop="openSettings">
 					<IconCog slot="icon" :size="20" />
 				</NcAppNavigationItem>
+				-->
 			</ul>
 		</template>
 	</NcAppNavigation>

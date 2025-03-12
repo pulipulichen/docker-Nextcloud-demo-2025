@@ -8,6 +8,7 @@ RUN apt-get install -y sudo
 RUN apt-get install -y nano
 RUN apt-get install -y inotify-tools
 RUN apt-get install -y vim
+RUN apt-get install -y jq
 
 ENV NEXTCLOUD_ENV=development
 

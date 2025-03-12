@@ -6,6 +6,7 @@ services:
     build: 
       context: .
       dockerfile: ./nextcloud_server/Dockerfile
+    restart: on-failure
     depends_on:
       - nextclouddb
       - redis
@@ -14,6 +15,7 @@ services:
       - 8080:80
     volumes:
       - nextcloud:/var/www/html/
+      - ./nextcloud_server/docker-entrypoint-hooks.d/pre-installation:/docker-entrypoint-hooks.d/pre-installation
       - ./nextcloud_server/docker-entrypoint-hooks.d/post-installation:/docker-entrypoint-hooks.d/post-installation
       - ./nextcloud_server/docker-entrypoint-hooks.d/before-starting:/docker-entrypoint-hooks.d/before-starting
       - ./nextcloud_server/server:/html

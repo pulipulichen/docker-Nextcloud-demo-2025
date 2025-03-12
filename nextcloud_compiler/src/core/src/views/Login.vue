@@ -23,13 +23,6 @@
 						:href="resetPasswordLink">
 						{{ t('core', 'Forgot password?') }}
 					</a>
-					<a v-else-if="canResetPassword && !resetPassword"
-						id="lost-password"
-						class="login-box__link"
-						:href="resetPasswordLink"
-						@click.prevent="resetPassword = true">
-						{{ t('core', 'Forgot password?') }}
-					</a>
 					<a
 						id="guest-link"
 						class="login-box__link"

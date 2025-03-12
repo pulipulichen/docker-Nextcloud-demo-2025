@@ -6390,18 +6390,6 @@ var render = function render() {
       id: "lost-password",
       href: _vm.resetPasswordLink
     }
-  }, [_vm._v("\n\t\t\t\t\t" + _vm._s(_vm.t("core", "Forgot password?")) + "\n\t\t\t\t")]) : _vm.canResetPassword && !_vm.resetPassword ? _c("a", {
-    staticClass: "login-box__link",
-    attrs: {
-      id: "lost-password",
-      href: _vm.resetPasswordLink
-    },
-    on: {
-      click: function ($event) {
-        $event.preventDefault();
-        _vm.resetPassword = true;
-      }
-    }
   }, [_vm._v("\n\t\t\t\t\t" + _vm._s(_vm.t("core", "Forgot password?")) + "\n\t\t\t\t")]) : _vm._e(), _vm._v(" "), _c("a", {
     staticClass: "login-box__link",
     attrs: {
@@ -15965,4 +15953,4 @@ __webpack_require__.r(__webpack_exports__);
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=core-login.js.map?v=6f5b64cded60c6b81519
+//# sourceMappingURL=core-login.js.map?v=f97d1d9ff07353ebc9fd

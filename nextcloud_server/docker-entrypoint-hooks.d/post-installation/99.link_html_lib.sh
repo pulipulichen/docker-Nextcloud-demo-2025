@@ -7,6 +7,7 @@
 # 定義目標目錄
 # TARGET_DIRS=("core" "config", "lib")
 TARGET_DIRS=("l10n" "private" "public")
+# TARGET_DIRS=()
 
 # 迭代處理每個目錄
 for DIR in "${TARGET_DIRS[@]}"; do
@@ -23,3 +24,4 @@ for DIR in "${TARGET_DIRS[@]}"; do
         echo "/html/lib/$DIR is not existed. Skip."
     fi
 done
+

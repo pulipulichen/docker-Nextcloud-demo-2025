@@ -32,7 +32,8 @@ watch_lib_prepare() {
     cp -rf "$DEST$DIR" "$DEST$DIR.bak"
   fi
 
-  rsync -a "$SRC$DIR" "$DEST$DIR"
+  rsync -a "$SRC$DIR/" "$DEST$DIR/"
+  # cp -rf $SRC$DIR/* "$DEST$DIRNAME"
 }
 
 watch_lib() {
@@ -51,8 +52,8 @@ watch_lib() {
 
 TARGET_DIRS=("l10n" "private" "public")
 for DIR in "${TARGET_DIRS[@]}"; do
-  watch_lib_prepare $DIR &
+  watch_lib_prepare $DIR
   watch_lib $DIR &
 done
 
-sleep 10
+sleep 3

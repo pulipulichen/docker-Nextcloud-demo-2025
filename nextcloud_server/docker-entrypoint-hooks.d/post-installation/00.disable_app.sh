@@ -31,4 +31,3 @@
 /var/www/html/occ app:disable weather_status
 # /var/www/html/occ app:disable files_sharing
 /var/www/html/occ app:disable nextcloud_announcements
-/var/www/html/occ app:disable ai

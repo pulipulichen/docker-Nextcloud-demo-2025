@@ -18,6 +18,7 @@ export const setUp = () => {
 	})
 
 	const container = document.getElementById('header-start__appmenu')
+	// console.log({container})
 	if (!container) {
 		// no container, possibly we're on a public page
 		return
@@ -25,8 +26,10 @@ export const setUp = () => {
 	const AppMenuApp = Vue.extend(AppMenu)
 	const appMenu = new AppMenuApp({}).$mount(container)
 
+	// console.trace('OK?')
 	Object.assign(OC, {
 		setNavigationCounter(id, counter) {
+			// console.trace(id, counter)
 			appMenu.setNavigationCounter(id, counter)
 		},
 	})

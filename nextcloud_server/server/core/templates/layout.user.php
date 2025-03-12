@@ -70,6 +70,7 @@ p($theme->getTitle());
 					<div class="logo logo-icon"></div>
 				</a>
 				<nav id="header-left__appmenu"></nav>
+				<nav id="header-start__appmenu"></nav>
 			</div>
 
 			<div class="header-right">

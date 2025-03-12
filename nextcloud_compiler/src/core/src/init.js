@@ -104,6 +104,7 @@ export const initCore = () => {
 		OC.hideMenus()
 	})
 
+	console.log('setUpMainMenu')
 	setUpMainMenu()
 	setUpUserMenu()
 	setUpContactsMenu()

@@ -7,6 +7,7 @@
 	<nav ref="appMenu"
 		class="app-menu"
 		:aria-label="t('core', 'Applications menu')">
+		
 		<ul :aria-label="t('core', 'Apps')"
 			class="app-menu__list">
 			<AppMenuEntry v-for="app in mainAppList"

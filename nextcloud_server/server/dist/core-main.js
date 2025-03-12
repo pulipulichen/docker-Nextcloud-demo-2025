@@ -4776,14 +4776,18 @@ const setUp = () => {
     }
   });
   const container = document.getElementById('header-start__appmenu');
+  // console.log({container})
   if (!container) {
     // no container, possibly we're on a public page
     return;
   }
   const AppMenuApp = vue__WEBPACK_IMPORTED_MODULE_2__["default"].extend(_AppMenu_vue__WEBPACK_IMPORTED_MODULE_1__["default"]);
   const appMenu = new AppMenuApp({}).$mount(container);
+
+  // console.trace('OK?')
   Object.assign(OC, {
     setNavigationCounter(id, counter) {
+      // console.trace(id, counter)
       appMenu.setNavigationCounter(id, counter);
     }
   });
@@ -5109,6 +5113,7 @@ const initCore = () => {
     }
     _OC_index_js__WEBPACK_IMPORTED_MODULE_4__["default"].hideMenus();
   });
+  console.log('setUpMainMenu');
   (0,_components_MainMenu_js__WEBPACK_IMPORTED_MODULE_6__.setUp)();
   (0,_components_UserMenu_js__WEBPACK_IMPORTED_MODULE_7__.setUp)();
   (0,_components_ContactsMenu_js__WEBPACK_IMPORTED_MODULE_5__.setUp)();
@@ -67933,4 +67938,4 @@ module.exports = "data:image/gif;base64,R0lGODlhKAAoAIABAAAAAP///yH/C05FVFNDQVBF
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=core-main.js.map?v=9c40cd6d30f5943a88e0
+//# sourceMappingURL=core-main.js.map?v=b005a9b9a51e629e1ff6

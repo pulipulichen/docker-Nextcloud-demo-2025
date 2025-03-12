@@ -53,6 +53,7 @@ services:
       - ./nextcloud_server/server/core/vendor:/src/core/vendor
       - ./nextcloud_server/server/dist:/src/dist
       - ./nextcloud_compiler/entrypoint.sh:/entrypoint.sh
+      - ./nextcloud_compiler/src/package.json:/src/package.json
     env_file:
       - .env
 

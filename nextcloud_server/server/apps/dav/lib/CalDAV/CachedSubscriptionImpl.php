@@ -9,18 +9,22 @@ declare(strict_types=1);
 namespace OCA\DAV\CalDAV;
 
 use OCP\Calendar\ICalendar;
-use OCP\Calendar\ICalendarIsShared;
-use OCP\Calendar\ICalendarIsWritable;
 use OCP\Constants;
 
-class CachedSubscriptionImpl implements ICalendar, ICalendarIsShared, ICalendarIsWritable {
+class CachedSubscriptionImpl implements ICalendar {
+	private CalDavBackend $backend;
+	private CachedSubscription $calendar;
+	/** @var array<string, mixed> */
+	private array $calendarInfo;
 
 	public function __construct(
-		private CachedSubscription $calendar,
-		/** @var array<string, mixed> */
-		private array $calendarInfo,
-		private CalDavBackend $backend,
+		CachedSubscription $calendar,
+		array $calendarInfo,
+		CalDavBackend $backend
 	) {
+		$this->calendar = $calendar;
+		$this->calendarInfo = $calendarInfo;
+		$this->backend = $backend;
 	}
 
 	/**
@@ -28,7 +32,7 @@ class CachedSubscriptionImpl implements ICalendar, ICalendarIsShared, ICalendarI
 	 * @since 13.0.0
 	 */
 	public function getKey(): string {
-		return (string)$this->calendarInfo['id'];
+		return (string) $this->calendarInfo['id'];
 	}
 
 	/**
@@ -58,7 +62,7 @@ class CachedSubscriptionImpl implements ICalendar, ICalendarIsShared, ICalendarI
 	 * @param string $pattern which should match within the $searchProperties
 	 * @param array $searchProperties defines the properties within the query pattern should match
 	 * @param array $options - optional parameters:
-	 *                       ['timerange' => ['start' => new DateTime(...), 'end' => new DateTime(...)]]
+	 * 	['timerange' => ['start' => new DateTime(...), 'end' => new DateTime(...)]]
 	 * @param int|null $limit - limit number of search results
 	 * @param int|null $offset - offset for paging of search results
 	 * @return array an array of events/journals/todos which are arrays of key-value-pairs
@@ -86,16 +90,8 @@ class CachedSubscriptionImpl implements ICalendar, ICalendarIsShared, ICalendarI
 		return $result;
 	}
 
-	public function isWritable(): bool {
-		return false;
-	}
-
 	public function isDeleted(): bool {
 		return false;
-	}
-
-	public function isShared(): bool {
-		return true;
 	}
 
 	public function getSource(): string {

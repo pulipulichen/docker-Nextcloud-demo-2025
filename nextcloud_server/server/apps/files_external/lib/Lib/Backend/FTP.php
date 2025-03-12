@@ -23,8 +23,6 @@ class FTP extends Backend {
 			->setText($l->t('FTP'))
 			->addParameters([
 				new DefinitionParameter('host', $l->t('Host')),
-				(new DefinitionParameter('port', $l->t('Port')))
-					->setFlag(DefinitionParameter::FLAG_OPTIONAL),
 				(new DefinitionParameter('root', $l->t('Remote subfolder')))
 					->setFlag(DefinitionParameter::FLAG_OPTIONAL),
 				(new DefinitionParameter('secure', $l->t('Secure ftps://')))

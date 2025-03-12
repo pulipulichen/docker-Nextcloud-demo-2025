@@ -6,7 +6,7 @@
  */
 namespace OCA\Files_External\Lib;
 
-use OCP\Files\Storage\IStorage;
+use OCP\Files\Storage;
 use OCP\Files\StorageNotAvailableException;
 use OCP\IUser;
 
@@ -28,8 +28,8 @@ trait StorageModifierTrait {
 	/**
 	 * Modify a StorageConfig parameters
 	 *
-	 * @param StorageConfig &$storage
-	 * @param ?IUser $user User the storage is being used as
+	 * @param StorageConfig $storage
+	 * @param IUser $user User the storage is being used as
 	 * @return void
 	 * @throws InsufficientDataForMeaningfulAnswerException
 	 * @throws StorageNotAvailableException
@@ -38,12 +38,14 @@ trait StorageModifierTrait {
 	}
 
 	/**
-	 * Wrap a storage if necessary
+	 * Wrap a Storage if necessary
 	 *
+	 * @param Storage $storage
+	 * @return Storage
 	 * @throws InsufficientDataForMeaningfulAnswerException
 	 * @throws StorageNotAvailableException
 	 */
-	public function wrapStorage(IStorage $storage): IStorage {
+	public function wrapStorage(Storage $storage) {
 		return $storage;
 	}
 }

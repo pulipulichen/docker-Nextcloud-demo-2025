@@ -10,9 +10,11 @@ use OCP\IL10N;
 
 class SecuritySetting implements ISetting {
 
-	public function __construct(
-		private IL10N $l10n,
-	) {
+	/** @var IL10N */
+	private $l10n;
+
+	public function __construct(IL10N $l10n) {
+		$this->l10n = $l10n;
 	}
 
 	public function canChangeMail() {

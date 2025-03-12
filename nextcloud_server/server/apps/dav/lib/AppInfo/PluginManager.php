@@ -28,6 +28,16 @@ use function is_array;
 class PluginManager {
 
 	/**
+	 * @var ServerContainer
+	 */
+	private $container;
+
+	/**
+	 * @var IAppManager
+	 */
+	private $appManager;
+
+	/**
 	 * App plugins
 	 *
 	 * @var ServerPlugin[]
@@ -64,10 +74,9 @@ class PluginManager {
 	 * @param ServerContainer $container server container for resolving plugin classes
 	 * @param IAppManager $appManager app manager to loading apps and their info
 	 */
-	public function __construct(
-		private ServerContainer $container,
-		private IAppManager $appManager,
-	) {
+	public function __construct(ServerContainer $container, IAppManager $appManager) {
+		$this->container = $container;
+		$this->appManager = $appManager;
 	}
 
 	/**
@@ -119,7 +128,7 @@ class PluginManager {
 
 		$this->calendarPlugins[] = $this->container->get(AppCalendarPlugin::class);
 
-		foreach ($this->appManager->getEnabledApps() as $app) {
+		foreach ($this->appManager->getInstalledApps() as $app) {
 			// load plugins and collections from info.xml
 			$info = $this->appManager->getAppInfo($app);
 			if (!isset($info['types']) || !in_array('dav', $info['types'], true)) {

@@ -12,15 +12,18 @@ use Sabre\CalDAV\Backend;
 use Sabre\DAVACL\PrincipalBackend;
 
 class CalendarRoot extends \Sabre\CalDAV\CalendarRoot {
+	private LoggerInterface $logger;
+
 	private array $returnCachedSubscriptions = [];
 
 	public function __construct(
 		PrincipalBackend\BackendInterface $principalBackend,
 		Backend\BackendInterface $caldavBackend,
 		$principalPrefix,
-		private LoggerInterface $logger,
+		LoggerInterface $logger
 	) {
 		parent::__construct($principalBackend, $caldavBackend, $principalPrefix);
+		$this->logger = $logger;
 	}
 
 	public function getChildForPrincipal(array $principal) {

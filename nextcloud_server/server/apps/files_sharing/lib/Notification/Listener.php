@@ -20,11 +20,21 @@ use Symfony\Component\EventDispatcher\GenericEvent;
 
 class Listener {
 
+	/** @var INotificationManager */
+	protected $notificationManager;
+	/** @var IShareManager */
+	protected $shareManager;
+	/** @var IGroupManager */
+	protected $groupManager;
+
 	public function __construct(
-		protected INotificationManager $notificationManager,
-		protected IShareManager $shareManager,
-		protected IGroupManager $groupManager,
+		INotificationManager $notificationManager,
+		IShareManager $shareManager,
+		IGroupManager $groupManager
 	) {
+		$this->notificationManager = $notificationManager;
+		$this->shareManager = $shareManager;
+		$this->groupManager = $groupManager;
 	}
 
 	public function shareNotification(ShareCreatedEvent $event): void {

@@ -11,10 +11,12 @@ use OCP\IL10N;
 use OCP\Settings\IDelegatedSettings;
 
 class Admin implements IDelegatedSettings {
-	public function __construct(
-		private TrustedServers $trustedServers,
-		private IL10N $l,
-	) {
+	private TrustedServers $trustedServers;
+	private IL10N $l;
+
+	public function __construct(TrustedServers $trustedServers, IL10N $l) {
+		$this->trustedServers = $trustedServers;
+		$this->l = $l;
 	}
 
 	/**
@@ -37,8 +39,8 @@ class Admin implements IDelegatedSettings {
 
 	/**
 	 * @return int whether the form should be rather on the top or bottom of
-	 *             the admin section. The forms are arranged in ascending order of the
-	 *             priority values. It is required to return a value between 0 and 100.
+	 * the admin section. The forms are arranged in ascending order of the
+	 * priority values. It is required to return a value between 0 and 100.
 	 *
 	 * E.g.: 70
 	 */
@@ -47,7 +49,7 @@ class Admin implements IDelegatedSettings {
 	}
 
 	public function getName(): ?string {
-		return $this->l->t('Trusted servers');
+		return $this->l->t("Trusted servers");
 	}
 
 	public function getAuthorizedAppConfig(): array {

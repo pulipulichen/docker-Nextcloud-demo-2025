@@ -22,14 +22,21 @@ use OCP\IUserSession;
 
 class PreferencesController extends OCSController {
 
+	private IConfig $config;
+	private IUserSession $userSession;
+	private IEventDispatcher $eventDispatcher;
+
 	public function __construct(
 		string $appName,
 		IRequest $request,
-		private IConfig $config,
-		private IUserSession $userSession,
-		private IEventDispatcher $eventDispatcher,
+		IConfig $config,
+		IUserSession $userSession,
+		IEventDispatcher $eventDispatcher
 	) {
 		parent::__construct($appName, $request);
+		$this->config = $config;
+		$this->userSession = $userSession;
+		$this->eventDispatcher = $eventDispatcher;
 	}
 
 	/**
@@ -40,7 +47,7 @@ class PreferencesController extends OCSController {
 	 * @param string $appId ID of the app
 	 * @param array<string, string> $configs Key-value pairs of the preferences
 	 *
-	 * @return DataResponse<Http::STATUS_OK|Http::STATUS_BAD_REQUEST, list<empty>, array{}>
+	 * @return DataResponse<Http::STATUS_OK|Http::STATUS_BAD_REQUEST, array<empty>, array{}>
 	 *
 	 * 200: Preferences updated successfully
 	 * 400: Preference invalid
@@ -85,7 +92,7 @@ class PreferencesController extends OCSController {
 	 * @param string $appId ID of the app
 	 * @param string $configKey Key of the preference
 	 * @param string $configValue New value
-	 * @return DataResponse<Http::STATUS_OK|Http::STATUS_BAD_REQUEST, list<empty>, array{}>
+	 * @return DataResponse<Http::STATUS_OK|Http::STATUS_BAD_REQUEST, array<empty>, array{}>
 	 *
 	 * 200: Preference updated successfully
 	 * 400: Preference invalid
@@ -124,10 +131,9 @@ class PreferencesController extends OCSController {
 	 * Delete multiple preferences for an app
 	 *
 	 * @param string $appId ID of the app
-	 * @param list<string> $configKeys Keys to delete
+	 * @param string[] $configKeys Keys to delete
 	 *
-	 * @return DataResponse<Http::STATUS_OK|Http::STATUS_BAD_REQUEST, list<empty>, array{}>
-	 *
+	 * @return DataResponse<Http::STATUS_OK|Http::STATUS_BAD_REQUEST, array<empty>, array{}>
 	 * 200: Preferences deleted successfully
 	 * 400: Preference invalid
 	 */
@@ -168,7 +174,7 @@ class PreferencesController extends OCSController {
 	 *
 	 * @param string $appId ID of the app
 	 * @param string $configKey Key to delete
-	 * @return DataResponse<Http::STATUS_OK|Http::STATUS_BAD_REQUEST, list<empty>, array{}>
+	 * @return DataResponse<Http::STATUS_OK|Http::STATUS_BAD_REQUEST, array<empty>, array{}>
 	 *
 	 * 200: Preference deleted successfully
 	 * 400: Preference invalid

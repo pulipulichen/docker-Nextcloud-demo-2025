@@ -18,20 +18,34 @@ use OCP\IRequest;
 
 class RecoveryController extends Controller {
 	/**
+	 * @var IConfig
+	 */
+	private $config;
+	/**
+	 * @var IL10N
+	 */
+	private $l;
+	/**
+	 * @var Recovery
+	 */
+	private $recovery;
+
+	/**
 	 * @param string $AppName
 	 * @param IRequest $request
 	 * @param IConfig $config
-	 * @param IL10N $l
+	 * @param IL10N $l10n
 	 * @param Recovery $recovery
 	 */
-	public function __construct(
-		$AppName,
+	public function __construct($AppName,
 		IRequest $request,
-		private IConfig $config,
-		private IL10N $l,
-		private Recovery $recovery,
-	) {
+		IConfig $config,
+		IL10N $l10n,
+		Recovery $recovery) {
 		parent::__construct($AppName, $request);
+		$this->config = $config;
+		$this->l = $l10n;
+		$this->recovery = $recovery;
 	}
 
 	/**

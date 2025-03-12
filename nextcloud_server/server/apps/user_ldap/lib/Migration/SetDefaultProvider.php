@@ -16,10 +16,16 @@ use OCP\Migration\IRepairStep;
 
 class SetDefaultProvider implements IRepairStep {
 
-	public function __construct(
-		private IConfig $config,
-		private Helper $helper,
-	) {
+	/** @var IConfig */
+	private $config;
+
+	/** @var Helper */
+	private $helper;
+
+	public function __construct(IConfig $config,
+		Helper $helper) {
+		$this->config = $config;
+		$this->helper = $helper;
 	}
 
 	public function getName(): string {

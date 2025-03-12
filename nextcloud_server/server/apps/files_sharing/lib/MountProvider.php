@@ -11,7 +11,6 @@ use OCA\Files_Sharing\Event\ShareMountedEvent;
 use OCP\Cache\CappedMemoryCache;
 use OCP\EventDispatcher\IEventDispatcher;
 use OCP\Files\Config\IMountProvider;
-use OCP\Files\Mount\IMountPoint;
 use OCP\Files\Storage\IStorageFactory;
 use OCP\ICacheFactory;
 use OCP\IConfig;
@@ -22,7 +21,7 @@ use Psr\Log\LoggerInterface;
 
 class MountProvider implements IMountProvider {
 	/**
-	 * @param IConfig $config
+	 * @param \OCP\IConfig $config
 	 * @param IManager $shareManager
 	 * @param LoggerInterface $logger
 	 */
@@ -31,16 +30,16 @@ class MountProvider implements IMountProvider {
 		protected IManager $shareManager,
 		protected LoggerInterface $logger,
 		protected IEventDispatcher $eventDispatcher,
-		protected ICacheFactory $cacheFactory,
+		protected ICacheFactory $cacheFactory
 	) {
 	}
 
 	/**
 	 * Get all mountpoints applicable for the user and check for shares where we need to update the etags
 	 *
-	 * @param IUser $user
-	 * @param IStorageFactory $loader
-	 * @return IMountPoint[]
+	 * @param \OCP\IUser $user
+	 * @param \OCP\Files\Storage\IStorageFactory $loader
+	 * @return \OCP\Files\Mount\IMountPoint[]
 	 */
 	public function getMountsForUser(IUser $user, IStorageFactory $loader) {
 		$shares = $this->shareManager->getSharedWith($user->getUID(), IShare::TYPE_USER, null, -1);
@@ -52,7 +51,7 @@ class MountProvider implements IMountProvider {
 
 
 		// filter out excluded shares and group shares that includes self
-		$shares = array_filter($shares, function (IShare $share) use ($user) {
+		$shares = array_filter($shares, function (\OCP\Share\IShare $share) use ($user) {
 			return $share->getPermissions() > 0 && $share->getShareOwner() !== $user->getUID();
 		});
 
@@ -66,7 +65,7 @@ class MountProvider implements IMountProvider {
 		$foldersExistCache = new CappedMemoryCache();
 		foreach ($superShares as $share) {
 			try {
-				/** @var IShare $parentShare */
+				/** @var \OCP\Share\IShare $parentShare */
 				$parentShare = $share[0];
 
 				if ($parentShare->getStatus() !== IShare::STATUS_ACCEPTED &&
@@ -125,9 +124,9 @@ class MountProvider implements IMountProvider {
 	/**
 	 * Groups shares by path (nodeId) and target path
 	 *
-	 * @param IShare[] $shares
-	 * @return IShare[][] array of grouped shares, each element in the
-	 *                    array is a group which itself is an array of shares
+	 * @param \OCP\Share\IShare[] $shares
+	 * @return \OCP\Share\IShare[][] array of grouped shares, each element in the
+	 * array is a group which itself is an array of shares
 	 */
 	private function groupShares(array $shares) {
 		$tmp = [];
@@ -162,16 +161,16 @@ class MountProvider implements IMountProvider {
 	 * grouped shares. The most permissive permissions are used based on the permissions
 	 * of all shares within the group.
 	 *
-	 * @param IShare[] $allShares
-	 * @param IUser $user user
+	 * @param \OCP\Share\IShare[] $allShares
+	 * @param \OCP\IUser $user user
 	 * @return array Tuple of [superShare, groupedShares]
 	 */
-	private function buildSuperShares(array $allShares, IUser $user) {
+	private function buildSuperShares(array $allShares, \OCP\IUser $user) {
 		$result = [];
 
 		$groupedShares = $this->groupShares($allShares);
 
-		/** @var IShare[] $shares */
+		/** @var \OCP\Share\IShare[] $shares */
 		foreach ($groupedShares as $shares) {
 			if (count($shares) === 0) {
 				continue;

@@ -20,7 +20,6 @@ use OCP\IL10N;
 use OCP\IRequest;
 use OCP\IUser;
 use OCP\IUserSession;
-use OCP\Server;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Sabre\CardDAV\Backend;
@@ -36,14 +35,20 @@ class UserAddressBooks extends \Sabre\CardDAV\AddressBookHome {
 	/** @var IConfig */
 	protected $config;
 
-	public function __construct(
-		Backend\BackendInterface $carddavBackend,
+	/** @var PluginManager */
+	private $pluginManager;
+	private ?IUser $user;
+	private ?IGroupManager $groupManager;
+
+	public function __construct(Backend\BackendInterface $carddavBackend,
 		string $principalUri,
-		private PluginManager $pluginManager,
-		private ?IUser $user,
-		private ?IGroupManager $groupManager,
-	) {
+		PluginManager $pluginManager,
+		?IUser $user,
+		?IGroupManager $groupManager) {
 		parent::__construct($carddavBackend, $principalUri);
+		$this->pluginManager = $pluginManager;
+		$this->user = $user;
+		$this->groupManager = $groupManager;
 	}
 
 	/**
@@ -56,7 +61,7 @@ class UserAddressBooks extends \Sabre\CardDAV\AddressBookHome {
 			$this->l10n = \OC::$server->getL10N('dav');
 		}
 		if ($this->config === null) {
-			$this->config = Server::get(IConfig::class);
+			$this->config = \OC::$server->getConfig();
 		}
 
 		/** @var string|array $principal */
@@ -82,9 +87,9 @@ class UserAddressBooks extends \Sabre\CardDAV\AddressBookHome {
 				$trustedServers = null;
 				$request = null;
 				try {
-					$trustedServers = Server::get(TrustedServers::class);
-					$request = Server::get(IRequest::class);
-				} catch (QueryException|NotFoundExceptionInterface|ContainerExceptionInterface $e) {
+					$trustedServers = \OC::$server->get(TrustedServers::class);
+					$request = \OC::$server->get(IRequest::class);
+				} catch (QueryException | NotFoundExceptionInterface | ContainerExceptionInterface $e) {
 					// nothing to do, the request / trusted servers don't exist
 				}
 				if ($addressBook['principaluri'] === 'principals/system/system') {
@@ -93,7 +98,7 @@ class UserAddressBooks extends \Sabre\CardDAV\AddressBookHome {
 						$addressBook,
 						$this->l10n,
 						$this->config,
-						Server::get(IUserSession::class),
+						\OCP\Server::get(IUserSession::class),
 						$request,
 						$trustedServers,
 						$this->groupManager

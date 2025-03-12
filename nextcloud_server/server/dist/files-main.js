@@ -3636,8 +3636,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _store_index_ts__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./store/index.ts */ "./apps/files/src/store/index.ts");
 /* harmony import */ var _services_HotKeysService_ts__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./services/HotKeysService.ts */ "./apps/files/src/services/HotKeysService.ts");
 /* harmony import */ var _FilesApp_vue__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./FilesApp.vue */ "./apps/files/src/FilesApp.vue");
-/* harmony import */ var _router_router_ts__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./router/router.ts */ "./apps/files/src/router/router.ts");
-/* harmony import */ var _services_RouterService_ts__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./services/RouterService.ts */ "./apps/files/src/services/RouterService.ts");
+/* harmony import */ var _router_router__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./router/router */ "./apps/files/src/router/router.ts");
+/* harmony import */ var _services_RouterService__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./services/RouterService */ "./apps/files/src/services/RouterService.ts");
 /* harmony import */ var _models_Setting_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./models/Setting.js */ "./apps/files/src/models/Setting.js");
 /* harmony import */ var _services_Settings_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./services/Settings.js */ "./apps/files/src/services/Settings.js");
 
@@ -3656,7 +3656,7 @@ window.OCA.Files = window.OCA.Files ?? {};
 window.OCP.Files = window.OCP.Files ?? {};
 // Expose router
 if (!window.OCP.Files.Router) {
-  const Router = new _services_RouterService_ts__WEBPACK_IMPORTED_MODULE_5__["default"](_router_router_ts__WEBPACK_IMPORTED_MODULE_4__["default"]);
+  const Router = new _services_RouterService__WEBPACK_IMPORTED_MODULE_5__["default"](_router_router__WEBPACK_IMPORTED_MODULE_4__["default"]);
   Object.assign(window.OCP.Files, {
     Router
   });
@@ -3981,9 +3981,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _nextcloud_dialogs__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @nextcloud/dialogs */ "./node_modules/@nextcloud/dialogs/dist/index.mjs");
 /* harmony import */ var _nextcloud_l10n__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @nextcloud/l10n */ "./node_modules/@nextcloud/l10n/dist/index.mjs");
 /* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.runtime.esm.js");
-/* harmony import */ var _DropServiceUtils_ts__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./DropServiceUtils.ts */ "./apps/files/src/services/DropServiceUtils.ts");
-/* harmony import */ var _actions_moveOrCopyAction_ts__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../actions/moveOrCopyAction.ts */ "./apps/files/src/actions/moveOrCopyAction.ts");
-/* harmony import */ var _actions_moveOrCopyActionUtils_ts__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../actions/moveOrCopyActionUtils.ts */ "./apps/files/src/actions/moveOrCopyActionUtils.ts");
+/* harmony import */ var _DropServiceUtils__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./DropServiceUtils */ "./apps/files/src/services/DropServiceUtils.ts");
+/* harmony import */ var _actions_moveOrCopyAction__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../actions/moveOrCopyAction */ "./apps/files/src/actions/moveOrCopyAction.ts");
+/* harmony import */ var _actions_moveOrCopyActionUtils__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../actions/moveOrCopyActionUtils */ "./apps/files/src/actions/moveOrCopyActionUtils.ts");
 /* harmony import */ var _logger_ts__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../logger.ts */ "./apps/files/src/logger.ts");
 /**
  * SPDX-FileCopyrightText: 2023 Nextcloud GmbH and Nextcloud contributors
@@ -4027,7 +4027,7 @@ const dataTransferToFileTree = async items => {
     return item?.getAsEntry?.() ?? item?.webkitGetAsEntry?.() ?? item;
   });
   let warned = false;
-  const fileTree = new _DropServiceUtils_ts__WEBPACK_IMPORTED_MODULE_6__.Directory('root');
+  const fileTree = new _DropServiceUtils__WEBPACK_IMPORTED_MODULE_6__.Directory('root');
   // Traverse the file tree
   for (const entry of entries) {
     // Handle browser issues if Filesystem API is not available. Fallback to File API
@@ -4057,7 +4057,7 @@ const dataTransferToFileTree = async items => {
     }
     // Use Filesystem API
     try {
-      fileTree.contents.push(await (0,_DropServiceUtils_ts__WEBPACK_IMPORTED_MODULE_6__.traverseTree)(entry));
+      fileTree.contents.push(await (0,_DropServiceUtils__WEBPACK_IMPORTED_MODULE_6__.traverseTree)(entry));
     } catch (error) {
       // Do not throw, as we want to continue with the other files
       _logger_ts__WEBPACK_IMPORTED_MODULE_9__["default"].error('Error while traversing file tree', {
@@ -4071,7 +4071,7 @@ const onDropExternalFiles = async (root, destination, contents) => {
   const uploader = (0,_nextcloud_upload__WEBPACK_IMPORTED_MODULE_1__.getUploader)();
   // Check for conflicts on root elements
   if (await (0,_nextcloud_upload__WEBPACK_IMPORTED_MODULE_1__.hasConflict)(root.contents, contents)) {
-    root.contents = await (0,_DropServiceUtils_ts__WEBPACK_IMPORTED_MODULE_6__.resolveConflict)(root.contents, destination, contents);
+    root.contents = await (0,_DropServiceUtils__WEBPACK_IMPORTED_MODULE_6__.resolveConflict)(root.contents, destination, contents);
   }
   if (root.contents.length === 0) {
     _logger_ts__WEBPACK_IMPORTED_MODULE_9__["default"].info('No files to upload', {
@@ -4093,13 +4093,13 @@ const onDropExternalFiles = async (root, destination, contents) => {
       const relativePath = (0,path__WEBPACK_IMPORTED_MODULE_2__.join)(path, file.name);
       // If the file is a directory, we need to create it first
       // then browse its tree and upload its contents.
-      if (file instanceof _DropServiceUtils_ts__WEBPACK_IMPORTED_MODULE_6__.Directory) {
+      if (file instanceof _DropServiceUtils__WEBPACK_IMPORTED_MODULE_6__.Directory) {
         const absolutePath = (0,_nextcloud_paths__WEBPACK_IMPORTED_MODULE_3__.joinPaths)(_nextcloud_files__WEBPACK_IMPORTED_MODULE_0__.davRootPath, destination.path, relativePath);
         try {
           console.debug('Processing directory', {
             relativePath
           });
-          await (0,_DropServiceUtils_ts__WEBPACK_IMPORTED_MODULE_6__.createDirectoryIfNotExists)(absolutePath);
+          await (0,_DropServiceUtils__WEBPACK_IMPORTED_MODULE_6__.createDirectoryIfNotExists)(absolutePath);
           await uploadDirectoryContents(file, relativePath);
         } catch (error) {
           (0,_nextcloud_dialogs__WEBPACK_IMPORTED_MODULE_4__.showError)((0,_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_5__.translate)('files', 'Unable to create the directory {directory}', {
@@ -4148,7 +4148,7 @@ const onDropInternalFiles = async function (nodes, destination, contents) {
   const queue = [];
   // Check for conflicts on root elements
   if (await (0,_nextcloud_upload__WEBPACK_IMPORTED_MODULE_1__.hasConflict)(nodes, contents)) {
-    nodes = await (0,_DropServiceUtils_ts__WEBPACK_IMPORTED_MODULE_6__.resolveConflict)(nodes, destination, contents);
+    nodes = await (0,_DropServiceUtils__WEBPACK_IMPORTED_MODULE_6__.resolveConflict)(nodes, destination, contents);
   }
   if (nodes.length === 0) {
     _logger_ts__WEBPACK_IMPORTED_MODULE_9__["default"].info('No files to process', {
@@ -4159,7 +4159,7 @@ const onDropInternalFiles = async function (nodes, destination, contents) {
   }
   for (const node of nodes) {
     vue__WEBPACK_IMPORTED_MODULE_10__["default"].set(node, 'status', _nextcloud_files__WEBPACK_IMPORTED_MODULE_0__.NodeStatus.LOADING);
-    queue.push((0,_actions_moveOrCopyAction_ts__WEBPACK_IMPORTED_MODULE_7__.handleCopyMoveNodeTo)(node, destination, isCopy ? _actions_moveOrCopyActionUtils_ts__WEBPACK_IMPORTED_MODULE_8__.MoveCopyAction.COPY : _actions_moveOrCopyActionUtils_ts__WEBPACK_IMPORTED_MODULE_8__.MoveCopyAction.MOVE, true));
+    queue.push((0,_actions_moveOrCopyAction__WEBPACK_IMPORTED_MODULE_7__.handleCopyMoveNodeTo)(node, destination, isCopy ? _actions_moveOrCopyActionUtils__WEBPACK_IMPORTED_MODULE_8__.MoveCopyAction.COPY : _actions_moveOrCopyActionUtils__WEBPACK_IMPORTED_MODULE_8__.MoveCopyAction.MOVE, true));
   }
   // Wait for all promises to settle
   const results = await Promise.allSettled(queue);
@@ -4872,7 +4872,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var pinia__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! pinia */ "./node_modules/pinia/dist/pinia.mjs");
 /* harmony import */ var _nextcloud_event_bus__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @nextcloud/event-bus */ "./node_modules/@nextcloud/event-bus/dist/index.mjs");
-/* harmony import */ var _logger_ts__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../logger.ts */ "./apps/files/src/logger.ts");
+/* harmony import */ var _logger__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../logger */ "./apps/files/src/logger.ts");
 /* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.runtime.esm.js");
 /* harmony import */ var _services_WebdavClient_ts__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../services/WebdavClient.ts */ "./apps/files/src/services/WebdavClient.ts");
 /* harmony import */ var _paths_ts__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./paths.ts */ "./apps/files/src/store/paths.ts");
@@ -4944,7 +4944,7 @@ const useFilesStore = function () {
         // Update the store all at once
         const files = nodes.reduce((acc, node) => {
           if (!node.fileid) {
-            _logger_ts__WEBPACK_IMPORTED_MODULE_1__["default"].error('Trying to update/set a node without fileid', {
+            _logger__WEBPACK_IMPORTED_MODULE_1__["default"].error('Trying to update/set a node without fileid', {
               node
             });
             return acc;
@@ -4983,7 +4983,7 @@ const useFilesStore = function () {
           oldSource
         } = _ref2;
         if (!node.fileid) {
-          _logger_ts__WEBPACK_IMPORTED_MODULE_1__["default"].error('Trying to update/set a node without fileid', {
+          _logger__WEBPACK_IMPORTED_MODULE_1__["default"].error('Trying to update/set a node without fileid', {
             node
           });
           return;
@@ -4994,7 +4994,7 @@ const useFilesStore = function () {
       },
       async onUpdatedNode(node) {
         if (!node.fileid) {
-          _logger_ts__WEBPACK_IMPORTED_MODULE_1__["default"].error('Trying to update/set a node without fileid', {
+          _logger__WEBPACK_IMPORTED_MODULE_1__["default"].error('Trying to update/set a node without fileid', {
             node
           });
           return;
@@ -5003,7 +5003,7 @@ const useFilesStore = function () {
         const nodes = this.getNodesById(node.fileid);
         if (nodes.length > 1) {
           await Promise.all(nodes.map(node => (0,_services_WebdavClient_ts__WEBPACK_IMPORTED_MODULE_2__.fetchNode)(node.path))).then(this.updateNodes);
-          _logger_ts__WEBPACK_IMPORTED_MODULE_1__["default"].debug(nodes.length + ' nodes updated in store', {
+          _logger__WEBPACK_IMPORTED_MODULE_1__["default"].debug(nodes.length + ' nodes updated in store', {
             fileid: node.fileid
           });
           return;
@@ -18556,4 +18556,4 @@ __webpack_require__.r(__webpack_exports__);
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=files-main.js.map?v=e6cd95ae300579b3afd5
+//# sourceMappingURL=files-main.js.map?v=5afe56adbed99e18b1aa

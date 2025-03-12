@@ -12,28 +12,18 @@ namespace OCA\Files_External\Lib\Storage;
 use GuzzleHttp\Psr7\Uri;
 use Icewind\Streams\CallbackWrapper;
 use Icewind\Streams\IteratorDirectory;
-use OC\Files\Filesystem;
 use OC\Files\ObjectStore\SwiftFactory;
-use OC\Files\Storage\Common;
-use OCP\Cache\CappedMemoryCache;
 use OCP\Files\IMimeTypeDetector;
-use OCP\Files\StorageAuthException;
 use OCP\Files\StorageBadConfigException;
-use OCP\Files\StorageNotAvailableException;
-use OCP\ICache;
-use OCP\ICacheFactory;
-use OCP\ITempManager;
-use OCP\Server;
 use OpenStack\Common\Error\BadResponseError;
-use OpenStack\ObjectStore\v1\Models\Container;
 use OpenStack\ObjectStore\v1\Models\StorageObject;
 use Psr\Log\LoggerInterface;
 
-class Swift extends Common {
+class Swift extends \OC\Files\Storage\Common {
 	/** @var SwiftFactory */
 	private $connectionFactory;
 	/**
-	 * @var Container
+	 * @var \OpenStack\ObjectStore\v1\Models\Container
 	 */
 	private $container;
 	/**
@@ -61,11 +51,15 @@ class Swift extends Common {
 	 * \OpenCloud\OpenStack\ObjectStorage\Resource\DataObject for existing
 	 * paths and path to false for not existing paths.
 	 *
-	 * @var ICache
+	 * @var \OCP\ICache
 	 */
 	private $objectCache;
 
-	private function normalizePath(string $path): string {
+	/**
+	 * @param string $path
+	 * @return mixed|string
+	 */
+	private function normalizePath(string $path) {
 		$path = trim($path, '/');
 
 		if (!$path) {
@@ -80,17 +74,25 @@ class Swift extends Common {
 	public const SUBCONTAINER_FILE = '.subcontainers';
 
 	/**
+	 * translate directory path to container name
+	 *
+	 * @param string $path
+	 * @return string
+	 */
+
+	/**
 	 * Fetches an object from the API.
 	 * If the object is cached already or a
 	 * failed "doesn't exist" response was cached,
 	 * that one will be returned.
 	 *
-	 * @return StorageObject|false object
-	 *                             or false if the object did not exist
-	 * @throws StorageAuthException
-	 * @throws StorageNotAvailableException
+	 * @param string $path
+	 * @return StorageObject|bool object
+	 * or false if the object did not exist
+	 * @throws \OCP\Files\StorageAuthException
+	 * @throws \OCP\Files\StorageNotAvailableException
 	 */
-	private function fetchObject(string $path): StorageObject|false {
+	private function fetchObject(string $path) {
 		$cached = $this->objectCache->get($path);
 		if ($cached !== null) {
 			// might be "false" if object did not exist from last check
@@ -104,7 +106,7 @@ class Swift extends Common {
 		} catch (BadResponseError $e) {
 			// Expected response is "404 Not Found", so only log if it isn't
 			if ($e->getResponse()->getStatusCode() !== 404) {
-				Server::get(LoggerInterface::class)->error($e->getMessage(), [
+				\OC::$server->get(LoggerInterface::class)->error($e->getMessage(), [
 					'exception' => $e,
 					'app' => 'files_external',
 				]);
@@ -117,65 +119,67 @@ class Swift extends Common {
 	/**
 	 * Returns whether the given path exists.
 	 *
+	 * @param string $path
+	 *
 	 * @return bool true if the object exist, false otherwise
-	 * @throws StorageAuthException
-	 * @throws StorageNotAvailableException
+	 * @throws \OCP\Files\StorageAuthException
+	 * @throws \OCP\Files\StorageNotAvailableException
 	 */
-	private function doesObjectExist(string $path): bool {
+	private function doesObjectExist($path) {
 		return $this->fetchObject($path) !== false;
 	}
 
-	public function __construct(array $parameters) {
-		if ((empty($parameters['key']) and empty($parameters['password']))
-			or (empty($parameters['user']) && empty($parameters['userid'])) or empty($parameters['bucket'])
-			or empty($parameters['region'])
+	public function __construct($params) {
+		if ((empty($params['key']) and empty($params['password']))
+			or (empty($params['user']) && empty($params['userid'])) or empty($params['bucket'])
+			or empty($params['region'])
 		) {
-			throw new StorageBadConfigException('API Key or password, Login, Bucket and Region have to be configured.');
+			throw new StorageBadConfigException("API Key or password, Login, Bucket and Region have to be configured.");
 		}
 
-		$user = $parameters['user'];
-		$this->id = 'swift::' . $user . md5($parameters['bucket']);
+		$user = $params['user'];
+		$this->id = 'swift::' . $user . md5($params['bucket']);
 
-		$bucketUrl = new Uri($parameters['bucket']);
+		$bucketUrl = new Uri($params['bucket']);
 		if ($bucketUrl->getHost()) {
-			$parameters['bucket'] = basename($bucketUrl->getPath());
-			$parameters['endpoint_url'] = (string)$bucketUrl->withPath(dirname($bucketUrl->getPath()));
+			$params['bucket'] = basename($bucketUrl->getPath());
+			$params['endpoint_url'] = (string)$bucketUrl->withPath(dirname($bucketUrl->getPath()));
 		}
 
-		if (empty($parameters['url'])) {
-			$parameters['url'] = 'https://identity.api.rackspacecloud.com/v2.0/';
+		if (empty($params['url'])) {
+			$params['url'] = 'https://identity.api.rackspacecloud.com/v2.0/';
 		}
 
-		if (empty($parameters['service_name'])) {
-			$parameters['service_name'] = 'cloudFiles';
+		if (empty($params['service_name'])) {
+			$params['service_name'] = 'cloudFiles';
 		}
 
-		$parameters['autocreate'] = true;
+		$params['autocreate'] = true;
 
-		if (isset($parameters['domain'])) {
-			$parameters['user'] = [
-				'name' => $parameters['user'],
-				'password' => $parameters['password'],
+		if (isset($params['domain'])) {
+			$params['user'] = [
+				'name' => $params['user'],
+				'password' => $params['password'],
 				'domain' => [
-					'name' => $parameters['domain'],
+					'name' => $params['domain'],
 				]
 			];
 		}
 
-		$this->params = $parameters;
+		$this->params = $params;
 		// FIXME: private class...
-		$this->objectCache = new CappedMemoryCache();
+		$this->objectCache = new \OCP\Cache\CappedMemoryCache();
 		$this->connectionFactory = new SwiftFactory(
-			Server::get(ICacheFactory::class)->createDistributed('swift/'),
+			\OC::$server->getMemCacheFactory()->createDistributed('swift/'),
 			$this->params,
-			Server::get(LoggerInterface::class)
+			\OC::$server->get(LoggerInterface::class)
 		);
 		$this->objectStore = new \OC\Files\ObjectStore\Swift($this->params, $this->connectionFactory);
-		$this->bucket = $parameters['bucket'];
-		$this->mimeDetector = Server::get(IMimeTypeDetector::class);
+		$this->bucket = $params['bucket'];
+		$this->mimeDetector = \OC::$server->get(IMimeTypeDetector::class);
 	}
 
-	public function mkdir(string $path): bool {
+	public function mkdir($path) {
 		$path = $this->normalizePath($path);
 
 		if ($this->is_dir($path)) {
@@ -196,7 +200,7 @@ class Swift extends Common {
 			// with all properties
 			$this->objectCache->remove($path);
 		} catch (BadResponseError $e) {
-			Server::get(LoggerInterface::class)->error($e->getMessage(), [
+			\OC::$server->get(LoggerInterface::class)->error($e->getMessage(), [
 				'exception' => $e,
 				'app' => 'files_external',
 			]);
@@ -206,7 +210,7 @@ class Swift extends Common {
 		return true;
 	}
 
-	public function file_exists(string $path): bool {
+	public function file_exists($path) {
 		$path = $this->normalizePath($path);
 
 		if ($path !== '.' && $this->is_dir($path)) {
@@ -216,7 +220,7 @@ class Swift extends Common {
 		return $this->doesObjectExist($path);
 	}
 
-	public function rmdir(string $path): bool {
+	public function rmdir($path) {
 		$path = $this->normalizePath($path);
 
 		if (!$this->is_dir($path) || !$this->isDeletable($path)) {
@@ -225,7 +229,7 @@ class Swift extends Common {
 
 		$dh = $this->opendir($path);
 		while (($file = readdir($dh)) !== false) {
-			if (Filesystem::isIgnoredDir($file)) {
+			if (\OC\Files\Filesystem::isIgnoredDir($file)) {
 				continue;
 			}
 
@@ -240,7 +244,7 @@ class Swift extends Common {
 			$this->objectStore->deleteObject($path . '/');
 			$this->objectCache->remove($path . '/');
 		} catch (BadResponseError $e) {
-			Server::get(LoggerInterface::class)->error($e->getMessage(), [
+			\OC::$server->get(LoggerInterface::class)->error($e->getMessage(), [
 				'exception' => $e,
 				'app' => 'files_external',
 			]);
@@ -250,7 +254,7 @@ class Swift extends Common {
 		return true;
 	}
 
-	public function opendir(string $path) {
+	public function opendir($path) {
 		$path = $this->normalizePath($path);
 
 		if ($path === '.') {
@@ -278,7 +282,7 @@ class Swift extends Common {
 
 			return IteratorDirectory::wrap($files);
 		} catch (\Exception $e) {
-			Server::get(LoggerInterface::class)->error($e->getMessage(), [
+			\OC::$server->get(LoggerInterface::class)->error($e->getMessage(), [
 				'exception' => $e,
 				'app' => 'files_external',
 			]);
@@ -286,7 +290,7 @@ class Swift extends Common {
 		}
 	}
 
-	public function stat(string $path): array|false {
+	public function stat($path) {
 		$path = $this->normalizePath($path);
 
 		if ($path === '.') {
@@ -301,7 +305,7 @@ class Swift extends Common {
 				return false;
 			}
 		} catch (BadResponseError $e) {
-			Server::get(LoggerInterface::class)->error($e->getMessage(), [
+			\OC::$server->get(LoggerInterface::class)->error($e->getMessage(), [
 				'exception' => $e,
 				'app' => 'files_external',
 			]);
@@ -326,7 +330,7 @@ class Swift extends Common {
 		return $stat;
 	}
 
-	public function filetype(string $path) {
+	public function filetype($path) {
 		$path = $this->normalizePath($path);
 
 		if ($path !== '.' && $this->doesObjectExist($path)) {
@@ -342,7 +346,7 @@ class Swift extends Common {
 		}
 	}
 
-	public function unlink(string $path): bool {
+	public function unlink($path) {
 		$path = $this->normalizePath($path);
 
 		if ($this->is_dir($path)) {
@@ -355,7 +359,7 @@ class Swift extends Common {
 			$this->objectCache->remove($path . '/');
 		} catch (BadResponseError $e) {
 			if ($e->getResponse()->getStatusCode() !== 404) {
-				Server::get(LoggerInterface::class)->error($e->getMessage(), [
+				\OC::$server->get(LoggerInterface::class)->error($e->getMessage(), [
 					'exception' => $e,
 					'app' => 'files_external',
 				]);
@@ -366,7 +370,7 @@ class Swift extends Common {
 		return true;
 	}
 
-	public function fopen(string $path, string $mode) {
+	public function fopen($path, $mode) {
 		$path = $this->normalizePath($path);
 
 		switch ($mode) {
@@ -379,7 +383,7 @@ class Swift extends Common {
 				try {
 					return $this->objectStore->readObject($path);
 				} catch (BadResponseError $e) {
-					Server::get(LoggerInterface::class)->error($e->getMessage(), [
+					\OC::$server->get(LoggerInterface::class)->error($e->getMessage(), [
 						'exception' => $e,
 						'app' => 'files_external',
 					]);
@@ -399,7 +403,7 @@ class Swift extends Common {
 				} else {
 					$ext = '';
 				}
-				$tmpFile = Server::get(ITempManager::class)->getTemporaryFile($ext);
+				$tmpFile = \OC::$server->getTempManager()->getTemporaryFile($ext);
 				// Fetch existing file if required
 				if ($mode[0] !== 'w' && $this->file_exists($path)) {
 					if ($mode[0] === 'x') {
@@ -410,13 +414,13 @@ class Swift extends Common {
 					file_put_contents($tmpFile, $source);
 				}
 				$handle = fopen($tmpFile, $mode);
-				return CallbackWrapper::wrap($handle, null, null, function () use ($path, $tmpFile): void {
+				return CallbackWrapper::wrap($handle, null, null, function () use ($path, $tmpFile) {
 					$this->writeBack($tmpFile, $path);
 				});
 		}
 	}
 
-	public function touch(string $path, ?int $mtime = null): bool {
+	public function touch($path, $mtime = null) {
 		$path = $this->normalizePath($path);
 		if (is_null($mtime)) {
 			$mtime = time();
@@ -446,7 +450,7 @@ class Swift extends Common {
 		}
 	}
 
-	public function copy(string $source, string $target): bool {
+	public function copy($source, $target) {
 		$source = $this->normalizePath($source);
 		$target = $this->normalizePath($target);
 
@@ -466,7 +470,7 @@ class Swift extends Common {
 				$this->objectCache->remove($target);
 				$this->objectCache->remove($target . '/');
 			} catch (BadResponseError $e) {
-				Server::get(LoggerInterface::class)->error($e->getMessage(), [
+				\OC::$server->get(LoggerInterface::class)->error($e->getMessage(), [
 					'exception' => $e,
 					'app' => 'files_external',
 				]);
@@ -482,7 +486,7 @@ class Swift extends Common {
 				$this->objectCache->remove($target);
 				$this->objectCache->remove($target . '/');
 			} catch (BadResponseError $e) {
-				Server::get(LoggerInterface::class)->error($e->getMessage(), [
+				\OC::$server->get(LoggerInterface::class)->error($e->getMessage(), [
 					'exception' => $e,
 					'app' => 'files_external',
 				]);
@@ -491,7 +495,7 @@ class Swift extends Common {
 
 			$dh = $this->opendir($source);
 			while (($file = readdir($dh)) !== false) {
-				if (Filesystem::isIgnoredDir($file)) {
+				if (\OC\Files\Filesystem::isIgnoredDir($file)) {
 					continue;
 				}
 
@@ -507,7 +511,7 @@ class Swift extends Common {
 		return true;
 	}
 
-	public function rename(string $source, string $target): bool {
+	public function rename($source, $target) {
 		$source = $this->normalizePath($source);
 		$target = $this->normalizePath($target);
 
@@ -532,18 +536,18 @@ class Swift extends Common {
 		return false;
 	}
 
-	public function getId(): string {
+	public function getId() {
 		return $this->id;
 	}
 
 	/**
 	 * Returns the initialized object store container.
 	 *
-	 * @return Container
-	 * @throws StorageAuthException
-	 * @throws StorageNotAvailableException
+	 * @return \OpenStack\ObjectStore\v1\Models\Container
+	 * @throws \OCP\Files\StorageAuthException
+	 * @throws \OCP\Files\StorageNotAvailableException
 	 */
-	public function getContainer(): Container {
+	public function getContainer() {
 		if (is_null($this->container)) {
 			$this->container = $this->connectionFactory->getContainer();
 
@@ -554,7 +558,7 @@ class Swift extends Common {
 		return $this->container;
 	}
 
-	public function writeBack(string $tmpFile, string $path): void {
+	public function writeBack($tmpFile, $path) {
 		$fileData = fopen($tmpFile, 'r');
 		$this->objectStore->writeObject($path, $fileData, $this->mimeDetector->detectPath($path));
 		// invalidate target object to force repopulation on fetch
@@ -562,7 +566,7 @@ class Swift extends Common {
 		unlink($tmpFile);
 	}
 
-	public function hasUpdated(string $path, int $time): bool {
+	public function hasUpdated($path, $time) {
 		if ($this->is_file($path)) {
 			return parent::hasUpdated($path, $time);
 		}
@@ -587,7 +591,7 @@ class Swift extends Common {
 	/**
 	 * check if curl is installed
 	 */
-	public static function checkDependencies(): bool {
+	public static function checkDependencies() {
 		return true;
 	}
 }

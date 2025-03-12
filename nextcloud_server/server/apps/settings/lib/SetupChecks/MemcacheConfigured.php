@@ -8,7 +8,6 @@ declare(strict_types=1);
  */
 namespace OCA\Settings\SetupChecks;
 
-use OC\Memcache\Memcached;
 use OCP\ICacheFactory;
 use OCP\IConfig;
 use OCP\IL10N;
@@ -38,7 +37,7 @@ class MemcacheConfigured implements ISetupCheck {
 		$memcacheLockingClass = $this->config->getSystemValue('memcache.locking', null);
 		$memcacheLocalClass = $this->config->getSystemValue('memcache.local', null);
 		$caches = array_filter([$memcacheDistributedClass,$memcacheLockingClass,$memcacheLocalClass]);
-		if (in_array(Memcached::class, array_map(fn (string $class) => ltrim($class, '\\'), $caches))) {
+		if (in_array(\OC\Memcache\Memcached::class, array_map(fn (string $class) => ltrim($class, '\\'), $caches))) {
 			// wrong PHP module is installed
 			if (extension_loaded('memcache') && !extension_loaded('memcached')) {
 				return SetupResult::warning(

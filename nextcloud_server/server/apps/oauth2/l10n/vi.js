@@ -13,7 +13,7 @@ OC.L10N.register(
     "Client Identifier" : "Mã định danh ứng dụng khách",
     "Add client" : "Thêm kết nối",
     "Add" : "Thêm",
-    "Show client secret" : "Hiện bí mật ứng dụng khách",
-    "Delete" : "Xóa"
+    "Delete" : "Xóa",
+    "Show client secret" : "Hiện bí mật ứng dụng khách"
 },
 "nplurals=1; plural=0;");

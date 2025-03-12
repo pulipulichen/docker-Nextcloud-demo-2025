@@ -8,15 +8,18 @@ namespace OCA\Settings\Settings\Admin;
 use OCP\AppFramework\Http\TemplateResponse;
 use OCP\IConfig;
 use OCP\IL10N;
-use OCP\ServerVersion;
 use OCP\Settings\IDelegatedSettings;
 
 class Overview implements IDelegatedSettings {
-	public function __construct(
-		private ServerVersion $serverVersion,
-		private IConfig $config,
-		private IL10N $l,
-	) {
+	/** @var IConfig */
+	private $config;
+
+	/** @var IL10N $l*/
+	private $l;
+
+	public function __construct(IConfig $config, IL10N $l) {
+		$this->config = $config;
+		$this->l = $l;
 	}
 
 	/**
@@ -25,7 +28,6 @@ class Overview implements IDelegatedSettings {
 	public function getForm() {
 		$parameters = [
 			'checkForWorkingWellKnownSetup' => $this->config->getSystemValue('check_for_working_wellknown_setup', true),
-			'version' => $this->serverVersion->getHumanVersion(),
 		];
 
 		return new TemplateResponse('settings', 'settings/admin/overview', $parameters, '');
@@ -40,8 +42,8 @@ class Overview implements IDelegatedSettings {
 
 	/**
 	 * @return int whether the form should be rather on the top or bottom of
-	 *             the admin section. The forms are arranged in ascending order of the
-	 *             priority values. It is required to return a value between 0 and 100.
+	 * the admin section. The forms are arranged in ascending order of the
+	 * priority values. It is required to return a value between 0 and 100.
 	 *
 	 * E.g.: 70
 	 */
@@ -50,7 +52,7 @@ class Overview implements IDelegatedSettings {
 	}
 
 	public function getName(): ?string {
-		return $this->l->t('Security & setup checks');
+		return $this->l->t('Security & setup warnings');
 	}
 
 	public function getAuthorizedAppConfig(): array {

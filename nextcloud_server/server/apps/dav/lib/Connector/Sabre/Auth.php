@@ -13,13 +13,10 @@ use OC\Authentication\TwoFactorAuth\Manager;
 use OC\User\Session;
 use OCA\DAV\Connector\Sabre\Exception\PasswordLoginForbidden;
 use OCA\DAV\Connector\Sabre\Exception\TooManyRequests;
-use OCP\AppFramework\Http;
-use OCP\Defaults;
 use OCP\IRequest;
 use OCP\ISession;
 use OCP\Security\Bruteforce\IThrottler;
 use OCP\Security\Bruteforce\MaxDelayReached;
-use OCP\Server;
 use Psr\Log\LoggerInterface;
 use Sabre\DAV\Auth\Backend\AbstractBasic;
 use Sabre\DAV\Exception\NotAuthenticated;
@@ -29,20 +26,29 @@ use Sabre\HTTP\ResponseInterface;
 
 class Auth extends AbstractBasic {
 	public const DAV_AUTHENTICATED = 'AUTHENTICATED_TO_DAV_BACKEND';
-	private ?string $currentUser = null;
 
-	public function __construct(
-		private ISession $session,
-		private Session $userSession,
-		private IRequest $request,
-		private Manager $twoFactorManager,
-		private IThrottler $throttler,
-		string $principalPrefix = 'principals/users/',
-	) {
+	private ISession $session;
+	private Session $userSession;
+	private IRequest $request;
+	private ?string $currentUser = null;
+	private Manager $twoFactorManager;
+	private IThrottler $throttler;
+
+	public function __construct(ISession $session,
+		Session $userSession,
+		IRequest $request,
+		Manager $twoFactorManager,
+		IThrottler $throttler,
+		string $principalPrefix = 'principals/users/') {
+		$this->session = $session;
+		$this->userSession = $userSession;
+		$this->twoFactorManager = $twoFactorManager;
+		$this->request = $request;
+		$this->throttler = $throttler;
 		$this->principalPrefix = $principalPrefix;
 
 		// setup realm
-		$defaults = new Defaults();
+		$defaults = new \OCP\Defaults();
 		$this->realm = $defaults->getName() ?: 'Nextcloud';
 	}
 
@@ -109,7 +115,7 @@ class Auth extends AbstractBasic {
 		} catch (Exception $e) {
 			$class = get_class($e);
 			$msg = $e->getMessage();
-			Server::get(LoggerInterface::class)->error($e->getMessage(), ['exception' => $e]);
+			\OC::$server->get(LoggerInterface::class)->error($e->getMessage(), ['exception' => $e]);
 			throw new ServiceUnavailable("$class: $msg");
 		}
 	}
@@ -164,7 +170,7 @@ class Auth extends AbstractBasic {
 			if ($this->request->getMethod() === 'POST') {
 				$forcedLogout = true;
 			} else {
-				$response->setStatus(Http::STATUS_UNAUTHORIZED);
+				$response->setStatus(401);
 				throw new \Sabre\DAV\Exception\NotAuthenticated('CSRF check not passed.');
 			}
 		}
@@ -197,7 +203,7 @@ class Auth extends AbstractBasic {
 		} elseif (in_array('XMLHttpRequest', explode(',', $request->getHeader('X-Requested-With') ?? ''))) {
 			// For ajax requests use dummy auth name to prevent browser popup in case of invalid creditials
 			$response->addHeader('WWW-Authenticate', 'DummyBasic realm="' . $this->realm . '"');
-			$response->setStatus(Http::STATUS_UNAUTHORIZED);
+			$response->setStatus(401);
 			throw new \Sabre\DAV\Exception\NotAuthenticated('Cannot authenticate over ajax calls');
 		}
 		return $data;

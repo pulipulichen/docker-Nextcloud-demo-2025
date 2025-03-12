@@ -11,7 +11,6 @@ namespace OCA\Files\Listener;
 use OCP\Collaboration\Reference\RenderReferenceEvent;
 use OCP\EventDispatcher\Event;
 use OCP\EventDispatcher\IEventListener;
-use OCP\Util;
 
 /** @template-implements IEventListener<RenderReferenceEvent> */
 class RenderReferenceEventListener implements IEventListener {
@@ -20,6 +19,6 @@ class RenderReferenceEventListener implements IEventListener {
 			return;
 		}
 
-		Util::addScript('files', 'reference-files');
+		\OCP\Util::addScript('files', 'reference-files');
 	}
 }

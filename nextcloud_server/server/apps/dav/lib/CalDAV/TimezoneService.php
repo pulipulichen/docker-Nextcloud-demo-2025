@@ -20,11 +20,9 @@ use function array_reduce;
 
 class TimezoneService {
 
-	public function __construct(
-		private IConfig $config,
+	public function __construct(private IConfig $config,
 		private PropertyMapper $propertyMapper,
-		private IManager $calendarManager,
-	) {
+		private IManager $calendarManager) {
 	}
 
 	public function getUserTimezone(string $userId): ?string {

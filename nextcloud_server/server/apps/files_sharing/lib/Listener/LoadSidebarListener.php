@@ -22,10 +22,7 @@ use OCP\Util;
  */
 class LoadSidebarListener implements IEventListener {
 
-	public function __construct(
-		private IInitialState $initialState,
-		private IManager $shareManager,
-	) {
+	public function __construct(private IInitialState $initialState, private IManager $shareManager) {
 	}
 
 	public function handle(Event $event): void {

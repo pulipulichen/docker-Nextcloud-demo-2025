@@ -18,8 +18,16 @@ use OCP\Notification\INotifier;
 use OCP\Notification\UnknownNotificationException;
 
 class Notifier implements INotifier {
+	/** @var IFactory */
+	protected $factory;
+	/** @var IManager */
+	protected $contactsManager;
+	/** @var IURLGenerator */
+	protected $url;
 	/** @var array */
 	protected $federatedContacts;
+	/** @var ICloudIdManager */
+	protected $cloudIdManager;
 
 	/**
 	 * @param IFactory $factory
@@ -27,12 +35,11 @@ class Notifier implements INotifier {
 	 * @param IURLGenerator $url
 	 * @param ICloudIdManager $cloudIdManager
 	 */
-	public function __construct(
-		protected IFactory $factory,
-		protected IManager $contactsManager,
-		protected IURLGenerator $url,
-		protected ICloudIdManager $cloudIdManager,
-	) {
+	public function __construct(IFactory $factory, IManager $contactsManager, IURLGenerator $url, ICloudIdManager $cloudIdManager) {
+		$this->factory = $factory;
+		$this->contactsManager = $contactsManager;
+		$this->url = $url;
+		$this->cloudIdManager = $cloudIdManager;
 	}
 
 	/**

@@ -20,12 +20,21 @@ use Sabre\VObject\Property\Text;
 use Sabre\VObject\Property\VCard\Date;
 
 class Converter {
+	/** @var IURLGenerator */
+	private $urlGenerator;
+	/** @var IAccountManager */
+	private $accountManager;
+	private IUserManager $userManager;
+
 	public function __construct(
-		private IAccountManager $accountManager,
-		private IUserManager $userManager,
-		private IURLGenerator $urlGenerator,
+		IAccountManager $accountManager,
+		IUserManager $userManager,
+		IURLGenerator $urlGenerator,
 		private LoggerInterface $logger,
 	) {
+		$this->accountManager = $accountManager;
+		$this->userManager = $userManager;
+		$this->urlGenerator = $urlGenerator;
 	}
 
 	public function createCardFromUser(IUser $user): ?VCard {
@@ -76,7 +85,7 @@ class Converter {
 							new Text(
 								$vCard,
 								'X-SOCIALPROFILE',
-								$this->urlGenerator->linkToRouteAbsolute('profile.ProfilePage.index', ['targetUserId' => $user->getUID()]),
+								$this->urlGenerator->linkToRouteAbsolute('core.ProfilePage.index', ['targetUserId' => $user->getUID()]),
 								[
 									'TYPE' => 'NEXTCLOUD',
 									'X-NC-SCOPE' => IAccountManager::SCOPE_PUBLISHED

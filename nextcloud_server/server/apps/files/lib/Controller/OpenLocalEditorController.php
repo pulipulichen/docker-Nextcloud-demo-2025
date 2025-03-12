@@ -29,16 +29,28 @@ class OpenLocalEditorController extends OCSController {
 	public const TOKEN_DURATION = 600; // 10 Minutes
 	public const TOKEN_RETRIES = 50;
 
+	protected ITimeFactory $timeFactory;
+	protected OpenLocalEditorMapper $mapper;
+	protected ISecureRandom $secureRandom;
+	protected LoggerInterface $logger;
+	protected ?string $userId;
+
 	public function __construct(
 		string $appName,
 		IRequest $request,
-		protected ITimeFactory $timeFactory,
-		protected OpenLocalEditorMapper $mapper,
-		protected ISecureRandom $secureRandom,
-		protected LoggerInterface $logger,
-		protected ?string $userId,
+		ITimeFactory $timeFactory,
+		OpenLocalEditorMapper $mapper,
+		ISecureRandom $secureRandom,
+		LoggerInterface $logger,
+		?string $userId
 	) {
 		parent::__construct($appName, $request);
+
+		$this->timeFactory = $timeFactory;
+		$this->mapper = $mapper;
+		$this->secureRandom = $secureRandom;
+		$this->logger = $logger;
+		$this->userId = $userId;
 	}
 
 	/**
@@ -46,7 +58,7 @@ class OpenLocalEditorController extends OCSController {
 	 *
 	 * @param string $path Path of the file
 	 *
-	 * @return DataResponse<Http::STATUS_OK, array{userId: ?string, pathHash: string, expirationTime: int, token: string}, array{}>|DataResponse<Http::STATUS_INTERNAL_SERVER_ERROR, list<empty>, array{}>
+	 * @return DataResponse<Http::STATUS_OK, array{userId: ?string, pathHash: string, expirationTime: int, token: string}, array{}>|DataResponse<Http::STATUS_INTERNAL_SERVER_ERROR, array<empty>, array{}>
 	 *
 	 * 200: Local editor returned
 	 */
@@ -91,7 +103,7 @@ class OpenLocalEditorController extends OCSController {
 	 * @param string $path Path of the file
 	 * @param string $token Token of the local editor
 	 *
-	 * @return DataResponse<Http::STATUS_OK, array{userId: string, pathHash: string, expirationTime: int, token: string}, array{}>|DataResponse<Http::STATUS_NOT_FOUND, list<empty>, array{}>
+	 * @return DataResponse<Http::STATUS_OK, array{userId: string, pathHash: string, expirationTime: int, token: string}, array{}>|DataResponse<Http::STATUS_NOT_FOUND, array<empty>, array{}>
 	 *
 	 * 200: Local editor validated successfully
 	 * 404: Local editor not found

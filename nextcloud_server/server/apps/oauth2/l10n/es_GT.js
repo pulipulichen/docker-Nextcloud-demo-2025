@@ -14,7 +14,7 @@ OC.L10N.register(
     "Secret key" : "Llave secreta",
     "Add client" : "Agregar cliente",
     "Add" : "Agregar",
-    "Show client secret" : "Mostrar secreto del cliente",
-    "Delete" : "Borrar"
+    "Delete" : "Borrar",
+    "Show client secret" : "Mostrar secreto del cliente"
 },
 "nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;");

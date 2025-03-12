@@ -23,19 +23,20 @@ use function count;
 use function explode;
 
 class CardDavRateLimitingPlugin extends ServerPlugin {
-	public function __construct(
-		private Limiter $limiter,
+	private ?string $userId;
+
+	public function __construct(private Limiter $limiter,
 		private IUserManager $userManager,
 		private CardDavBackend $cardDavBackend,
 		private LoggerInterface $logger,
 		private IAppConfig $config,
-		private ?string $userId,
-	) {
+		?string $userId) {
 		$this->limiter = $limiter;
 		$this->userManager = $userManager;
 		$this->cardDavBackend = $cardDavBackend;
 		$this->config = $config;
 		$this->logger = $logger;
+		$this->userId = $userId;
 	}
 
 	public function initialize(DAV\Server $server): void {

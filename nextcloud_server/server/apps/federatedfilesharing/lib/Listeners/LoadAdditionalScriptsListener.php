@@ -14,7 +14,6 @@ use OCP\App\IAppManager;
 use OCP\AppFramework\Services\IInitialState;
 use OCP\EventDispatcher\Event;
 use OCP\EventDispatcher\IEventListener;
-use OCP\Util;
 
 /** @template-implements IEventListener<LoadAdditionalScriptsEvent> */
 class LoadAdditionalScriptsListener implements IEventListener {
@@ -35,7 +34,7 @@ class LoadAdditionalScriptsListener implements IEventListener {
 
 		if ($this->federatedShareProvider->isIncomingServer2serverShareEnabled()) {
 			$this->initialState->provideInitialState('notificationsEnabled', $this->appManager->isEnabledForUser('notifications'));
-			Util::addInitScript('federatedfilesharing', 'external');
+			\OCP\Util::addInitScript('federatedfilesharing', 'external');
 		}
 	}
 }

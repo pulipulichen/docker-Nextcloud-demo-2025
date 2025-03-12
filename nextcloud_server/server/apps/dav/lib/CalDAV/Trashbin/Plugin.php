@@ -32,14 +32,16 @@ class Plugin extends ServerPlugin {
 	/** @var bool */
 	private $disableTrashbin;
 
+	/** @var RetentionService */
+	private $retentionService;
+
 	/** @var Server */
 	private $server;
 
-	public function __construct(
-		IRequest $request,
-		private RetentionService $retentionService,
-	) {
+	public function __construct(IRequest $request,
+		RetentionService $retentionService) {
 		$this->disableTrashbin = $request->getHeader('X-NC-CalDAV-No-Trashbin') === '1';
+		$this->retentionService = $retentionService;
 	}
 
 	public function initialize(Server $server): void {

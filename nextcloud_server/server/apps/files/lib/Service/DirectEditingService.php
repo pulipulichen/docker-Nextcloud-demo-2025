@@ -14,10 +14,14 @@ use OCP\EventDispatcher\IEventDispatcher;
 
 class DirectEditingService {
 
-	public function __construct(
-		private IEventDispatcher $eventDispatcher,
-		private IManager $directEditingManager,
-	) {
+	/** @var IManager */
+	private $directEditingManager;
+	/** @var IEventDispatcher */
+	private $eventDispatcher;
+
+	public function __construct(IEventDispatcher $eventDispatcher, IManager $directEditingManager) {
+		$this->directEditingManager = $directEditingManager;
+		$this->eventDispatcher = $eventDispatcher;
 	}
 
 	public function getDirectEditingETag(): string {

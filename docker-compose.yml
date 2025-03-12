@@ -19,7 +19,7 @@ services:
       - ./nextcloud_server/docker-entrypoint-hooks.d/post-installation:/docker-entrypoint-hooks.d/post-installation
       - ./nextcloud_server/docker-entrypoint-hooks.d/before-starting:/docker-entrypoint-hooks.d/before-starting
       - ./nextcloud_server/server:/html
-      - ./data:/data
+      - ./files:/files
     environment:
       - MYSQL_DATABASE=nextcloud
       - MYSQL_USER=nextcloud
@@ -41,7 +41,7 @@ services:
       context: .
       dockerfile: ./nextcloud_compiler/Dockerfile
     volumes:
-      - ./nextcloud_server/server/apps:/src/apps
+      - ./nextcloud_compiler/src/apps:/src/apps
       - ./nextcloud_compiler/src/build:/src/build
       - ./nextcloud_compiler/src/core/src:/src/core/src
       - ./nextcloud_server/server/core/css:/src/core/css

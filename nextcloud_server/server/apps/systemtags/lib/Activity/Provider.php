@@ -5,7 +5,6 @@
  */
 namespace OCA\SystemTags\Activity;
 
-use OCP\Activity\Exceptions\UnknownActivityException;
 use OCP\Activity\IEvent;
 use OCP\Activity\IManager;
 use OCP\Activity\IProvider;
@@ -22,8 +21,20 @@ class Provider implements IProvider {
 	public const ASSIGN_TAG = 'assign_tag';
 	public const UNASSIGN_TAG = 'unassign_tag';
 
+	/** @var IFactory */
+	protected $languageFactory;
+
 	/** @var IL10N */
 	protected $l;
+
+	/** @var IURLGenerator */
+	protected $url;
+
+	/** @var IManager */
+	protected $activityManager;
+
+	/** @var IUserManager */
+	protected $userManager;
 
 	/**
 	 * @param IFactory $languageFactory
@@ -31,12 +42,11 @@ class Provider implements IProvider {
 	 * @param IManager $activityManager
 	 * @param IUserManager $userManager
 	 */
-	public function __construct(
-		protected IFactory $languageFactory,
-		protected IURLGenerator $url,
-		protected IManager $activityManager,
-		protected IUserManager $userManager,
-	) {
+	public function __construct(IFactory $languageFactory, IURLGenerator $url, IManager $activityManager, IUserManager $userManager) {
+		$this->languageFactory = $languageFactory;
+		$this->url = $url;
+		$this->activityManager = $activityManager;
+		$this->userManager = $userManager;
 	}
 
 	/**
@@ -44,12 +54,12 @@ class Provider implements IProvider {
 	 * @param IEvent $event
 	 * @param IEvent|null $previousEvent
 	 * @return IEvent
-	 * @throws UnknownActivityException
+	 * @throws \InvalidArgumentException
 	 * @since 11.0.0
 	 */
 	public function parse($language, IEvent $event, ?IEvent $previousEvent = null) {
 		if ($event->getApp() !== 'systemtags') {
-			throw new UnknownActivityException();
+			throw new \InvalidArgumentException();
 		}
 
 		$this->l = $this->languageFactory->get('systemtags', $language);
@@ -57,7 +67,7 @@ class Provider implements IProvider {
 		if ($this->activityManager->isFormattingFilteredObject()) {
 			try {
 				return $this->parseShortVersion($event);
-			} catch (UnknownActivityException) {
+			} catch (\InvalidArgumentException $e) {
 				// Ignore and simply use the long version...
 			}
 		}
@@ -68,10 +78,10 @@ class Provider implements IProvider {
 	/**
 	 * @param IEvent $event
 	 * @return IEvent
-	 * @throws UnknownActivityException
+	 * @throws \InvalidArgumentException
 	 * @since 11.0.0
 	 */
-	public function parseShortVersion(IEvent $event): IEvent {
+	public function parseShortVersion(IEvent $event) {
 		$parsedParameters = $this->getParameters($event);
 
 		if ($this->activityManager->getRequirePNG()) {
@@ -131,7 +141,7 @@ class Provider implements IProvider {
 					]);
 			}
 		} else {
-			throw new UnknownActivityException();
+			throw new \InvalidArgumentException();
 		}
 
 		return $event;
@@ -140,10 +150,10 @@ class Provider implements IProvider {
 	/**
 	 * @param IEvent $event
 	 * @return IEvent
-	 * @throws UnknownActivityException
+	 * @throws \InvalidArgumentException
 	 * @since 11.0.0
 	 */
-	public function parseLongVersion(IEvent $event): IEvent {
+	public function parseLongVersion(IEvent $event) {
 		$parsedParameters = $this->getParameters($event);
 
 		if ($this->activityManager->getRequirePNG()) {
@@ -238,7 +248,7 @@ class Provider implements IProvider {
 					->setRichSubject($this->l->t('{actor} removed system tag {systemtag} from {file}'), $parsedParameters);
 			}
 		} else {
-			throw new UnknownActivityException();
+			throw new \InvalidArgumentException();
 		}
 
 		return $event;
@@ -252,19 +262,19 @@ class Provider implements IProvider {
 			case self::CREATE_TAG:
 			case self::DELETE_TAG:
 				return [
-					'actor' => $this->getUserParameter((string)$parameters[0]),
+					'actor' => $this->getUserParameter((string) $parameters[0]),
 					'systemtag' => $this->getSystemTagParameter($parameters[1]),
 				];
 			case self::UPDATE_TAG:
 				return [
-					'actor' => $this->getUserParameter((string)$parameters[0]),
+					'actor' => $this->getUserParameter((string) $parameters[0]),
 					'newsystemtag' => $this->getSystemTagParameter($parameters[1]),
 					'oldsystemtag' => $this->getSystemTagParameter($parameters[2]),
 				];
 			case self::ASSIGN_TAG:
 			case self::UNASSIGN_TAG:
 				return [
-					'actor' => $this->getUserParameter((string)$parameters[0]),
+					'actor' => $this->getUserParameter((string) $parameters[0]),
 					'file' => $this->getFileParameter($event->getObjectId(), $parameters[1]),
 					'systemtag' => $this->getSystemTagParameter($parameters[2]),
 				];
@@ -275,7 +285,7 @@ class Provider implements IProvider {
 	protected function getFileParameter($id, $path) {
 		return [
 			'type' => 'file',
-			'id' => (string)$id,
+			'id' => $id,
 			'name' => basename($path),
 			'path' => trim($path, '/'),
 		];
@@ -286,7 +296,7 @@ class Provider implements IProvider {
 		if ($tagData === null) {
 			[$name, $status] = explode('|||', substr($parameter, 3, -3));
 			$tagData = [
-				'id' => '0',// No way to recover the ID
+				'id' => 0,// No way to recover the ID
 				'name' => $name,
 				'assignable' => $status === 'assignable',
 				'visible' => $status !== 'invisible',
@@ -295,7 +305,7 @@ class Provider implements IProvider {
 
 		return [
 			'type' => 'systemtag',
-			'id' => (string)$tagData['id'],
+			'id' => (int) $tagData['id'],
 			'name' => $tagData['name'],
 			'assignable' => $tagData['assignable'] ? '1' : '0',
 			'visibility' => $tagData['visible'] ? '1' : '0',

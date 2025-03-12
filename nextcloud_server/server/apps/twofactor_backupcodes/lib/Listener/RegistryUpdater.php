@@ -17,10 +17,15 @@ use OCP\EventDispatcher\IEventListener;
 /** @template-implements IEventListener<CodesGenerated> */
 class RegistryUpdater implements IEventListener {
 
-	public function __construct(
-		private IRegistry $registry,
-		private BackupCodesProvider $provider,
-	) {
+	/** @var IRegistry */
+	private $registry;
+
+	/** @var BackupCodesProvider */
+	private $provider;
+
+	public function __construct(IRegistry $registry, BackupCodesProvider $provider) {
+		$this->registry = $registry;
+		$this->provider = $provider;
 	}
 
 	public function handle(Event $event): void {

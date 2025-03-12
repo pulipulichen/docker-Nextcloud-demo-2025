@@ -8,7 +8,7 @@ declare(strict_types=1);
  */
 namespace OCA\Settings\Activity;
 
-use OCP\Activity\Exceptions\UnknownActivityException;
+use InvalidArgumentException;
 use OCP\Activity\IEvent;
 use OCP\Activity\IManager;
 use OCP\Activity\IProvider;
@@ -17,16 +17,24 @@ use OCP\L10N\IFactory as L10nFactory;
 
 class SecurityProvider implements IProvider {
 
-	public function __construct(
-		private L10nFactory $l10n,
-		private IURLGenerator $urlGenerator,
-		private IManager $activityManager,
-	) {
+	/** @var L10nFactory */
+	private $l10n;
+
+	/** @var IURLGenerator */
+	private $urlGenerator;
+
+	/** @var IManager */
+	private $activityManager;
+
+	public function __construct(L10nFactory $l10n, IURLGenerator $urlGenerator, IManager $activityManager) {
+		$this->urlGenerator = $urlGenerator;
+		$this->l10n = $l10n;
+		$this->activityManager = $activityManager;
 	}
 
 	public function parse($language, IEvent $event, ?IEvent $previousEvent = null) {
 		if ($event->getType() !== 'security') {
-			throw new UnknownActivityException();
+			throw new InvalidArgumentException();
 		}
 
 		$l = $this->l10n->get('settings', $language);
@@ -77,7 +85,7 @@ class SecurityProvider implements IProvider {
 				}
 				break;
 			default:
-				throw new UnknownActivityException();
+				throw new InvalidArgumentException();
 		}
 		return $event;
 	}

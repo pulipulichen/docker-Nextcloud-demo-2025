@@ -10,6 +10,7 @@ use OCA\Files_External\Service\BackendService;
 use OCA\User_LDAP\Controller\RenewPasswordController;
 use OCA\User_LDAP\Events\GroupBackendRegistered;
 use OCA\User_LDAP\Events\UserBackendRegistered;
+use OCA\User_LDAP\FilesystemHelper;
 use OCA\User_LDAP\Group_Proxy;
 use OCA\User_LDAP\GroupPluginManager;
 use OCA\User_LDAP\Handler\ExtStorageConfigHandler;
@@ -39,7 +40,6 @@ use OCP\IUserManager;
 use OCP\Notification\IManager as INotificationManager;
 use OCP\Share\IManager as IShareManager;
 use OCP\User\Events\PostLoginEvent;
-use OCP\Util;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 
@@ -84,6 +84,7 @@ class Application extends App implements IBootstrap {
 			function (ContainerInterface $c) {
 				return new Manager(
 					$c->get(IConfig::class),
+					$c->get(FilesystemHelper::class),
 					$c->get(LoggerInterface::class),
 					$c->get(IAvatarManager::class),
 					$c->get(Image::class),
@@ -108,8 +109,8 @@ class Application extends App implements IBootstrap {
 			IGroupManager $groupManager,
 			User_Proxy $userBackend,
 			Group_Proxy $groupBackend,
-			Helper $helper,
-		): void {
+			Helper $helper
+		) {
 			$configPrefixes = $helper->getServerConfigurationPrefixes(true);
 			if (count($configPrefixes) > 0) {
 				$userPluginManager = $appContainer->get(UserPluginManager::class);
@@ -128,7 +129,7 @@ class Application extends App implements IBootstrap {
 
 		$context->injectFn(Closure::fromCallable([$this, 'registerBackendDependents']));
 
-		Util::connectHook(
+		\OCP\Util::connectHook(
 			'\OCA\Files_Sharing\API\Server2Server',
 			'preLoginNameUsedAsUserName',
 			'\OCA\User_LDAP\Helper',
@@ -139,7 +140,7 @@ class Application extends App implements IBootstrap {
 	private function registerBackendDependents(IAppContainer $appContainer, IEventDispatcher $dispatcher): void {
 		$dispatcher->addListener(
 			'OCA\\Files_External::loadAdditionalBackends',
-			function () use ($appContainer): void {
+			function () use ($appContainer) {
 				$storagesBackendService = $appContainer->get(BackendService::class);
 				$storagesBackendService->registerConfigHandler('home', function () use ($appContainer) {
 					return $appContainer->get(ExtStorageConfigHandler::class);

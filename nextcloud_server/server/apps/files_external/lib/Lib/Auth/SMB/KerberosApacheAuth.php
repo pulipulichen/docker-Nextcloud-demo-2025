@@ -13,10 +13,10 @@ use OCP\Authentication\LoginCredentials\IStore;
 use OCP\IL10N;
 
 class KerberosApacheAuth extends AuthMechanism {
-	public function __construct(
-		IL10N $l,
-		private IStore $credentialsStore,
-	) {
+	/** @var IStore */
+	private $credentialsStore;
+
+	public function __construct(IL10N $l, IStore $credentialsStore) {
 		$realm = new DefinitionParameter('default_realm', 'Default realm');
 		$realm
 			->setType(DefinitionParameter::VALUE_TEXT)
@@ -27,6 +27,7 @@ class KerberosApacheAuth extends AuthMechanism {
 			->setScheme(self::SCHEME_SMB)
 			->setText($l->t('Kerberos ticket Apache mode'))
 			->addParameter($realm);
+		$this->credentialsStore = $credentialsStore;
 	}
 
 	public function getCredentialsStore(): IStore {

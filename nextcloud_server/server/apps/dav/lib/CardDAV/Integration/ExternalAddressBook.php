@@ -32,10 +32,12 @@ abstract class ExternalAddressBook implements IAddressBook, DAV\IProperties {
 	 */
 	private const DELIMITER = '--';
 
-	public function __construct(
-		private string $appId,
-		private string $uri,
-	) {
+	private string $appId;
+	private string $uri;
+
+	public function __construct(string $appId, string $uri) {
+		$this->appId = $appId;
+		$this->uri = $uri;
 	}
 
 	/**

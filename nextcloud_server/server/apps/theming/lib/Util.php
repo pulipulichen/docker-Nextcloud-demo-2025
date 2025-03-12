@@ -13,17 +13,19 @@ use OCP\Files\NotFoundException;
 use OCP\Files\SimpleFS\ISimpleFile;
 use OCP\IConfig;
 use OCP\IUserSession;
-use OCP\Server;
-use OCP\ServerVersion;
 
 class Util {
-	public function __construct(
-		private ServerVersion $serverVersion,
-		private IConfig $config,
-		private IAppManager $appManager,
-		private IAppData $appData,
-		private ImageManager $imageManager,
-	) {
+
+	private IConfig $config;
+	private IAppManager $appManager;
+	private IAppData $appData;
+	private ImageManager $imageManager;
+
+	public function __construct(IConfig $config, IAppManager $appManager, IAppData $appData, ImageManager $imageManager) {
+		$this->config = $config;
+		$this->appManager = $appManager;
+		$this->appData = $appData;
+		$this->imageManager = $imageManager;
 	}
 
 	/**
@@ -187,7 +189,7 @@ class Util {
 	 */
 	public function generateRadioButton($color) {
 		$radioButtonIcon = '<svg xmlns="http://www.w3.org/2000/svg" height="16" width="16">' .
-			'<path d="M8 1a7 7 0 0 0-7 7 7 7 0 0 0 7 7 7 7 0 0 0 7-7 7 7 0 0 0-7-7zm0 1a6 6 0 0 1 6 6 6 6 0 0 1-6 6 6 6 0 0 1-6-6 6 6 0 0 1 6-6zm0 2a4 4 0 1 0 0 8 4 4 0 0 0 0-8z" fill="' . $color . '"/></svg>';
+			'<path d="M8 1a7 7 0 0 0-7 7 7 7 0 0 0 7 7 7 7 0 0 0 7-7 7 7 0 0 0-7-7zm0 1a6 6 0 0 1 6 6 6 6 0 0 1-6 6 6 6 0 0 1-6-6 6 6 0 0 1 6-6zm0 2a4 4 0 1 0 0 8 4 4 0 0 0 0-8z" fill="'.$color.'"/></svg>';
 		return base64_encode($radioButtonIcon);
 	}
 
@@ -197,7 +199,7 @@ class Util {
 	 * @return string|ISimpleFile path to app icon / file of logo
 	 */
 	public function getAppIcon($app) {
-		$app = $this->appManager->cleanAppId($app);
+		$app = str_replace(['\0', '/', '\\', '..'], '', $app);
 		try {
 			$appPath = $this->appManager->getAppPath($app);
 			$icon = $appPath . '/img/' . $app . '.svg';
@@ -228,12 +230,9 @@ class Util {
 	 * @return string|false absolute path to image
 	 */
 	public function getAppImage($app, $image) {
-		$app = $this->appManager->cleanAppId($app);
-		/**
-		 * @psalm-taint-escape file
-		 */
+		$app = str_replace(['\0', '/', '\\', '..'], '', $app);
 		$image = str_replace(['\0', '\\', '..'], '', $image);
-		if ($app === 'core') {
+		if ($app === "core") {
 			$icon = \OC::$SERVERROOT . '/core/img/' . $image;
 			if (file_exists($icon)) {
 				return $icon;
@@ -306,13 +305,13 @@ class Util {
 	}
 
 	public function getCacheBuster(): string {
-		$userSession = Server::get(IUserSession::class);
+		$userSession = \OC::$server->get(IUserSession::class);
 		$userId = '';
 		$user = $userSession->getUser();
 		if (!is_null($user)) {
 			$userId = $user->getUID();
 		}
-		$serverVersion = $this->serverVersion->getVersionString();
+		$serverVersion = \OC_Util::getVersionString();
 		$themingAppVersion = $this->appManager->getAppVersion('theming');
 		$userCacheBuster = '';
 		if ($userId) {

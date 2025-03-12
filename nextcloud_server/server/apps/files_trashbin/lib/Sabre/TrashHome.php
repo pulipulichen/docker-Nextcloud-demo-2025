@@ -15,11 +15,23 @@ use Sabre\DAV\Exception\NotFound;
 use Sabre\DAV\ICollection;
 
 class TrashHome implements ICollection {
+	/** @var ITrashManager */
+	private $trashManager;
+
+	/** @var array */
+	private $principalInfo;
+
+	/** @var IUser */
+	private $user;
+
 	public function __construct(
-		private array $principalInfo,
-		private ITrashManager $trashManager,
-		private IUser $user,
+		array $principalInfo,
+		ITrashManager $trashManager,
+		IUser $user
 	) {
+		$this->principalInfo = $principalInfo;
+		$this->trashManager = $trashManager;
+		$this->user = $user;
 	}
 
 	public function delete() {

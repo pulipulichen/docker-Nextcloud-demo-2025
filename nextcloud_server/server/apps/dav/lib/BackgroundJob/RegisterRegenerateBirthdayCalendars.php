@@ -16,6 +16,12 @@ use OCP\IUserManager;
 
 class RegisterRegenerateBirthdayCalendars extends QueuedJob {
 
+	/** @var IUserManager */
+	private $userManager;
+
+	/** @var IJobList */
+	private $jobList;
+
 	/**
 	 * RegisterRegenerateBirthdayCalendars constructor.
 	 *
@@ -23,19 +29,19 @@ class RegisterRegenerateBirthdayCalendars extends QueuedJob {
 	 * @param IUserManager $userManager
 	 * @param IJobList $jobList
 	 */
-	public function __construct(
-		ITimeFactory $time,
-		private IUserManager $userManager,
-		private IJobList $jobList,
-	) {
+	public function __construct(ITimeFactory $time,
+		IUserManager $userManager,
+		IJobList $jobList) {
 		parent::__construct($time);
+		$this->userManager = $userManager;
+		$this->jobList = $jobList;
 	}
 
 	/**
 	 * @inheritDoc
 	 */
 	public function run($argument) {
-		$this->userManager->callForSeenUsers(function (IUser $user): void {
+		$this->userManager->callForSeenUsers(function (IUser $user) {
 			$this->jobList->add(GenerateBirthdayCalendarBackgroundJob::class, [
 				'userId' => $user->getUID(),
 				'purgeBeforeGenerating' => true

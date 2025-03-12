@@ -20,16 +20,22 @@ class WebAuthn implements ISettings {
 	/** @var PublicKeyCredentialMapper */
 	private $mapper;
 
+	/** @var string */
+	private $uid;
+
+	/** @var IInitialStateService */
+	private $initialStateService;
+
 	/** @var Manager */
 	private $manager;
 
-	public function __construct(
-		PublicKeyCredentialMapper $mapper,
-		private string $userId,
-		private IInitialStateService $initialStateService,
-		Manager $manager,
-	) {
+	public function __construct(PublicKeyCredentialMapper $mapper,
+		string $UserId,
+		IInitialStateService $initialStateService,
+		Manager $manager) {
 		$this->mapper = $mapper;
+		$this->uid = $UserId;
+		$this->initialStateService = $initialStateService;
 		$this->manager = $manager;
 	}
 
@@ -37,7 +43,7 @@ class WebAuthn implements ISettings {
 		$this->initialStateService->provideInitialState(
 			Application::APP_ID,
 			'webauthn-devices',
-			$this->mapper->findAllForUid($this->userId)
+			$this->mapper->findAllForUid($this->uid)
 		);
 
 		return new TemplateResponse('settings', 'settings/personal/security/webauthn', [

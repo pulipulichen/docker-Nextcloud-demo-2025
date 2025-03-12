@@ -20,10 +20,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class FixCalendarSyncCommand extends Command {
 
-	public function __construct(
-		private IUserManager $userManager,
-		private CalDavBackend $calDavBackend,
-	) {
+	public function __construct(private IUserManager $userManager,
+		private CalDavBackend $calDavBackend) {
 		parent::__construct('dav:fix-missing-caldav-changes');
 	}
 
@@ -43,23 +41,22 @@ class FixCalendarSyncCommand extends Command {
 			$user = $this->userManager->get($userArg);
 			if ($user === null) {
 				$output->writeln("<error>User $userArg does not exist</error>");
-				return self::FAILURE;
+				return 1;
 			}
 
 			$this->fixUserCalendars($user);
 		} else {
 			$progress = new ProgressBar($output);
-			$this->userManager->callForSeenUsers(function (IUser $user) use ($progress): void {
+			$this->userManager->callForSeenUsers(function (IUser $user) use ($progress) {
 				$this->fixUserCalendars($user, $progress);
 			});
 			$progress->finish();
 		}
-		$output->writeln('');
-		return self::SUCCESS;
+		return 0;
 	}
 
 	private function fixUserCalendars(IUser $user, ?ProgressBar $progress = null): void {
-		$calendars = $this->calDavBackend->getCalendarsForUser('principals/users/' . $user->getUID());
+		$calendars = $this->calDavBackend->getCalendarsForUser("principals/users/" . $user->getUID());
 
 		foreach ($calendars as $calendar) {
 			$this->calDavBackend->restoreChanges($calendar['id']);

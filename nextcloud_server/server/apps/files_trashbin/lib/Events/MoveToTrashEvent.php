@@ -21,10 +21,12 @@ class MoveToTrashEvent extends Event {
 	/** @var bool */
 	private $moveToTrashBin;
 
-	public function __construct(
-		private Node $node,
-	) {
+	/** @var Node */
+	private $node;
+
+	public function __construct(Node $node) {
 		$this->moveToTrashBin = true;
+		$this->node = $node;
 	}
 
 	/**

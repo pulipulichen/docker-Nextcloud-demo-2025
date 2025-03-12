@@ -11,14 +11,17 @@ echo =================================================================
 # 定義目標目錄
 # TARGET_DIRS=("core" "config", "lib")
 # TARGET_DIRS=("core" "config")
-TARGET_DIRS=("core" "dist" "apps")
+
+# TARGET_DIRS=("core" "dist" "apps")
+TARGET_DIRS=("core" "dist")
 
 # 迭代處理每個目錄
 for DIR in "${TARGET_DIRS[@]}"; do
     if [ -d "/html/$DIR" ]; then
         # 如果 /var/www/html/$DIR 存在，則刪除
         if [ -e "/var/www/html/$DIR" ]; then
-            rm -rf "/var/www/html/$DIR"
+            # rm -rf "/var/www/html/$DIR"
+            mv "/var/www/html/$DIR" "/var/www/html/$DIR.bak"
         fi
         # 建立符號連結
         ln -s "/html/$DIR" "/var/www/html/$DIR"

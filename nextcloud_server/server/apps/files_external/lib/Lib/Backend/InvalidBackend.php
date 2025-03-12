@@ -16,19 +16,21 @@ use OCP\IUser;
  */
 class InvalidBackend extends Backend {
 
+	/** @var string Invalid backend id */
+	private $invalidId;
+
 	/**
 	 * Constructs a new InvalidBackend with the id of the invalid backend
 	 * for display purposes
 	 *
 	 * @param string $invalidId id of the backend that did not exist
 	 */
-	public function __construct(
-		private $invalidId,
-	) {
+	public function __construct($invalidId) {
+		$this->invalidId = $invalidId;
 		$this
-			->setIdentifier($this->invalidId)
+			->setIdentifier($invalidId)
 			->setStorageClass('\OC\Files\Storage\FailedStorage')
-			->setText('Unknown storage backend ' . $this->invalidId);
+			->setText('Unknown storage backend ' . $invalidId);
 	}
 
 	/**

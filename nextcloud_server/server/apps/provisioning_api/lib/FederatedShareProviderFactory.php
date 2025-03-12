@@ -13,9 +13,11 @@ use OCP\IServerContainer;
 
 class FederatedShareProviderFactory {
 
-	public function __construct(
-		private IServerContainer $serverContainer,
-	) {
+	/** @var IServerContainer */
+	private $serverContainer;
+
+	public function __construct(IServerContainer $serverContainer) {
+		$this->serverContainer = $serverContainer;
 	}
 
 	public function get(): FederatedShareProvider {

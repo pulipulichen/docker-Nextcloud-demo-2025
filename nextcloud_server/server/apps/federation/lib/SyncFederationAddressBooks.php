@@ -14,15 +14,20 @@ use OCP\OCS\IDiscoveryService;
 use Psr\Log\LoggerInterface;
 
 class SyncFederationAddressBooks {
+	protected DbHandler $dbHandler;
+	private SyncService $syncService;
 	private DiscoveryService $ocsDiscoveryService;
+	private LoggerInterface $logger;
 
-	public function __construct(
-		protected DbHandler $dbHandler,
-		private SyncService $syncService,
+	public function __construct(DbHandler $dbHandler,
+		SyncService $syncService,
 		IDiscoveryService $ocsDiscoveryService,
-		private LoggerInterface $logger,
+		LoggerInterface $logger
 	) {
+		$this->syncService = $syncService;
+		$this->dbHandler = $dbHandler;
 		$this->ocsDiscoveryService = $ocsDiscoveryService;
+		$this->logger = $logger;
 	}
 
 	/**
@@ -45,7 +50,7 @@ class SyncFederationAddressBooks {
 				continue;
 			}
 			$targetBookId = $trustedServer['url_hash'];
-			$targetPrincipal = 'principals/system/system';
+			$targetPrincipal = "principals/system/system";
 			$targetBookProperties = [
 				'{DAV:}displayname' => $url
 			];

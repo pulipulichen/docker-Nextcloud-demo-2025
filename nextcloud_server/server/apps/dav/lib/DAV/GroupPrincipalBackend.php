@@ -20,17 +20,32 @@ use Sabre\DAVACL\PrincipalBackend\BackendInterface;
 class GroupPrincipalBackend implements BackendInterface {
 	public const PRINCIPAL_PREFIX = 'principals/groups';
 
+	/** @var IGroupManager */
+	private $groupManager;
+
+	/** @var IUserSession */
+	private $userSession;
+
+	/** @var IShareManager */
+	private $shareManager;
+	/** @var IConfig */
+	private $config;
+
 	/**
-	 * @param IGroupManager $groupManager
+	 * @param IGroupManager $IGroupManager
 	 * @param IUserSession $userSession
 	 * @param IShareManager $shareManager
 	 */
 	public function __construct(
-		private IGroupManager $groupManager,
-		private IUserSession $userSession,
-		private IShareManager $shareManager,
-		private IConfig $config,
+		IGroupManager $IGroupManager,
+		IUserSession $userSession,
+		IShareManager $shareManager,
+		IConfig $config
 	) {
+		$this->groupManager = $IGroupManager;
+		$this->userSession = $userSession;
+		$this->shareManager = $shareManager;
+		$this->config = $config;
 	}
 
 	/**

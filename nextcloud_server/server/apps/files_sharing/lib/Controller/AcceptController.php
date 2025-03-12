@@ -25,13 +25,21 @@ use OCP\Share\IManager as ShareManager;
 #[OpenAPI(scope: OpenAPI::SCOPE_IGNORE)]
 class AcceptController extends Controller {
 
-	public function __construct(
-		IRequest $request,
-		private ShareManager $shareManager,
-		private IUserSession $userSession,
-		private IURLGenerator $urlGenerator,
-	) {
+	/** @var ShareManager */
+	private $shareManager;
+
+	/** @var IUserSession */
+	private $userSession;
+
+	/** @var IURLGenerator */
+	private $urlGenerator;
+
+	public function __construct(IRequest $request, ShareManager $shareManager, IUserSession $userSession, IURLGenerator $urlGenerator) {
 		parent::__construct(Application::APP_ID, $request);
+
+		$this->shareManager = $shareManager;
+		$this->userSession = $userSession;
+		$this->urlGenerator = $urlGenerator;
 	}
 
 	#[NoAdminRequired]

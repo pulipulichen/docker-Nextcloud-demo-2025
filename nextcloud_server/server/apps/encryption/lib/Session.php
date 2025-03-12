@@ -12,6 +12,9 @@ use OCP\ISession;
 
 class Session {
 
+	/** @var ISession */
+	protected $session;
+
 	public const NOT_INITIALIZED = '0';
 	public const INIT_EXECUTED = '1';
 	public const INIT_SUCCESSFUL = '2';
@@ -19,9 +22,8 @@ class Session {
 	/**
 	 * @param ISession $session
 	 */
-	public function __construct(
-		protected ISession $session,
-	) {
+	public function __construct(ISession $session) {
+		$this->session = $session;
 	}
 
 	/**
@@ -66,7 +68,7 @@ class Session {
 	public function getPrivateKey() {
 		$key = $this->session->get('privateKey');
 		if (is_null($key)) {
-			throw new PrivateKeyMissingException('please try to log-out and log-in again', 0);
+			throw new Exceptions\PrivateKeyMissingException('please try to log-out and log-in again', 0);
 		}
 		return $key;
 	}

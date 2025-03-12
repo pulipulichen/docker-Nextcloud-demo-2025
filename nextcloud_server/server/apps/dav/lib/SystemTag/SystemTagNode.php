@@ -10,10 +10,9 @@ namespace OCA\DAV\SystemTag;
 use OCP\IUser;
 use OCP\SystemTag\ISystemTag;
 use OCP\SystemTag\ISystemTagManager;
-use OCP\SystemTag\ISystemTagObjectMapper;
 use OCP\SystemTag\TagAlreadyExistsException;
+
 use OCP\SystemTag\TagNotFoundException;
-use Sabre\DAV\Exception\BadRequest;
 use Sabre\DAV\Exception\Conflict;
 use Sabre\DAV\Exception\Forbidden;
 use Sabre\DAV\Exception\MethodNotAllowed;
@@ -22,7 +21,31 @@ use Sabre\DAV\Exception\NotFound;
 /**
  * DAV node representing a system tag, with the name being the tag id.
  */
-class SystemTagNode implements \Sabre\DAV\ICollection {
+class SystemTagNode implements \Sabre\DAV\INode {
+
+	/**
+	 * @var ISystemTag
+	 */
+	protected $tag;
+
+	/**
+	 * @var ISystemTagManager
+	 */
+	protected $tagManager;
+
+	/**
+	 * User
+	 *
+	 * @var IUser
+	 */
+	protected $user;
+
+	/**
+	 * Whether to allow permissions for admins
+	 *
+	 * @var bool
+	 */
+	protected $isAdmin;
 
 	protected int $numberOfFiles = -1;
 	protected int $referenceFileId = -1;
@@ -35,19 +58,11 @@ class SystemTagNode implements \Sabre\DAV\ICollection {
 	 * @param bool $isAdmin whether to allow operations for admins
 	 * @param ISystemTagManager $tagManager tag manager
 	 */
-	public function __construct(
-		protected ISystemTag $tag,
-		/**
-		 * User
-		 */
-		protected IUser $user,
-		/**
-		 * Whether to allow permissions for admins
-		 */
-		protected bool $isAdmin,
-		protected ISystemTagManager $tagManager,
-		protected ISystemTagObjectMapper $tagMapper,
-	) {
+	public function __construct(ISystemTag $tag, IUser $user, $isAdmin, ISystemTagManager $tagManager) {
+		$this->tag = $tag;
+		$this->user = $user;
+		$this->isAdmin = $isAdmin;
+		$this->tagManager = $tagManager;
 	}
 
 	/**
@@ -87,13 +102,12 @@ class SystemTagNode implements \Sabre\DAV\ICollection {
 	 * @param string $name new tag name
 	 * @param bool $userVisible user visible
 	 * @param bool $userAssignable user assignable
-	 * @param string $color color
 	 *
 	 * @throws NotFound whenever the given tag id does not exist
 	 * @throws Forbidden whenever there is no permission to update said tag
 	 * @throws Conflict whenever a tag already exists with the given attributes
 	 */
-	public function update($name, $userVisible, $userAssignable, $color): void {
+	public function update($name, $userVisible, $userAssignable): void {
 		try {
 			if (!$this->tagManager->canUserSeeTag($this->tag, $this->user)) {
 				throw new NotFound('Tag with id ' . $this->tag->getId() . ' does not exist');
@@ -112,12 +126,7 @@ class SystemTagNode implements \Sabre\DAV\ICollection {
 				}
 			}
 
-			// Make sure color is a proper hex
-			if ($color !== null && (strlen($color) !== 6 || !ctype_xdigit($color))) {
-				throw new BadRequest('Color must be a 6-digit hexadecimal value');
-			}
-
-			$this->tagManager->updateTag($this->tag->getId(), $name, $userVisible, $userAssignable, $color);
+			$this->tagManager->updateTag($this->tag->getId(), $name, $userVisible, $userAssignable);
 		} catch (TagNotFoundException $e) {
 			throw new NotFound('Tag with id ' . $this->tag->getId() . ' does not exist');
 		} catch (TagAlreadyExistsException $e) {
@@ -171,32 +180,5 @@ class SystemTagNode implements \Sabre\DAV\ICollection {
 
 	public function setReferenceFileId(int $referenceFileId): void {
 		$this->referenceFileId = $referenceFileId;
-	}
-
-	public function createFile($name, $data = null) {
-		throw new MethodNotAllowed();
-	}
-	
-	public function createDirectory($name) {
-		throw new MethodNotAllowed();
-	}
-	
-	public function getChild($name) {
-		return new SystemTagObjectType($this->tag, $name, $this->tagManager, $this->tagMapper);
-	}
-	
-	public function childExists($name) {
-		$objectTypes = $this->tagMapper->getAvailableObjectTypes();
-		return in_array($name, $objectTypes);
-	}
-
-	public function getChildren() {
-		$objectTypes = $this->tagMapper->getAvailableObjectTypes();
-		return array_map(
-			function ($objectType) {
-				return new SystemTagObjectType($this->tag, $objectType, $this->tagManager, $this->tagMapper);
-			},
-			$objectTypes
-		);
 	}
 }

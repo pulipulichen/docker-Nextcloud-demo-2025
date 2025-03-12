@@ -14,7 +14,7 @@ OC.L10N.register(
     "Secret key" : "کلید مخفی",
     "Add client" : "افزودن مشتری",
     "Add" : "افزودن",
-    "Show client secret" : "راز مشتری را نشان دهید",
-    "Delete" : "حذف"
+    "Delete" : "حذف",
+    "Show client secret" : "راز مشتری را نشان دهید"
 },
 "nplurals=2; plural=(n > 1);");

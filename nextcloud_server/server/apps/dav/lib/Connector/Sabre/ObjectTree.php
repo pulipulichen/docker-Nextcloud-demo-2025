@@ -9,14 +9,10 @@ namespace OCA\DAV\Connector\Sabre;
 
 use OC\Files\FileInfo;
 use OC\Files\Storage\FailedStorage;
-use OC\Files\Storage\Storage;
-use OC\Files\View;
 use OCA\DAV\Connector\Sabre\Exception\FileLocked;
 use OCA\DAV\Connector\Sabre\Exception\Forbidden;
 use OCA\DAV\Connector\Sabre\Exception\InvalidPath;
 use OCP\Files\ForbiddenException;
-use OCP\Files\InvalidPathException;
-use OCP\Files\Mount\IMountManager;
 use OCP\Files\StorageInvalidException;
 use OCP\Files\StorageNotAvailableException;
 use OCP\Lock\LockedException;
@@ -24,12 +20,12 @@ use OCP\Lock\LockedException;
 class ObjectTree extends CachingTree {
 
 	/**
-	 * @var View
+	 * @var \OC\Files\View
 	 */
 	protected $fileView;
 
 	/**
-	 * @var IMountManager
+	 * @var  \OCP\Files\Mount\IMountManager
 	 */
 	protected $mountManager;
 
@@ -41,10 +37,10 @@ class ObjectTree extends CachingTree {
 
 	/**
 	 * @param \Sabre\DAV\INode $rootNode
-	 * @param View $view
-	 * @param IMountManager $mountManager
+	 * @param \OC\Files\View $view
+	 * @param  \OCP\Files\Mount\IMountManager $mountManager
 	 */
-	public function init(\Sabre\DAV\INode $rootNode, View $view, IMountManager $mountManager) {
+	public function init(\Sabre\DAV\INode $rootNode, \OC\Files\View $view, \OCP\Files\Mount\IMountManager $mountManager) {
 		$this->rootNode = $rootNode;
 		$this->fileView = $view;
 		$this->mountManager = $mountManager;
@@ -74,7 +70,7 @@ class ObjectTree extends CachingTree {
 		if ($path) {
 			try {
 				$this->fileView->verifyPath($path, basename($path));
-			} catch (InvalidPathException $ex) {
+			} catch (\OCP\Files\InvalidPathException $ex) {
 				throw new InvalidPath($ex->getMessage());
 			}
 		}
@@ -92,7 +88,7 @@ class ObjectTree extends CachingTree {
 			$internalPath = $mount->getInternalPath($absPath);
 			if ($storage && $storage->file_exists($internalPath)) {
 				/**
-				 * @var Storage $storage
+				 * @var \OC\Files\Storage\Storage $storage
 				 */
 				// get data directly
 				$data = $storage->getMetaData($internalPath);
@@ -124,9 +120,9 @@ class ObjectTree extends CachingTree {
 		}
 
 		if ($info->getType() === 'dir') {
-			$node = new Directory($this->fileView, $info, $this);
+			$node = new \OCA\DAV\Connector\Sabre\Directory($this->fileView, $info, $this);
 		} else {
-			$node = new File($this->fileView, $info);
+			$node = new \OCA\DAV\Connector\Sabre\File($this->fileView, $info);
 		}
 
 		$this->cache[$path] = $node;
@@ -173,7 +169,7 @@ class ObjectTree extends CachingTree {
 		[$destinationDir, $destinationName] = \Sabre\Uri\split($destinationPath);
 		try {
 			$this->fileView->verifyPath($destinationDir, $destinationName);
-		} catch (InvalidPathException $ex) {
+		} catch (\OCP\Files\InvalidPathException $ex) {
 			throw new InvalidPath($ex->getMessage());
 		}
 

@@ -27,7 +27,6 @@ class Delete extends Base {
 		protected UserStoragesService $userService,
 		protected IUserSession $userSession,
 		protected IUserManager $userManager,
-		protected QuestionHelper $questionHelper,
 	) {
 		parent::__construct();
 	}

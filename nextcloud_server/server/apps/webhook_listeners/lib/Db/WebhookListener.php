@@ -11,7 +11,6 @@ namespace OCA\WebhookListeners\Db;
 
 use OCP\AppFramework\Db\Entity;
 use OCP\Security\ICrypto;
-use OCP\Server;
 
 /**
  * @method void setUserId(?string $userId)
@@ -63,7 +62,7 @@ class WebhookListener extends Entity implements \JsonSerializable {
 
 	/**
 	 * @var ?string
-	 *              If not empty, id of the user that needs to be connected for the webhook to trigger
+	 * If not empty, id of the user that needs to be connected for the webhook to trigger
 	 * @psalm-suppress PropertyNotSetInConstructor
 	 */
 	protected $userIdFilter;
@@ -90,7 +89,7 @@ class WebhookListener extends Entity implements \JsonSerializable {
 		?ICrypto $crypto = null,
 	) {
 		if ($crypto === null) {
-			$crypto = Server::get(ICrypto::class);
+			$crypto = \OCP\Server::get(ICrypto::class);
 		}
 		$this->crypto = $crypto;
 		$this->addType('appId', 'string');
@@ -119,7 +118,7 @@ class WebhookListener extends Entity implements \JsonSerializable {
 
 	public function setAuthDataClear(
 		#[\SensitiveParameter]
-		?array $data,
+		?array $data
 	): void {
 		if ($data === null) {
 			if ($this->getAuthMethodEnum() === AuthMethod::Header) {

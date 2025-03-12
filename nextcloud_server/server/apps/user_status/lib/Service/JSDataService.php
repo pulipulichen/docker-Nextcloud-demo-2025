@@ -14,16 +14,22 @@ use OCP\UserStatus\IUserStatus;
 
 class JSDataService implements \JsonSerializable {
 
+	/** @var IUserSession */
+	private $userSession;
+
+	/** @var StatusService */
+	private $statusService;
+
 	/**
 	 * JSDataService constructor.
 	 *
 	 * @param IUserSession $userSession
 	 * @param StatusService $statusService
 	 */
-	public function __construct(
-		private IUserSession $userSession,
-		private StatusService $statusService,
-	) {
+	public function __construct(IUserSession $userSession,
+		StatusService $statusService) {
+		$this->userSession = $userSession;
+		$this->statusService = $statusService;
 	}
 
 	public function jsonSerialize(): array {

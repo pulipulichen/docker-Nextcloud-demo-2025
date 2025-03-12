@@ -20,10 +20,16 @@ use Throwable;
  */
 class CalendarDeletionDefaultUpdaterListener implements IEventListener {
 
-	public function __construct(
-		private IConfig $config,
-		private LoggerInterface $logger,
-	) {
+	/** @var IConfig */
+	private $config;
+
+	/** @var LoggerInterface */
+	private $logger;
+
+	public function __construct(IConfig $config,
+		LoggerInterface $logger) {
+		$this->config = $config;
+		$this->logger = $logger;
 	}
 
 	/**

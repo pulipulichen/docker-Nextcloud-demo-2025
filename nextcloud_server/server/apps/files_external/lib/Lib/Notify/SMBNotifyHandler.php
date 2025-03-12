@@ -12,6 +12,11 @@ use OCP\Files\Notify\INotifyHandler;
 
 class SMBNotifyHandler implements INotifyHandler {
 	/**
+	 * @var \Icewind\SMB\INotifyHandler
+	 */
+	private $shareNotifyHandler;
+
+	/**
 	 * @var string
 	 */
 	private $root;
@@ -24,10 +29,8 @@ class SMBNotifyHandler implements INotifyHandler {
 	 * @param \Icewind\SMB\INotifyHandler $shareNotifyHandler
 	 * @param string $root
 	 */
-	public function __construct(
-		private \Icewind\SMB\INotifyHandler $shareNotifyHandler,
-		$root,
-	) {
+	public function __construct(\Icewind\SMB\INotifyHandler $shareNotifyHandler, $root) {
+		$this->shareNotifyHandler = $shareNotifyHandler;
 		$this->root = str_replace('\\', '/', $root);
 	}
 

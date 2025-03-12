@@ -15,9 +15,11 @@ use OCP\User\Events\UserDeletedEvent;
 
 /** @template-implements IEventListener<UserDeletedEvent> */
 class UserDeletedListener implements IEventListener {
-	public function __construct(
-		private DBConfigService $config,
-	) {
+	/** @var DBConfigService */
+	private $config;
+
+	public function __construct(DBConfigService $config) {
+		$this->config = $config;
 	}
 
 	public function handle(Event $event): void {

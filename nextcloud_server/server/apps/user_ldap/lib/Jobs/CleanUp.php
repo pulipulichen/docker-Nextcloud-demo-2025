@@ -10,12 +10,10 @@ namespace OCA\User_LDAP\Jobs;
 use OCA\User_LDAP\Helper;
 use OCA\User_LDAP\Mapping\UserMapping;
 use OCA\User_LDAP\User\DeletedUsersIndex;
+use OCA\User_LDAP\User_LDAP;
 use OCA\User_LDAP\User_Proxy;
 use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\BackgroundJob\TimedJob;
-use OCP\IConfig;
-use OCP\IDBConnection;
-use OCP\Server;
 
 /**
  * Class CleanUp
@@ -31,10 +29,13 @@ class CleanUp extends TimedJob {
 	/** @var int $defaultIntervalMin default interval in minutes */
 	protected $defaultIntervalMin = 60;
 
-	/** @var IConfig $ocConfig */
+	/** @var User_LDAP|User_Proxy $userBackend */
+	protected $userBackend;
+
+	/** @var \OCP\IConfig $ocConfig */
 	protected $ocConfig;
 
-	/** @var IDBConnection $db */
+	/** @var \OCP\IDBConnection $db */
 	protected $db;
 
 	/** @var Helper $ldapHelper */
@@ -43,15 +44,20 @@ class CleanUp extends TimedJob {
 	/** @var UserMapping */
 	protected $mapping;
 
+	/** @var DeletedUsersIndex */
+	protected $dui;
+
 	public function __construct(
 		ITimeFactory $timeFactory,
-		protected User_Proxy $userBackend,
-		protected DeletedUsersIndex $dui,
+		User_Proxy $userBackend,
+		DeletedUsersIndex $dui
 	) {
 		parent::__construct($timeFactory);
-		$minutes = Server::get(IConfig::class)->getSystemValue(
+		$minutes = \OC::$server->getConfig()->getSystemValue(
 			'ldapUserCleanupInterval', (string)$this->defaultIntervalMin);
 		$this->setInterval((int)$minutes * 60);
+		$this->userBackend = $userBackend;
+		$this->dui = $dui;
 	}
 
 	/**
@@ -67,13 +73,13 @@ class CleanUp extends TimedJob {
 		if (isset($arguments['helper'])) {
 			$this->ldapHelper = $arguments['helper'];
 		} else {
-			$this->ldapHelper = new Helper(Server::get(IConfig::class), Server::get(IDBConnection::class));
+			$this->ldapHelper = new Helper(\OC::$server->getConfig(), \OC::$server->getDatabaseConnection());
 		}
 
 		if (isset($arguments['ocConfig'])) {
 			$this->ocConfig = $arguments['ocConfig'];
 		} else {
-			$this->ocConfig = Server::get(IConfig::class);
+			$this->ocConfig = \OC::$server->getConfig();
 		}
 
 		if (isset($arguments['userBackend'])) {
@@ -83,13 +89,13 @@ class CleanUp extends TimedJob {
 		if (isset($arguments['db'])) {
 			$this->db = $arguments['db'];
 		} else {
-			$this->db = Server::get(IDBConnection::class);
+			$this->db = \OC::$server->getDatabaseConnection();
 		}
 
 		if (isset($arguments['mapping'])) {
 			$this->mapping = $arguments['mapping'];
 		} else {
-			$this->mapping = Server::get(UserMapping::class);
+			$this->mapping = \OCP\Server::get(UserMapping::class);
 		}
 
 		if (isset($arguments['deletedUsersIndex'])) {

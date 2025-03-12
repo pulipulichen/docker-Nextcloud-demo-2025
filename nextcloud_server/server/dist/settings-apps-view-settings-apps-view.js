@@ -1569,8 +1569,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _nextcloud_l10n__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @nextcloud/l10n */ "./node_modules/@nextcloud/l10n/dist/index.mjs");
 /* harmony import */ var _nextcloud_router__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @nextcloud/router */ "./node_modules/@nextcloud/router/dist/index.mjs");
 /* harmony import */ var pinia__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! pinia */ "./node_modules/pinia/dist/pinia.mjs");
-/* harmony import */ var _api_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./api.js */ "./apps/settings/src/store/api.js");
-/* harmony import */ var _logger_ts__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../logger.ts */ "./apps/settings/src/logger.ts");
+/* harmony import */ var _api__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./api */ "./apps/settings/src/store/api.js");
+/* harmony import */ var _logger__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../logger */ "./apps/settings/src/logger.ts");
 /* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.runtime.esm.js");
 /**
  * SPDX-FileCopyrightText: 2024 Nextcloud GmbH and Nextcloud contributors
@@ -1612,7 +1612,7 @@ const useAppApiStore = (0,pinia__WEBPACK_IMPORTED_MODULE_8__.defineStore)('app-a
       (0,_nextcloud_dialogs__WEBPACK_IMPORTED_MODULE_2__.showError)((0,_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_4__.translate)('settings', 'An error occurred during the request. Unable to proceed.') + '<br>' + error.error.response.data.data.message, {
         isHTML: true
       });
-      _logger_ts__WEBPACK_IMPORTED_MODULE_7__["default"].error(error);
+      _logger__WEBPACK_IMPORTED_MODULE_7__["default"].error(error);
     },
     setLoading(id, value) {
       vue__WEBPACK_IMPORTED_MODULE_9__["default"].set(this.loading, id, value);
@@ -1686,7 +1686,7 @@ const useAppApiStore = (0,pinia__WEBPACK_IMPORTED_MODULE_8__.defineStore)('app-a
       this.setLoading(appId, true);
       this.setLoading('install', true);
       return (0,_nextcloud_password_confirmation__WEBPACK_IMPORTED_MODULE_1__.confirmPassword)().then(() => {
-        return _api_js__WEBPACK_IMPORTED_MODULE_6__["default"].post((0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_5__.generateUrl)('/apps/app_api/apps/force'), {
+        return _api__WEBPACK_IMPORTED_MODULE_6__["default"].post((0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_5__.generateUrl)('/apps/app_api/apps/force'), {
           appId
         }).then(() => {
           location.reload();
@@ -1707,7 +1707,7 @@ const useAppApiStore = (0,pinia__WEBPACK_IMPORTED_MODULE_8__.defineStore)('app-a
     disableApp(appId) {
       this.setLoading(appId, true);
       return (0,_nextcloud_password_confirmation__WEBPACK_IMPORTED_MODULE_1__.confirmPassword)().then(() => {
-        return _api_js__WEBPACK_IMPORTED_MODULE_6__["default"].get((0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_5__.generateUrl)(`apps/app_api/apps/disable/${appId}`)).then(() => {
+        return _api__WEBPACK_IMPORTED_MODULE_6__["default"].get((0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_5__.generateUrl)(`apps/app_api/apps/disable/${appId}`)).then(() => {
           this.setLoading(appId, false);
           const app = this.apps.find(app => app.id === appId);
           if (app) {
@@ -1731,7 +1731,7 @@ const useAppApiStore = (0,pinia__WEBPACK_IMPORTED_MODULE_8__.defineStore)('app-a
     uninstallApp(appId, removeData) {
       this.setLoading(appId, true);
       return (0,_nextcloud_password_confirmation__WEBPACK_IMPORTED_MODULE_1__.confirmPassword)().then(() => {
-        return _api_js__WEBPACK_IMPORTED_MODULE_6__["default"].get((0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_5__.generateUrl)(`/apps/app_api/apps/uninstall/${appId}?removeData=${removeData}`)).then(() => {
+        return _api__WEBPACK_IMPORTED_MODULE_6__["default"].get((0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_5__.generateUrl)(`/apps/app_api/apps/uninstall/${appId}?removeData=${removeData}`)).then(() => {
           this.setLoading(appId, false);
           const app = this.apps.find(app => app.id === appId);
           if (app) {
@@ -1761,7 +1761,7 @@ const useAppApiStore = (0,pinia__WEBPACK_IMPORTED_MODULE_8__.defineStore)('app-a
       this.setLoading(appId, true);
       this.setLoading('install', true);
       return (0,_nextcloud_password_confirmation__WEBPACK_IMPORTED_MODULE_1__.confirmPassword)().then(() => {
-        return _api_js__WEBPACK_IMPORTED_MODULE_6__["default"].get((0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_5__.generateUrl)(`/apps/app_api/apps/update/${appId}`)).then(() => {
+        return _api__WEBPACK_IMPORTED_MODULE_6__["default"].get((0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_5__.generateUrl)(`/apps/app_api/apps/update/${appId}`)).then(() => {
           this.setLoading(appId, false);
           this.setLoading('install', false);
           const app = this.apps.find(app => app.id === appId);
@@ -1796,18 +1796,18 @@ const useAppApiStore = (0,pinia__WEBPACK_IMPORTED_MODULE_8__.defineStore)('app-a
     async fetchAllApps() {
       this.loadingList = true;
       try {
-        const response = await _api_js__WEBPACK_IMPORTED_MODULE_6__["default"].get((0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_5__.generateUrl)('/apps/app_api/apps/list'));
+        const response = await _api__WEBPACK_IMPORTED_MODULE_6__["default"].get((0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_5__.generateUrl)('/apps/app_api/apps/list'));
         this.apps = response.data.apps;
         this.loadingList = false;
         return true;
       } catch (error) {
-        _logger_ts__WEBPACK_IMPORTED_MODULE_7__["default"].error(error);
+        _logger__WEBPACK_IMPORTED_MODULE_7__["default"].error(error);
         (0,_nextcloud_dialogs__WEBPACK_IMPORTED_MODULE_2__.showError)((0,_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_4__.translate)('settings', 'An error occurred during the request. Unable to proceed.'));
         this.loadingList = false;
       }
     },
     async fetchAppStatus(appId) {
-      return _api_js__WEBPACK_IMPORTED_MODULE_6__["default"].get((0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_5__.generateUrl)(`/apps/app_api/apps/status/${appId}`)).then(response => {
+      return _api__WEBPACK_IMPORTED_MODULE_6__["default"].get((0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_5__.generateUrl)(`/apps/app_api/apps/status/${appId}`)).then(response => {
         const app = this.apps.find(app => app.id === appId);
         if (app) {
           app.status = response.data;
@@ -1867,7 +1867,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _nextcloud_router__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @nextcloud/router */ "./node_modules/@nextcloud/router/dist/index.mjs");
 /* harmony import */ var pinia__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! pinia */ "./node_modules/pinia/dist/pinia.mjs");
 /* harmony import */ var _nextcloud_axios__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @nextcloud/axios */ "./node_modules/@nextcloud/axios/dist/index.mjs");
-/* harmony import */ var _logger_ts__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../logger.ts */ "./apps/settings/src/logger.ts");
+/* harmony import */ var _logger__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../logger */ "./apps/settings/src/logger.ts");
 /* harmony import */ var _constants_AppstoreCategoryIcons_ts__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../constants/AppstoreCategoryIcons.ts */ "./apps/settings/src/constants/AppstoreCategoryIcons.ts");
 /**
  * SPDX-FileCopyrightText: 2024 Nextcloud GmbH and Nextcloud contributors
@@ -1912,7 +1912,7 @@ const useAppsStore = (0,pinia__WEBPACK_IMPORTED_MODULE_7__.defineStore)('setting
           categories
         });
       } catch (error) {
-        _logger_ts__WEBPACK_IMPORTED_MODULE_5__["default"].error(error);
+        _logger__WEBPACK_IMPORTED_MODULE_5__["default"].error(error);
         showApiError();
       } finally {
         this.loading.categories = false;
@@ -1932,7 +1932,7 @@ const useAppsStore = (0,pinia__WEBPACK_IMPORTED_MODULE_7__.defineStore)('setting
           apps: data.apps
         });
       } catch (error) {
-        _logger_ts__WEBPACK_IMPORTED_MODULE_5__["default"].error(error);
+        _logger__WEBPACK_IMPORTED_MODULE_5__["default"].error(error);
         showApiError();
       } finally {
         this.loading.apps = false;
@@ -7392,4 +7392,4 @@ class Queue {
 /***/ })
 
 }]);
-//# sourceMappingURL=settings-apps-view-settings-apps-view.js.map?v=64f7fef4b08b69881803
+//# sourceMappingURL=settings-apps-view-settings-apps-view.js.map?v=3e6e2cdb8faa01492ff2

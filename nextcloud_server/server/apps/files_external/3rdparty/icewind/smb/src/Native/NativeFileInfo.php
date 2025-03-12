@@ -8,7 +8,6 @@ namespace Icewind\SMB\Native;
 
 use Icewind\SMB\ACL;
 use Icewind\SMB\Exception\Exception;
-use Icewind\SMB\Exception\NotFoundException;
 use Icewind\SMB\IFileInfo;
 
 class NativeFileInfo implements IFileInfo {
@@ -18,8 +17,8 @@ class NativeFileInfo implements IFileInfo {
 	protected $name;
 	/** @var NativeShare */
 	protected $share;
-	/** @var array{"mode": int, "size": int, "mtime": int}|null */
-	protected $statCache = null;
+	/** @var array{"mode": int, "size": int, "write_time": int}|null */
+	protected $attributeCache = null;
 
 	public function __construct(NativeShare $share, string $path, string $name) {
 		$this->share = $share;
@@ -36,13 +35,33 @@ class NativeFileInfo implements IFileInfo {
 	}
 
 	/**
-	 * @return array{"mode": int, "size": int, "mtime": int}
+	 * @return array{"mode": int, "size": int, "write_time": int}
 	 */
 	protected function stat(): array {
-		if (is_null($this->statCache)) {
-			$this->statCache = $this->share->rawStat($this->path);
+		if (is_null($this->attributeCache)) {
+			$rawAttributes = explode(',', $this->share->getAttribute($this->path, 'system.dos_attr.*'));
+			$attributes = [];
+			foreach ($rawAttributes as $rawAttribute) {
+				list($name, $value) = explode(':', $rawAttribute);
+				$name = strtolower($name);
+				if ($name == 'mode') {
+					$attributes[$name] = (int)hexdec(substr($value, 2));
+				} else {
+					$attributes[$name] = (int)$value;
+				}
+			}
+			if (!isset($attributes['mode'])) {
+				throw new Exception("Invalid attribute response");
+			}
+			if (!isset($attributes['size'])) {
+				throw new Exception("Invalid attribute response");
+			}
+			if (!isset($attributes['write_time'])) {
+				throw new Exception("Invalid attribute response");
+			}
+			$this->attributeCache = $attributes;
 		}
-		return $this->statCache;
+		return $this->attributeCache;
 	}
 
 	public function getSize(): int {
@@ -52,7 +71,7 @@ class NativeFileInfo implements IFileInfo {
 
 	public function getMTime(): int {
 		$stat = $this->stat();
-		return $stat['mtime'];
+		return $stat['write_time'];
 	}
 
 	/**

@@ -17,10 +17,13 @@ use Psr\Log\LoggerInterface;
 
 /** @template-implements IEventListener<CalendarPublishedEvent|CalendarUnpublishedEvent> */
 class CalendarPublicationListener implements IEventListener {
-	public function __construct(
-		private Backend $activityBackend,
-		private LoggerInterface $logger,
-	) {
+	private Backend $activityBackend;
+	private LoggerInterface $logger;
+
+	public function __construct(Backend $activityBackend,
+		LoggerInterface $logger) {
+		$this->activityBackend = $activityBackend;
+		$this->logger = $logger;
 	}
 
 	/**

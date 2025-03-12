@@ -18,16 +18,19 @@ use OCP\WorkflowEngine\IFileCheck;
 class FileName extends AbstractStringCheck implements IFileCheck {
 	use TFileCheck;
 
+	/** @var IRequest */
+	protected $request;
+	/** @var IMountManager */
+	private $mountManager;
+
 	/**
 	 * @param IL10N $l
 	 * @param IRequest $request
 	 */
-	public function __construct(
-		IL10N $l,
-		protected IRequest $request,
-		private IMountManager $mountManager,
-	) {
+	public function __construct(IL10N $l, IRequest $request, IMountManager $mountManager) {
 		parent::__construct($l);
+		$this->request = $request;
+		$this->mountManager = $mountManager;
 	}
 
 	/**

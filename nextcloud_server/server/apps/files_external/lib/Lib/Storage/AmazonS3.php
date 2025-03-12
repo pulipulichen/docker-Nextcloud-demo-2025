@@ -13,24 +13,22 @@ use Icewind\Streams\IteratorDirectory;
 use OC\Files\Cache\CacheEntry;
 use OC\Files\ObjectStore\S3ConnectionTrait;
 use OC\Files\ObjectStore\S3ObjectTrait;
-use OC\Files\Storage\Common;
 use OCP\Cache\CappedMemoryCache;
 use OCP\Constants;
 use OCP\Files\FileInfo;
 use OCP\Files\IMimeTypeDetector;
 use OCP\ICache;
 use OCP\ICacheFactory;
-use OCP\ITempManager;
 use OCP\Server;
 use Psr\Log\LoggerInterface;
 
-class AmazonS3 extends Common {
+class AmazonS3 extends \OC\Files\Storage\Common {
 	use S3ConnectionTrait;
 	use S3ObjectTrait;
 
 	private LoggerInterface $logger;
 
-	public function needsPartFile(): bool {
+	public function needsPartFile() {
 		return false;
 	}
 
@@ -47,7 +45,7 @@ class AmazonS3 extends Common {
 	private ?bool $versioningEnabled = null;
 	private ICache $memCache;
 
-	public function __construct(array $parameters) {
+	public function __construct($parameters) {
 		parent::__construct($parameters);
 		$this->parseParams($parameters);
 		$this->id = 'amazon::external::' . md5($this->params['hostname'] . ':' . $this->params['bucket'] . ':' . $this->params['key']);
@@ -61,7 +59,11 @@ class AmazonS3 extends Common {
 		$this->logger = Server::get(LoggerInterface::class);
 	}
 
-	private function normalizePath(string $path): string {
+	/**
+	 * @param string $path
+	 * @return string correctly encoded path
+	 */
+	private function normalizePath($path) {
 		$path = trim($path, '/');
 
 		if (!$path) {
@@ -71,24 +73,24 @@ class AmazonS3 extends Common {
 		return $path;
 	}
 
-	private function isRoot(string $path): bool {
+	private function isRoot($path) {
 		return $path === '.';
 	}
 
-	private function cleanKey(string $path): string {
+	private function cleanKey($path) {
 		if ($this->isRoot($path)) {
 			return '/';
 		}
 		return $path;
 	}
 
-	private function clearCache(): void {
+	private function clearCache() {
 		$this->objectCache = new CappedMemoryCache();
 		$this->directoryCache = new CappedMemoryCache();
 		$this->filesCache = new CappedMemoryCache();
 	}
 
-	private function invalidateCache(string $key): void {
+	private function invalidateCache($key) {
 		unset($this->objectCache[$key]);
 		$keys = array_keys($this->objectCache->getData());
 		$keyLength = strlen($key);
@@ -108,13 +110,16 @@ class AmazonS3 extends Common {
 		unset($this->directoryCache[$key]);
 	}
 
-	private function headObject(string $key): array|false {
+	/**
+	 * @return array|false
+	 */
+	private function headObject(string $key) {
 		if (!isset($this->objectCache[$key])) {
 			try {
 				$this->objectCache[$key] = $this->getConnection()->headObject([
 					'Bucket' => $this->bucket,
 					'Key' => $key
-				] + $this->getSSECParameters())->toArray();
+				])->toArray();
 			} catch (S3Exception $e) {
 				if ($e->getStatusCode() >= 500) {
 					throw $e;
@@ -123,9 +128,9 @@ class AmazonS3 extends Common {
 			}
 		}
 
-		if (is_array($this->objectCache[$key]) && !isset($this->objectCache[$key]['Key'])) {
+		if (is_array($this->objectCache[$key]) && !isset($this->objectCache[$key]["Key"])) {
 			/** @psalm-suppress InvalidArgument Psalm doesn't understand nested arrays well */
-			$this->objectCache[$key]['Key'] = $key;
+			$this->objectCache[$key]["Key"] = $key;
 		}
 		return $this->objectCache[$key];
 	}
@@ -139,9 +144,11 @@ class AmazonS3 extends Common {
 	 * Implementation from flysystem-aws-s3-v3:
 	 * https://github.com/thephpleague/flysystem-aws-s3-v3/blob/8241e9cc5b28f981e0d24cdaf9867f14c7498ae4/src/AwsS3Adapter.php#L670-L694
 	 *
+	 * @param $path
+	 * @return bool
 	 * @throws \Exception
 	 */
-	private function doesDirectoryExist(string $path): bool {
+	private function doesDirectoryExist($path) {
 		if ($path === '.' || $path === '') {
 			return true;
 		}
@@ -183,7 +190,13 @@ class AmazonS3 extends Common {
 		return false;
 	}
 
-	protected function remove(string $path): bool {
+	/**
+	 * Remove a file or folder
+	 *
+	 * @param string $path
+	 * @return bool
+	 */
+	protected function remove($path) {
 		// remember fileType to reduce http calls
 		$fileType = $this->filetype($path);
 		if ($fileType === 'dir') {
@@ -195,7 +208,7 @@ class AmazonS3 extends Common {
 		}
 	}
 
-	public function mkdir(string $path): bool {
+	public function mkdir($path) {
 		$path = $this->normalizePath($path);
 
 		if ($this->is_dir($path)) {
@@ -208,7 +221,7 @@ class AmazonS3 extends Common {
 				'Key' => $path . '/',
 				'Body' => '',
 				'ContentType' => FileInfo::MIMETYPE_FOLDER
-			] + $this->getSSECParameters());
+			]);
 			$this->testTimeout();
 		} catch (S3Exception $e) {
 			$this->logger->error($e->getMessage(), [
@@ -223,12 +236,12 @@ class AmazonS3 extends Common {
 		return true;
 	}
 
-	public function file_exists(string $path): bool {
+	public function file_exists($path) {
 		return $this->filetype($path) !== false;
 	}
 
 
-	public function rmdir(string $path): bool {
+	public function rmdir($path) {
 		$path = $this->normalizePath($path);
 
 		if ($this->isRoot($path)) {
@@ -243,12 +256,12 @@ class AmazonS3 extends Common {
 		return $this->batchDelete($path);
 	}
 
-	protected function clearBucket(): bool {
+	protected function clearBucket() {
 		$this->clearCache();
 		return $this->batchDelete();
 	}
 
-	private function batchDelete(?string $path = null): bool {
+	private function batchDelete($path = null) {
 		// TODO explore using https://docs.aws.amazon.com/aws-sdk-php/v3/api/class-Aws.S3.BatchDelete.html
 		$params = [
 			'Bucket' => $this->bucket
@@ -288,7 +301,7 @@ class AmazonS3 extends Common {
 		return true;
 	}
 
-	public function opendir(string $path) {
+	public function opendir($path) {
 		try {
 			$content = iterator_to_array($this->getDirectoryContent($path));
 			return IteratorDirectory::wrap(array_map(function (array $item) {
@@ -299,7 +312,7 @@ class AmazonS3 extends Common {
 		}
 	}
 
-	public function stat(string $path): array|false {
+	public function stat($path) {
 		$path = $this->normalizePath($path);
 
 		if ($this->is_dir($path)) {
@@ -321,8 +334,11 @@ class AmazonS3 extends Common {
 	 *
 	 * When the information is already present (e.g. opendir has been called before)
 	 * this value is return. Otherwise a headObject is emitted.
+	 *
+	 * @param $path
+	 * @return int|mixed
 	 */
-	private function getContentLength(string $path): int {
+	private function getContentLength($path) {
 		if (isset($this->filesCache[$path])) {
 			return (int)$this->filesCache[$path]['ContentLength'];
 		}
@@ -340,8 +356,11 @@ class AmazonS3 extends Common {
 	 *
 	 * When the information is already present (e.g. opendir has been called before)
 	 * this value is return. Otherwise a headObject is emitted.
+	 *
+	 * @param $path
+	 * @return mixed|string
 	 */
-	private function getLastModified(string $path): string {
+	private function getLastModified($path) {
 		if (isset($this->filesCache[$path])) {
 			return $this->filesCache[$path]['LastModified'];
 		}
@@ -354,7 +373,7 @@ class AmazonS3 extends Common {
 		return 'now';
 	}
 
-	public function is_dir(string $path): bool {
+	public function is_dir($path) {
 		$path = $this->normalizePath($path);
 
 		if (isset($this->filesCache[$path])) {
@@ -372,7 +391,7 @@ class AmazonS3 extends Common {
 		}
 	}
 
-	public function filetype(string $path): string|false {
+	public function filetype($path) {
 		$path = $this->normalizePath($path);
 
 		if ($this->isRoot($path)) {
@@ -400,7 +419,7 @@ class AmazonS3 extends Common {
 		return false;
 	}
 
-	public function getPermissions(string $path): int {
+	public function getPermissions($path) {
 		$type = $this->filetype($path);
 		if (!$type) {
 			return 0;
@@ -408,7 +427,7 @@ class AmazonS3 extends Common {
 		return $type === 'dir' ? Constants::PERMISSION_ALL : Constants::PERMISSION_ALL - Constants::PERMISSION_CREATE;
 	}
 
-	public function unlink(string $path): bool {
+	public function unlink($path) {
 		$path = $this->normalizePath($path);
 
 		if ($this->is_dir($path)) {
@@ -429,7 +448,7 @@ class AmazonS3 extends Common {
 		return true;
 	}
 
-	public function fopen(string $path, string $mode) {
+	public function fopen($path, $mode) {
 		$path = $this->normalizePath($path);
 
 		switch ($mode) {
@@ -452,10 +471,10 @@ class AmazonS3 extends Common {
 				}
 			case 'w':
 			case 'wb':
-				$tmpFile = Server::get(ITempManager::class)->getTemporaryFile();
+				$tmpFile = \OC::$server->getTempManager()->getTemporaryFile();
 
 				$handle = fopen($tmpFile, 'w');
-				return CallbackWrapper::wrap($handle, null, null, function () use ($path, $tmpFile): void {
+				return CallbackWrapper::wrap($handle, null, null, function () use ($path, $tmpFile) {
 					$this->writeBack($tmpFile, $path);
 				});
 			case 'a':
@@ -473,21 +492,21 @@ class AmazonS3 extends Common {
 				} else {
 					$ext = '';
 				}
-				$tmpFile = Server::get(ITempManager::class)->getTemporaryFile($ext);
+				$tmpFile = \OC::$server->getTempManager()->getTemporaryFile($ext);
 				if ($this->file_exists($path)) {
 					$source = $this->readObject($path);
 					file_put_contents($tmpFile, $source);
 				}
 
 				$handle = fopen($tmpFile, $mode);
-				return CallbackWrapper::wrap($handle, null, null, function () use ($path, $tmpFile): void {
+				return CallbackWrapper::wrap($handle, null, null, function () use ($path, $tmpFile) {
 					$this->writeBack($tmpFile, $path);
 				});
 		}
 		return false;
 	}
 
-	public function touch(string $path, ?int $mtime = null): bool {
+	public function touch($path, $mtime = null) {
 		if (is_null($mtime)) {
 			$mtime = time();
 		}
@@ -508,7 +527,7 @@ class AmazonS3 extends Common {
 				'Body' => '',
 				'ContentType' => $mimeType,
 				'MetadataDirective' => 'REPLACE',
-			] + $this->getSSECParameters());
+			]);
 			$this->testTimeout();
 		} catch (S3Exception $e) {
 			$this->logger->error($e->getMessage(), [
@@ -522,7 +541,7 @@ class AmazonS3 extends Common {
 		return true;
 	}
 
-	public function copy(string $source, string $target, ?bool $isFile = null): bool {
+	public function copy($source, $target, $isFile = null) {
 		$source = $this->normalizePath($source);
 		$target = $this->normalizePath($target);
 
@@ -565,7 +584,7 @@ class AmazonS3 extends Common {
 		return true;
 	}
 
-	public function rename(string $source, string $target): bool {
+	public function rename($source, $target) {
 		$source = $this->normalizePath($source);
 		$target = $this->normalizePath($target);
 
@@ -592,18 +611,18 @@ class AmazonS3 extends Common {
 		return true;
 	}
 
-	public function test(): bool {
+	public function test() {
 		$this->getConnection()->headBucket([
 			'Bucket' => $this->bucket
 		]);
 		return true;
 	}
 
-	public function getId(): string {
+	public function getId() {
 		return $this->id;
 	}
 
-	public function writeBack(string $tmpFile, string $path): bool {
+	public function writeBack($tmpFile, $path) {
 		try {
 			$source = fopen($tmpFile, 'r');
 			$this->writeObject($path, $source, $this->mimeDetector->detectPath($path));
@@ -623,11 +642,11 @@ class AmazonS3 extends Common {
 	/**
 	 * check if curl is installed
 	 */
-	public static function checkDependencies(): bool {
+	public static function checkDependencies() {
 		return true;
 	}
 
-	public function getDirectoryContent(string $directory): \Traversable {
+	public function getDirectoryContent($directory): \Traversable {
 		$path = $this->normalizePath($directory);
 
 		if ($this->isRoot($path)) {
@@ -724,7 +743,7 @@ class AmazonS3 extends Common {
 		}
 	}
 
-	public function hasUpdated(string $path, int $time): bool {
+	public function hasUpdated($path, $time) {
 		// for files we can get the proper mtime
 		if ($path !== '' && $object = $this->headObject($path)) {
 			$stat = $this->objectToMetaData($object);
@@ -741,13 +760,13 @@ class AmazonS3 extends Common {
 		if ($size === null) {
 			$size = 0;
 			// track the number of bytes read from the input stream to return as the number of written bytes.
-			$stream = CountWrapper::wrap($stream, function (int $writtenSize) use (&$size): void {
+			$stream = CountWrapper::wrap($stream, function (int $writtenSize) use (&$size) {
 				$size = $writtenSize;
 			});
 		}
 
 		if (!is_resource($stream)) {
-			throw new \InvalidArgumentException('Invalid stream provided');
+			throw new \InvalidArgumentException("Invalid stream provided");
 		}
 
 		$path = $this->normalizePath($path);

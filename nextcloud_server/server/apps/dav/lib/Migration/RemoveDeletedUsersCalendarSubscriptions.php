@@ -15,6 +15,12 @@ use OCP\Migration\IOutput;
 use OCP\Migration\IRepairStep;
 
 class RemoveDeletedUsersCalendarSubscriptions implements IRepairStep {
+	/** @var IDBConnection */
+	private $connection;
+
+	/** @var IUserManager */
+	private $userManager;
+
 	/** @var int */
 	private $progress = 0;
 
@@ -23,10 +29,9 @@ class RemoveDeletedUsersCalendarSubscriptions implements IRepairStep {
 
 	private const SUBSCRIPTIONS_CHUNK_SIZE = 1000;
 
-	public function __construct(
-		private IDBConnection $connection,
-		private IUserManager $userManager,
-	) {
+	public function __construct(IDBConnection $connection, IUserManager $userManager) {
+		$this->connection = $connection;
+		$this->userManager = $userManager;
 	}
 
 	/**
@@ -91,7 +96,7 @@ class RemoveDeletedUsersCalendarSubscriptions implements IRepairStep {
 		while ($row = $result->fetch()) {
 			$username = $this->getPrincipal($row['principaluri']);
 			if (!$this->userManager->userExists($username)) {
-				$this->orphanSubscriptionIds[] = (int)$row['id'];
+				$this->orphanSubscriptionIds[] = (int) $row['id'];
 			}
 		}
 		$result->closeCursor();

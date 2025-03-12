@@ -16,10 +16,13 @@ use Psr\Log\LoggerInterface;
 
 /** @template-implements IEventListener<CalendarShareUpdatedEvent> */
 class CalendarShareUpdateListener implements IEventListener {
-	public function __construct(
-		private Backend $activityBackend,
-		private LoggerInterface $logger,
-	) {
+	private Backend $activityBackend;
+	private LoggerInterface $logger;
+
+	public function __construct(Backend $activityBackend,
+		LoggerInterface $logger) {
+		$this->activityBackend = $activityBackend;
+		$this->logger = $logger;
 	}
 
 	/**
@@ -31,7 +34,7 @@ class CalendarShareUpdateListener implements IEventListener {
 			return;
 		}
 
-		$this->logger->debug('Creating activity for Calendar having its shares updated');
+		$this->logger->debug("Creating activity for Calendar having its shares updated");
 
 		$this->activityBackend->onCalendarUpdateShares(
 			$event->getCalendarData(),

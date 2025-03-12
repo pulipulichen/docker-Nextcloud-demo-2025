@@ -29,14 +29,10 @@
                     "files": {
                         "type": "object",
                         "required": [
-                            "undelete",
-                            "delete_from_trash"
+                            "undelete"
                         ],
                         "properties": {
                             "undelete": {
-                                "type": "boolean"
-                            },
-                            "delete_from_trash": {
                                 "type": "boolean"
                             }
                         }

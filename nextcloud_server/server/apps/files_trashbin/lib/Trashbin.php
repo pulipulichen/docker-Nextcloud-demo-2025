@@ -11,27 +11,19 @@ use OC\Files\Cache\Cache;
 use OC\Files\Cache\CacheEntry;
 use OC\Files\Cache\CacheQueryBuilder;
 use OC\Files\Filesystem;
+use OC\Files\Node\File;
+use OC\Files\Node\Folder;
 use OC\Files\Node\NonExistingFile;
 use OC\Files\Node\NonExistingFolder;
 use OC\Files\View;
-use OC\User\NoUserException;
 use OC_User;
 use OCA\Files_Trashbin\AppInfo\Application;
 use OCA\Files_Trashbin\Command\Expire;
 use OCA\Files_Trashbin\Events\BeforeNodeRestoredEvent;
 use OCA\Files_Trashbin\Events\NodeRestoredEvent;
-use OCA\Files_Trashbin\Exceptions\CopyRecursiveException;
-use OCA\Files_Versions\Storage;
 use OCP\App\IAppManager;
 use OCP\AppFramework\Utility\ITimeFactory;
-use OCP\Command\IBus;
-use OCP\EventDispatcher\Event;
 use OCP\EventDispatcher\IEventDispatcher;
-use OCP\EventDispatcher\IEventListener;
-use OCP\Files\Events\Node\BeforeNodeDeletedEvent;
-use OCP\Files\File;
-use OCP\Files\Folder;
-use OCP\Files\IMimeTypeLoader;
 use OCP\Files\IRootFolder;
 use OCP\Files\Node;
 use OCP\Files\NotFoundException;
@@ -41,28 +33,26 @@ use OCP\Files\Storage\IStorage;
 use OCP\FilesMetadata\IFilesMetadataManager;
 use OCP\IConfig;
 use OCP\IDBConnection;
-use OCP\IURLGenerator;
-use OCP\IUserManager;
 use OCP\Lock\ILockingProvider;
 use OCP\Lock\LockedException;
 use OCP\Server;
-use OCP\Util;
 use Psr\Log\LoggerInterface;
 
-/** @template-implements IEventListener<BeforeNodeDeletedEvent> */
-class Trashbin implements IEventListener {
+class Trashbin {
 	// unit: percentage; 50% of available disk space/quota
 	public const DEFAULTMAXSIZE = 50;
 
 	/**
 	 * Ensure we don't need to scan the file during the move to trash
 	 * by triggering the scan in the pre-hook
+	 *
+	 * @param array $params
 	 */
-	public static function ensureFileScannedHook(Node $node): void {
+	public static function ensureFileScannedHook($params) {
 		try {
-			self::getUidAndFilename($node->getPath());
+			self::getUidAndFilename($params['path']);
 		} catch (NotFoundException $e) {
-			// Nothing to scan for non existing files
+			// nothing to scan for non existing files
 		}
 	}
 
@@ -72,11 +62,11 @@ class Trashbin implements IEventListener {
 	 *
 	 * @param string $filename
 	 * @return array
-	 * @throws NoUserException
+	 * @throws \OC\User\NoUserException
 	 */
 	public static function getUidAndFilename($filename) {
 		$uid = Filesystem::getOwner($filename);
-		$userManager = Server::get(IUserManager::class);
+		$userManager = \OC::$server->getUserManager();
 		// if the user with the UID doesn't exists, e.g. because the UID points
 		// to a remote user with a federated cloud ID we use the current logged-in
 		// user. We need a valid local user to move the file to the right trash bin
@@ -107,7 +97,7 @@ class Trashbin implements IEventListener {
 	 * @return array<string, array<string, array{location: string, deletedBy: string}>>
 	 */
 	public static function getExtraData($user) {
-		$query = Server::get(IDBConnection::class)->getQueryBuilder();
+		$query = \OC::$server->getDatabaseConnection()->getQueryBuilder();
 		$query->select('id', 'timestamp', 'location', 'deleted_by')
 			->from('files_trash')
 			->where($query->expr()->eq('user', $query->createNamedParameter($user)));
@@ -129,10 +119,10 @@ class Trashbin implements IEventListener {
 	 * @param string $user
 	 * @param string $filename
 	 * @param string $timestamp
-	 * @return string|false original location
+	 * @return string original location
 	 */
 	public static function getLocation($user, $filename, $timestamp) {
-		$query = Server::get(IDBConnection::class)->getQueryBuilder();
+		$query = \OC::$server->getDatabaseConnection()->getQueryBuilder();
 		$query->select('location')
 			->from('files_trash')
 			->where($query->expr()->eq('user', $query->createNamedParameter($user)))
@@ -150,8 +140,7 @@ class Trashbin implements IEventListener {
 		}
 	}
 
-	/** @param string $user */
-	private static function setUpTrash($user): void {
+	private static function setUpTrash($user) {
 		$view = new View('/' . $user);
 		if (!$view->is_dir('files_trashbin')) {
 			$view->mkdir('files_trashbin');
@@ -174,10 +163,10 @@ class Trashbin implements IEventListener {
 	 * @param string $sourcePath
 	 * @param string $owner
 	 * @param string $targetPath
-	 * @param string $user
+	 * @param $user
 	 * @param int $timestamp
 	 */
-	private static function copyFilesToUser($sourcePath, $owner, $targetPath, $user, $timestamp): void {
+	private static function copyFilesToUser($sourcePath, $owner, $targetPath, $user, $timestamp) {
 		self::setUpTrash($owner);
 
 		$targetFilename = basename($targetPath);
@@ -198,7 +187,7 @@ class Trashbin implements IEventListener {
 
 
 		if ($view->file_exists($target)) {
-			$query = Server::get(IDBConnection::class)->getQueryBuilder();
+			$query = \OC::$server->getDatabaseConnection()->getQueryBuilder();
 			$query->insert('files_trash')
 				->setValue('id', $query->createNamedParameter($targetFilename))
 				->setValue('timestamp', $query->createNamedParameter($timestamp))
@@ -207,7 +196,7 @@ class Trashbin implements IEventListener {
 				->setValue('deleted_by', $query->createNamedParameter($user));
 			$result = $query->executeStatement();
 			if (!$result) {
-				Server::get(LoggerInterface::class)->error('trash bin database couldn\'t be updated for the files owner', ['app' => 'files_trashbin']);
+				\OC::$server->get(LoggerInterface::class)->error('trash bin database couldn\'t be updated for the files owner', ['app' => 'files_trashbin']);
 			}
 		}
 	}
@@ -257,10 +246,10 @@ class Trashbin implements IEventListener {
 		$filename = $path_parts['basename'];
 		$location = $path_parts['dirname'];
 		/** @var ITimeFactory $timeFactory */
-		$timeFactory = Server::get(ITimeFactory::class);
+		$timeFactory = \OC::$server->query(ITimeFactory::class);
 		$timestamp = $timeFactory->getTime();
 
-		$lockingProvider = Server::get(ILockingProvider::class);
+		$lockingProvider = \OC::$server->getLockingProvider();
 
 		// disable proxy to prevent recursive calls
 		$trashPath = '/files_trashbin/files/' . static::getTrashFilename($filename, $timestamp);
@@ -301,12 +290,12 @@ class Trashbin implements IEventListener {
 			if ($sourceStorage->getCache()->inCache($sourceInternalPath)) {
 				$trashStorage->getUpdater()->renameFromStorage($sourceStorage, $sourceInternalPath, $trashInternalPath);
 			}
-		} catch (CopyRecursiveException $e) {
+		} catch (\OCA\Files_Trashbin\Exceptions\CopyRecursiveException $e) {
 			$moveSuccessful = false;
 			if ($trashStorage->file_exists($trashInternalPath)) {
 				$trashStorage->unlink($trashInternalPath);
 			}
-			Server::get(LoggerInterface::class)->error('Couldn\'t move ' . $file_path . ' to the trash bin', ['app' => 'files_trashbin']);
+			\OC::$server->get(LoggerInterface::class)->error('Couldn\'t move ' . $file_path . ' to the trash bin', ['app' => 'files_trashbin']);
 		}
 
 		if ($sourceStorage->file_exists($sourceInternalPath)) { // failed to delete the original file, abort
@@ -326,7 +315,7 @@ class Trashbin implements IEventListener {
 		}
 
 		if ($moveSuccessful) {
-			$query = Server::get(IDBConnection::class)->getQueryBuilder();
+			$query = \OC::$server->getDatabaseConnection()->getQueryBuilder();
 			$query->insert('files_trash')
 				->setValue('id', $query->createNamedParameter($filename))
 				->setValue('timestamp', $query->createNamedParameter($timestamp))
@@ -335,9 +324,9 @@ class Trashbin implements IEventListener {
 				->setValue('deleted_by', $query->createNamedParameter($user));
 			$result = $query->executeStatement();
 			if (!$result) {
-				Server::get(LoggerInterface::class)->error('trash bin database couldn\'t be updated', ['app' => 'files_trashbin']);
+				\OC::$server->get(LoggerInterface::class)->error('trash bin database couldn\'t be updated', ['app' => 'files_trashbin']);
 			}
-			Util::emitHook('\OCA\Files_Trashbin\Trashbin', 'post_moveToTrash', ['filePath' => Filesystem::normalizePath($file_path),
+			\OCP\Util::emitHook('\OCA\Files_Trashbin\Trashbin', 'post_moveToTrash', ['filePath' => Filesystem::normalizePath($file_path),
 				'trashPath' => Filesystem::normalizePath(static::getTrashFilename($filename, $timestamp))]);
 
 			self::retainVersions($filename, $owner, $ownerPath, $timestamp);
@@ -361,14 +350,14 @@ class Trashbin implements IEventListener {
 	}
 
 	private static function getConfiguredTrashbinSize(string $user): int|float {
-		$config = Server::get(IConfig::class);
+		$config = \OC::$server->get(IConfig::class);
 		$userTrashbinSize = $config->getUserValue($user, 'files_trashbin', 'trashbin_size', '-1');
 		if (is_numeric($userTrashbinSize) && ($userTrashbinSize > -1)) {
-			return Util::numericToNumber($userTrashbinSize);
+			return \OCP\Util::numericToNumber($userTrashbinSize);
 		}
 		$systemTrashbinSize = $config->getAppValue('files_trashbin', 'trashbin_size', '-1');
 		if (is_numeric($systemTrashbinSize)) {
-			return Util::numericToNumber($systemTrashbinSize);
+			return \OCP\Util::numericToNumber($systemTrashbinSize);
 		}
 		return -1;
 	}
@@ -382,7 +371,7 @@ class Trashbin implements IEventListener {
 	 * @param int $timestamp when the file was deleted
 	 */
 	private static function retainVersions($filename, $owner, $ownerPath, $timestamp) {
-		if (Server::get(IAppManager::class)->isEnabledForUser('files_versions') && !empty($ownerPath)) {
+		if (\OCP\Server::get(IAppManager::class)->isEnabledForUser('files_versions') && !empty($ownerPath)) {
 			$user = OC_User::getUser();
 			$rootView = new View('/');
 
@@ -391,7 +380,7 @@ class Trashbin implements IEventListener {
 					self::copy_recursive($owner . '/files_versions/' . $ownerPath, $owner . '/files_trashbin/versions/' . static::getTrashFilename(basename($ownerPath), $timestamp), $rootView);
 				}
 				self::move($rootView, $owner . '/files_versions/' . $ownerPath, $user . '/files_trashbin/versions/' . static::getTrashFilename($filename, $timestamp));
-			} elseif ($versions = Storage::getVersions($owner, $ownerPath)) {
+			} elseif ($versions = \OCA\Files_Versions\Storage::getVersions($owner, $ownerPath)) {
 				foreach ($versions as $v) {
 					if ($owner !== $user) {
 						self::copy($rootView, $owner . '/files_versions' . $v['path'] . '.v' . $v['version'], $owner . '/files_trashbin/versions/' . static::getTrashFilename($v['name'] . '.v' . $v['version'], $timestamp));
@@ -450,7 +439,7 @@ class Trashbin implements IEventListener {
 	 * Restore a file or folder from trash bin
 	 *
 	 * @param string $file path to the deleted file/folder relative to "files_trashbin/files/",
-	 *                     including the timestamp suffix ".d12345678"
+	 * including the timestamp suffix ".d12345678"
 	 * @param string $filename name of the file/folder
 	 * @param int $timestamp time when the file/folder was deleted
 	 *
@@ -464,7 +453,7 @@ class Trashbin implements IEventListener {
 		if ($timestamp) {
 			$location = self::getLocation($user, $filename, $timestamp);
 			if ($location === false) {
-				Server::get(LoggerInterface::class)->error('trash bin database inconsistent! ($user: ' . $user . ' $filename: ' . $filename . ', $timestamp: ' . $timestamp . ')', ['app' => 'files_trashbin']);
+				\OC::$server->get(LoggerInterface::class)->error('trash bin database inconsistent! ($user: ' . $user . ' $filename: ' . $filename . ', $timestamp: ' . $timestamp . ')', ['app' => 'files_trashbin']);
 			} else {
 				// if location no longer exists, restore file in the root directory
 				if ($location !== '/' &&
@@ -498,7 +487,7 @@ class Trashbin implements IEventListener {
 		$targetNode = self::getNodeForPath($targetPath);
 		$run = true;
 		$event = new BeforeNodeRestoredEvent($sourceNode, $targetNode, $run);
-		$dispatcher = Server::get(IEventDispatcher::class);
+		$dispatcher = \OC::$server->get(IEventDispatcher::class);
 		$dispatcher->dispatchTyped($event);
 
 		if (!$run) {
@@ -513,18 +502,18 @@ class Trashbin implements IEventListener {
 			$view->chroot('/' . $user . '/files');
 			$view->touch('/' . $location . '/' . $uniqueFilename, $mtime);
 			$view->chroot($fakeRoot);
-			Util::emitHook('\OCA\Files_Trashbin\Trashbin', 'post_restore', ['filePath' => $targetPath, 'trashPath' => $sourcePath]);
+			\OCP\Util::emitHook('\OCA\Files_Trashbin\Trashbin', 'post_restore', ['filePath' => $targetPath, 'trashPath' => $sourcePath]);
 
 			$sourceNode = self::getNodeForPath($sourcePath);
 			$targetNode = self::getNodeForPath($targetPath);
 			$event = new NodeRestoredEvent($sourceNode, $targetNode);
-			$dispatcher = Server::get(IEventDispatcher::class);
+			$dispatcher = \OC::$server->get(IEventDispatcher::class);
 			$dispatcher->dispatchTyped($event);
 
 			self::restoreVersions($view, $file, $filename, $uniqueFilename, $location, $timestamp);
 
 			if ($timestamp) {
-				$query = Server::get(IDBConnection::class)->getQueryBuilder();
+				$query = \OC::$server->getDatabaseConnection()->getQueryBuilder();
 				$query->delete('files_trash')
 					->where($query->expr()->eq('user', $query->createNamedParameter($user)))
 					->andWhere($query->expr()->eq('id', $query->createNamedParameter($filename)))
@@ -550,7 +539,7 @@ class Trashbin implements IEventListener {
 	 * @return false|null
 	 */
 	private static function restoreVersions(View $view, $file, $filename, $uniqueFilename, $location, $timestamp) {
-		if (Server::get(IAppManager::class)->isEnabledForUser('files_versions')) {
+		if (\OCP\Server::get(IAppManager::class)->isEnabledForUser('files_versions')) {
 			$user = OC_User::getUser();
 			$rootView = new View('/');
 
@@ -616,7 +605,7 @@ class Trashbin implements IEventListener {
 		// actual file deletion
 		$trash->delete();
 
-		$query = Server::get(IDBConnection::class)->getQueryBuilder();
+		$query = \OC::$server->getDatabaseConnection()->getQueryBuilder();
 		$query->delete('files_trash')
 			->where($query->expr()->eq('user', $query->createNamedParameter($user)));
 		$query->executeStatement();
@@ -668,7 +657,7 @@ class Trashbin implements IEventListener {
 		$size = 0;
 
 		if ($timestamp) {
-			$query = Server::get(IDBConnection::class)->getQueryBuilder();
+			$query = \OC::$server->getDatabaseConnection()->getQueryBuilder();
 			$query->delete('files_trash')
 				->where($query->expr()->eq('user', $query->createNamedParameter($user)))
 				->andWhere($query->expr()->eq('id', $query->createNamedParameter($filename)))
@@ -708,7 +697,7 @@ class Trashbin implements IEventListener {
 	 */
 	private static function deleteVersions(View $view, $file, $filename, $timestamp, string $user): int|float {
 		$size = 0;
-		if (Server::get(IAppManager::class)->isEnabledForUser('files_versions')) {
+		if (\OCP\Server::get(IAppManager::class)->isEnabledForUser('files_versions')) {
 			if ($view->is_dir('files_trashbin/versions/' . $file)) {
 				$size += self::calculateSize(new View('/' . $user . '/files_trashbin/versions/' . $file));
 				$view->unlink('files_trashbin/versions/' . $file);
@@ -753,10 +742,10 @@ class Trashbin implements IEventListener {
 	 * @return bool result of db delete operation
 	 */
 	public static function deleteUser($uid) {
-		$query = Server::get(IDBConnection::class)->getQueryBuilder();
+		$query = \OC::$server->getDatabaseConnection()->getQueryBuilder();
 		$query->delete('files_trash')
 			->where($query->expr()->eq('user', $query->createNamedParameter($uid)));
-		return (bool)$query->executeStatement();
+		return (bool) $query->executeStatement();
 	}
 
 	/**
@@ -772,7 +761,7 @@ class Trashbin implements IEventListener {
 			return $configuredTrashbinSize - $trashbinSize;
 		}
 
-		$userObject = Server::get(IUserManager::class)->get($user);
+		$userObject = \OC::$server->getUserManager()->get($user);
 		if (is_null($userObject)) {
 			return 0;
 		}
@@ -786,7 +775,7 @@ class Trashbin implements IEventListener {
 				$quota = PHP_INT_MAX;
 			}
 		} else {
-			$quota = Util::computerFileSize($quota);
+			$quota = \OCP\Util::computerFileSize($quota);
 			// invalid quota
 			if ($quota === false) {
 				$quota = PHP_INT_MAX;
@@ -810,7 +799,7 @@ class Trashbin implements IEventListener {
 			$availableSpace = $quota;
 		}
 
-		return Util::numericToNumber($availableSpace);
+		return \OCP\Util::numericToNumber($availableSpace);
 	}
 
 	/**
@@ -854,10 +843,10 @@ class Trashbin implements IEventListener {
 	private static function scheduleExpire($user) {
 		// let the admin disable auto expire
 		/** @var Application $application */
-		$application = Server::get(Application::class);
+		$application = \OC::$server->query(Application::class);
 		$expiration = $application->getContainer()->query('Expiration');
 		if ($expiration->isEnabled()) {
-			Server::get(IBus::class)->push(new Expire($user));
+			\OC::$server->getCommandBus()->push(new Expire($user));
 		}
 	}
 
@@ -872,7 +861,7 @@ class Trashbin implements IEventListener {
 	 */
 	protected static function deleteFiles(array $files, string $user, int|float $availableSpace): int|float {
 		/** @var Application $application */
-		$application = Server::get(Application::class);
+		$application = \OC::$server->query(Application::class);
 		$expiration = $application->getContainer()->query('Expiration');
 		$size = 0;
 
@@ -880,7 +869,7 @@ class Trashbin implements IEventListener {
 			foreach ($files as $file) {
 				if ($availableSpace < 0 && $expiration->isExpired($file['mtime'], true)) {
 					$tmp = self::delete($file['name'], $user, $file['mtime']);
-					Server::get(LoggerInterface::class)->info('remove "' . $file['name'] . '" (' . $tmp . 'B) to meet the limit of trash bin size (50% of available quota)', ['app' => 'files_trashbin']);
+					\OC::$server->get(LoggerInterface::class)->info('remove "' . $file['name'] . '" (' . $tmp . 'B) to meet the limit of trash bin size (50% of available quota)', ['app' => 'files_trashbin']);
 					$availableSpace += $tmp;
 					$size += $tmp;
 				} else {
@@ -900,7 +889,7 @@ class Trashbin implements IEventListener {
 	 */
 	public static function deleteExpiredFiles($files, $user) {
 		/** @var Expiration $expiration */
-		$expiration = Server::get(Expiration::class);
+		$expiration = \OC::$server->query(Expiration::class);
 		$size = 0;
 		$count = 0;
 		foreach ($files as $file) {
@@ -910,15 +899,15 @@ class Trashbin implements IEventListener {
 				try {
 					$size += self::delete($filename, $user, $timestamp);
 					$count++;
-				} catch (NotPermittedException $e) {
-					Server::get(LoggerInterface::class)->warning('Removing "' . $filename . '" from trashbin failed.',
+				} catch (\OCP\Files\NotPermittedException $e) {
+					\OC::$server->get(LoggerInterface::class)->warning('Removing "' . $filename . '" from trashbin failed.',
 						[
 							'exception' => $e,
 							'app' => 'files_trashbin',
 						]
 					);
 				}
-				Server::get(LoggerInterface::class)->info(
+				\OC::$server->get(LoggerInterface::class)->info(
 					'Remove "' . $filename . '" from trashbin because it exceeds max retention obligation term.',
 					['app' => 'files_trashbin']
 				);
@@ -952,7 +941,7 @@ class Trashbin implements IEventListener {
 					$size += $view->filesize($pathDir);
 					$result = $view->copy($pathDir, $destination . '/' . $i['name']);
 					if (!$result) {
-						throw new CopyRecursiveException();
+						throw new \OCA\Files_Trashbin\Exceptions\CopyRecursiveException();
 					}
 					$view->touch($destination . '/' . $i['name'], $view->filemtime($pathDir));
 				}
@@ -961,7 +950,7 @@ class Trashbin implements IEventListener {
 			$size += $view->filesize($source);
 			$result = $view->copy($source, $destination);
 			if (!$result) {
-				throw new CopyRecursiveException();
+				throw new \OCA\Files_Trashbin\Exceptions\CopyRecursiveException();
 			}
 			$view->touch($destination, $view->filemtime($source));
 		}
@@ -981,10 +970,10 @@ class Trashbin implements IEventListener {
 		/** @var \OC\Files\Storage\Storage $storage */
 		[$storage,] = $view->resolvePath('/');
 
-		$pattern = Server::get(IDBConnection::class)->escapeLikeParameter(basename($filename));
+		$pattern = \OC::$server->getDatabaseConnection()->escapeLikeParameter(basename($filename));
 		if ($timestamp) {
 			// fetch for old versions
-			$escapedTimestamp = Server::get(IDBConnection::class)->escapeLikeParameter((string)$timestamp);
+			$escapedTimestamp = \OC::$server->getDatabaseConnection()->escapeLikeParameter($timestamp);
 			$pattern .= '.v%.d' . $escapedTimestamp;
 			$offset = -strlen($escapedTimestamp) - 2;
 		} else {
@@ -997,7 +986,7 @@ class Trashbin implements IEventListener {
 			Server::get(IDBConnection::class)->getQueryBuilder(),
 			Server::get(IFilesMetadataManager::class),
 		);
-		$normalizedParentPath = ltrim(Filesystem::normalizePath(dirname('files_trashbin/versions/' . $filename)), '/');
+		$normalizedParentPath = ltrim(Filesystem::normalizePath(dirname('files_trashbin/versions/'. $filename)), '/');
 		$parentId = $cache->getId($normalizedParentPath);
 		if ($parentId === -1) {
 			return [];
@@ -1014,7 +1003,7 @@ class Trashbin implements IEventListener {
 
 		/** @var CacheEntry[] $matches */
 		$matches = array_map(function (array $data) {
-			return Cache::cacheEntryFromData($data, Server::get(IMimeTypeLoader::class));
+			return Cache::cacheEntryFromData($data, \OC::$server->getMimeTypeLoader());
 		}, $entries);
 
 		foreach ($matches as $ma) {
@@ -1041,7 +1030,7 @@ class Trashbin implements IEventListener {
 	private static function getUniqueFilename($location, $filename, View $view) {
 		$ext = pathinfo($filename, PATHINFO_EXTENSION);
 		$name = pathinfo($filename, PATHINFO_FILENAME);
-		$l = Util::getL10N('files_trashbin');
+		$l = \OCP\Util::getL10N('files_trashbin');
 
 		$location = '/' . trim($location, '/');
 
@@ -1052,9 +1041,9 @@ class Trashbin implements IEventListener {
 
 		if ($view->file_exists('files' . $location . '/' . $filename)) {
 			$i = 2;
-			$uniqueName = $name . ' (' . $l->t('restored') . ')' . $ext;
+			$uniqueName = $name . " (" . $l->t("restored") . ")" . $ext;
 			while ($view->file_exists('files' . $location . '/' . $uniqueName)) {
-				$uniqueName = $name . ' (' . $l->t('restored') . ' ' . $i . ')' . $ext;
+				$uniqueName = $name . " (" . $l->t("restored") . " " . $i . ")" . $ext;
 				$i++;
 			}
 
@@ -1071,7 +1060,7 @@ class Trashbin implements IEventListener {
 	 * @return int|float size of the folder
 	 */
 	private static function calculateSize(View $view): int|float {
-		$root = Server::get(IConfig::class)->getSystemValue('datadirectory', \OC::$SERVERROOT . '/data') . $view->getAbsolutePath('');
+		$root = \OC::$server->getConfig()->getSystemValue('datadirectory', \OC::$SERVERROOT . '/data') . $view->getAbsolutePath('');
 		if (!file_exists($root)) {
 			return 0;
 		}
@@ -1130,7 +1119,7 @@ class Trashbin implements IEventListener {
 	 * @return string
 	 */
 	public static function preview_icon($path) {
-		return Server::get(IURLGenerator::class)->linkToRoute('core_ajax_trashbin_preview', ['x' => 32, 'y' => 32, 'file' => $path]);
+		return \OC::$server->getURLGenerator()->linkToRoute('core_ajax_trashbin_preview', ['x' => 32, 'y' => 32, 'file' => $path]);
 	}
 
 	/**
@@ -1154,7 +1143,7 @@ class Trashbin implements IEventListener {
 
 	private static function getNodeForPath(string $path): Node {
 		$user = OC_User::getUser();
-		$rootFolder = Server::get(IRootFolder::class);
+		$rootFolder = \OC::$server->get(IRootFolder::class);
 
 		if ($user !== false) {
 			$userFolder = $rootFolder->getUserFolder($user);
@@ -1166,7 +1155,7 @@ class Trashbin implements IEventListener {
 			}
 		}
 
-		$view = Server::get(View::class);
+		$view = \OC::$server->get(View::class);
 		$fsView = Filesystem::getView();
 		if ($fsView === null) {
 			throw new Exception('View should not be null');
@@ -1178,12 +1167,6 @@ class Trashbin implements IEventListener {
 			return new NonExistingFolder($rootFolder, $view, $fullPath);
 		} else {
 			return new NonExistingFile($rootFolder, $view, $fullPath);
-		}
-	}
-
-	public function handle(Event $event): void {
-		if ($event instanceof BeforeNodeDeletedEvent) {
-			self::ensureFileScannedHook($event->getNode());
 		}
 	}
 }

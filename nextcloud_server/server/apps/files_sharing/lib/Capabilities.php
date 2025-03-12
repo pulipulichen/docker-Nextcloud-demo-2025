@@ -18,10 +18,14 @@ use OCP\Share\IManager;
  */
 class Capabilities implements ICapability {
 
-	public function __construct(
-		private IConfig $config,
-		private IManager $shareManager,
-	) {
+	/** @var IConfig */
+	private $config;
+	/** @var IManager */
+	private $shareManager;
+
+	public function __construct(IConfig $config, IManager $shareManager) {
+		$this->config = $config;
+		$this->shareManager = $shareManager;
 	}
 
 	/**
@@ -55,7 +59,6 @@ class Capabilities implements ICapability {
 	 *             send_mail?: bool,
 	 *             upload?: bool,
 	 *             upload_files_drop?: bool,
-	 *             custom_tokens?: bool,
 	 *         },
 	 *         user: array{
 	 *             send_mail: bool,
@@ -137,7 +140,6 @@ class Capabilities implements ICapability {
 				$public['send_mail'] = $this->config->getAppValue('core', 'shareapi_allow_public_notification', 'no') === 'yes';
 				$public['upload'] = $this->shareManager->shareApiLinkAllowPublicUpload();
 				$public['upload_files_drop'] = $public['upload'];
-				$public['custom_tokens'] = $this->shareManager->allowCustomTokens();
 			}
 			$res['public'] = $public;
 

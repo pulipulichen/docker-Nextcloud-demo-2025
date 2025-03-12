@@ -7,8 +7,6 @@
  */
 namespace OCA\User_LDAP;
 
-use OCP\IConfig;
-use OCP\Server;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -82,8 +80,6 @@ use Psr\Log\LoggerInterface;
  * @property string $ldapAttributeHeadline
  * @property string $ldapAttributeBiography
  * @property string $ldapAdminGroup
- * @property string $ldapAttributeBirthDate
- * @property string $ldapAttributePronouns
  */
 class Configuration {
 	public const AVATAR_PREFIX_DEFAULT = 'default';
@@ -93,6 +89,11 @@ class Configuration {
 	public const LDAP_SERVER_FEATURE_UNKNOWN = 'unknown';
 	public const LDAP_SERVER_FEATURE_AVAILABLE = 'available';
 	public const LDAP_SERVER_FEATURE_UNAVAILABLE = 'unavailable';
+
+	/**
+	 * @var string
+	 */
+	protected $configPrefix;
 	/**
 	 * @var bool
 	 */
@@ -178,13 +179,10 @@ class Configuration {
 		'ldapAdminGroup' => '',
 		'ldapAttributeBirthDate' => null,
 		'ldapAttributeAnniversaryDate' => null,
-		'ldapAttributePronouns' => null,
 	];
 
-	public function __construct(
-		protected string $configPrefix,
-		bool $autoRead = true,
-	) {
+	public function __construct(string $configPrefix, bool $autoRead = true) {
+		$this->configPrefix = $configPrefix;
 		if ($autoRead) {
 			$this->readConfiguration();
 		}
@@ -218,7 +216,7 @@ class Configuration {
 	 * from configuration. It does not save the configuration! To do so, you
 	 * must call saveConfiguration afterwards.
 	 * @param array $config array that holds the config parameters in an associated
-	 *                      array
+	 * array
 	 * @param array &$applied optional; array where the set fields will be given to
 	 */
 	public function setConfiguration(array $config, ?array &$applied = null): void {
@@ -240,7 +238,7 @@ class Configuration {
 				case 'homeFolderNamingRule':
 					$trimmedVal = trim($val);
 					if ($trimmedVal !== '' && !str_contains($val, 'attr:')) {
-						$val = 'attr:' . $trimmedVal;
+						$val = 'attr:'.$trimmedVal;
 					}
 					break;
 				case 'ldapBase':
@@ -296,28 +294,6 @@ class Configuration {
 						break;
 					case 'ldapUserDisplayName2':
 					case 'ldapGroupDisplayName':
-					case 'ldapGidNumber':
-					case 'ldapGroupMemberAssocAttr':
-					case 'ldapQuotaAttribute':
-					case 'ldapEmailAttribute':
-					case 'ldapUuidUserAttribute':
-					case 'ldapUuidGroupAttribute':
-					case 'ldapExpertUsernameAttr':
-					case 'ldapExpertUUIDUserAttr':
-					case 'ldapExpertUUIDGroupAttr':
-					case 'ldapExtStorageHomeAttribute':
-					case 'ldapAttributePhone':
-					case 'ldapAttributeWebsite':
-					case 'ldapAttributeAddress':
-					case 'ldapAttributeTwitter':
-					case 'ldapAttributeFediverse':
-					case 'ldapAttributeOrganisation':
-					case 'ldapAttributeRole':
-					case 'ldapAttributeHeadline':
-					case 'ldapAttributeBiography':
-					case 'ldapAttributeBirthDate':
-					case 'ldapAttributeAnniversaryDate':
-					case 'ldapAttributePronouns':
 						$readMethod = 'getLcValue';
 						break;
 					case 'ldapUserDisplayName':
@@ -440,7 +416,7 @@ class Configuration {
 
 	protected function getSystemValue(string $varName): string {
 		//FIXME: if another system value is added, softcode the default value
-		return Server::get(IConfig::class)->getSystemValue($varName, false);
+		return \OC::$server->getConfig()->getSystemValue($varName, false);
 	}
 
 	protected function getValue(string $varName): string {
@@ -448,8 +424,8 @@ class Configuration {
 		if (is_null($defaults)) {
 			$defaults = $this->getDefaults();
 		}
-		return Server::get(IConfig::class)->getAppValue('user_ldap',
-			$this->configPrefix . $varName,
+		return \OC::$server->getConfig()->getAppValue('user_ldap',
+			$this->configPrefix.$varName,
 			$defaults[$varName]);
 	}
 
@@ -477,9 +453,9 @@ class Configuration {
 	}
 
 	protected function saveValue(string $varName, string $value): bool {
-		Server::get(IConfig::class)->setAppValue(
+		\OC::$server->getConfig()->setAppValue(
 			'user_ldap',
-			$this->configPrefix . $varName,
+			$this->configPrefix.$varName,
 			$value
 		);
 		return true;
@@ -487,7 +463,7 @@ class Configuration {
 
 	/**
 	 * @return array an associative array with the default values. Keys are correspond
-	 *               to config-value entries in the database table
+	 * to config-value entries in the database table
 	 */
 	public function getDefaults(): array {
 		return [
@@ -562,7 +538,6 @@ class Configuration {
 			'ldap_admin_group' => '',
 			'ldap_attr_birthdate' => '',
 			'ldap_attr_anniversarydate' => '',
-			'ldap_attr_pronouns' => '',
 		];
 	}
 
@@ -642,7 +617,6 @@ class Configuration {
 			'ldap_admin_group' => 'ldapAdminGroup',
 			'ldap_attr_birthdate' => 'ldapAttributeBirthDate',
 			'ldap_attr_anniversarydate' => 'ldapAttributeAnniversaryDate',
-			'ldap_attr_pronouns' => 'ldapAttributePronouns',
 		];
 		return $array;
 	}
@@ -672,7 +646,7 @@ class Configuration {
 			return [strtolower($attribute)];
 		}
 		if ($value !== self::AVATAR_PREFIX_DEFAULT) {
-			Server::get(LoggerInterface::class)->warning('Invalid config value to ldapUserAvatarRule; falling back to default.');
+			\OCP\Server::get(LoggerInterface::class)->warning('Invalid config value to ldapUserAvatarRule; falling back to default.');
 		}
 		return $defaultAttributes;
 	}

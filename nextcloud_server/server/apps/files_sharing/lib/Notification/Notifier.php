@@ -28,14 +28,31 @@ class Notifier implements INotifier {
 	public const INCOMING_USER_SHARE = 'incoming_user_share';
 	public const INCOMING_GROUP_SHARE = 'incoming_group_share';
 
-	public function __construct(
-		protected IFactory $l10nFactory,
-		private IManager $shareManager,
-		private IRootFolder $rootFolder,
-		protected IGroupManager $groupManager,
-		protected IUserManager $userManager,
-		protected IURLGenerator $url,
-	) {
+	/** @var IFactory */
+	protected $l10nFactory;
+	/** @var IManager */
+	private $shareManager;
+	/** @var IRootFolder */
+	private $rootFolder;
+	/** @var IGroupManager  */
+	protected $groupManager;
+	/** @var IUserManager  */
+	protected $userManager;
+	/** @var IURLGenerator */
+	protected $url;
+
+	public function __construct(IFactory $l10nFactory,
+		IManager $shareManager,
+		IRootFolder $rootFolder,
+		IGroupManager $groupManager,
+		IUserManager $userManager,
+		IURLGenerator $url) {
+		$this->l10nFactory = $l10nFactory;
+		$this->shareManager = $shareManager;
+		$this->rootFolder = $rootFolder;
+		$this->groupManager = $groupManager;
+		$this->userManager = $userManager;
+		$this->url = $url;
 	}
 
 	/**
@@ -109,9 +126,9 @@ class Notifier implements INotifier {
 				[
 					'node' => [
 						'type' => 'file',
-						'id' => (string)$node->getId(),
+						'id' => $node->getId(),
 						'name' => $node->getName(),
-						'path' => (string)$path,
+						'path' => $path,
 					],
 				]
 			);

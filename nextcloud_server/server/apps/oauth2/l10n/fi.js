@@ -13,8 +13,8 @@ OC.L10N.register(
     "Delete client" : "Poista asiakas",
     "Add client" : "Lisää asiakas",
     "Add" : "Lisää",
+    "Delete" : "Poista",
     "Show client secret" : "Näytä asiakkaan salaisuus",
-    "Hide client secret" : "Piilota asiakkaan salaisuus",
-    "Delete" : "Poista"
+    "Hide client secret" : "Piilota asiakkaan salaisuus"
 },
 "nplurals=2; plural=(n != 1);");

@@ -10,16 +10,18 @@ namespace OCA\DAV\Upload;
 use OC\Files\Filesystem;
 use OC\Files\View;
 use OCA\DAV\Connector\Sabre\Directory;
-use OCP\IUserSession;
-use OCP\Server;
 use Sabre\DAV\Exception\Forbidden;
 use Sabre\DAV\ICollection;
 
 class UploadHome implements ICollection {
-	public function __construct(
-		private array $principalInfo,
-		private CleanupService $cleanupService,
-	) {
+	/** @var array */
+	private $principalInfo;
+	/** @var CleanupService */
+	private $cleanupService;
+
+	public function __construct(array $principalInfo, CleanupService $cleanupService) {
+		$this->principalInfo = $principalInfo;
+		$this->cleanupService = $cleanupService;
 	}
 
 	public function createFile($name, $data = null) {
@@ -75,7 +77,7 @@ class UploadHome implements ICollection {
 
 	private function getView() {
 		$rootView = new View();
-		$user = Server::get(IUserSession::class)->getUser();
+		$user = \OC::$server->getUserSession()->getUser();
 		Filesystem::initMountPoints($user->getUID());
 		if (!$rootView->file_exists('/' . $user->getUID() . '/uploads')) {
 			$rootView->mkdir('/' . $user->getUID() . '/uploads');

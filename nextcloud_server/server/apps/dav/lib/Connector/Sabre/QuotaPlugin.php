@@ -8,7 +8,6 @@
  */
 namespace OCA\DAV\Connector\Sabre;
 
-use OC\Files\View;
 use OCA\DAV\Upload\FutureFile;
 use OCA\DAV\Upload\UploadFolder;
 use OCP\Files\StorageNotAvailableException;
@@ -24,6 +23,9 @@ use Sabre\DAV\INode;
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
 class QuotaPlugin extends \Sabre\DAV\ServerPlugin {
+	/** @var \OC\Files\View */
+	private $view;
+
 	/**
 	 * Reference to main server object
 	 *
@@ -32,11 +34,10 @@ class QuotaPlugin extends \Sabre\DAV\ServerPlugin {
 	private $server;
 
 	/**
-	 * @param View $view
+	 * @param \OC\Files\View $view
 	 */
-	public function __construct(
-		private $view,
-	) {
+	public function __construct($view) {
+		$this->view = $view;
 	}
 
 	/**

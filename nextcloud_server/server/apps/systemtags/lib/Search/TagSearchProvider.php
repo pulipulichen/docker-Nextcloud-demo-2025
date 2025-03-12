@@ -32,14 +32,34 @@ use RecursiveIteratorIterator;
 
 class TagSearchProvider implements IProvider {
 
+	/** @var IL10N */
+	private $l10n;
+
+	/** @var IURLGenerator */
+	private $urlGenerator;
+
+	/** @var IMimeTypeDetector */
+	private $mimeTypeDetector;
+
+	/** @var IRootFolder */
+	private $rootFolder;
+	private ISystemTagObjectMapper $objectMapper;
+	private ISystemTagManager $tagManager;
+
 	public function __construct(
-		private IL10N $l10n,
-		private IURLGenerator $urlGenerator,
-		private IMimeTypeDetector $mimeTypeDetector,
-		private IRootFolder $rootFolder,
-		private ISystemTagObjectMapper $objectMapper,
-		private ISystemTagManager $tagManager,
+		IL10N             $l10n,
+		IURLGenerator     $urlGenerator,
+		IMimeTypeDetector $mimeTypeDetector,
+		IRootFolder       $rootFolder,
+		ISystemTagObjectMapper $objectMapper,
+		ISystemTagManager $tagManager
 	) {
+		$this->l10n = $l10n;
+		$this->urlGenerator = $urlGenerator;
+		$this->mimeTypeDetector = $mimeTypeDetector;
+		$this->rootFolder = $rootFolder;
+		$this->objectMapper = $objectMapper;
+		$this->tagManager = $tagManager;
 	}
 
 	/**
@@ -98,7 +118,7 @@ class TagSearchProvider implements IProvider {
 			$thumbnailUrl = '';
 			$link = $this->urlGenerator->linkToRoute('files.view.indexView', [
 				'view' => 'tags',
-			]) . '?dir=' . $tag->getId();
+			]) . '?dir='.$tag->getId();
 			$searchResultEntry = new SearchResultEntry(
 				$thumbnailUrl,
 				$this->l10n->t('All tagged %s …', [$tag->getName()]),

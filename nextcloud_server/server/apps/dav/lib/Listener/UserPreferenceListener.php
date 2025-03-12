@@ -17,9 +17,10 @@ use OCP\EventDispatcher\IEventListener;
 /** @template-implements IEventListener<BeforePreferenceSetEvent|BeforePreferenceDeletedEvent> */
 class UserPreferenceListener implements IEventListener {
 
-	public function __construct(
-		protected IJobList $jobList,
-	) {
+	protected IJobList $jobList;
+
+	public function __construct(IJobList $jobList) {
+		$this->jobList = $jobList;
 	}
 
 	public function handle(Event $event): void {

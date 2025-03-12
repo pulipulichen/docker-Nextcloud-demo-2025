@@ -34,7 +34,7 @@ class Manager {
 	 * @param ?string $languageCode The language in which to query the changelog (defaults to current user language and fallsback to English)
 	 * @return string|null Either the changelog entry or null if no changelog is found
 	 */
-	public function getChangelog(string $appId, string $version, ?string $languageCode = null): ?string {
+	public function getChangelog(string $appId, string $version, ?string $languageCode = null): string|null {
 		if ($languageCode === null) {
 			$languageCode = $this->l10NFactory->getUserLanguage($this->currentUser);
 		}
@@ -55,7 +55,7 @@ class Manager {
 	 * @param string $languageCode The language code to search
 	 * @return string|null Either the file path or null if not found
 	 */
-	public function getChangelogFile(string $appId, string $languageCode): ?string {
+	public function getChangelogFile(string $appId, string $languageCode): string|null {
 		try {
 			$appPath = $this->appManager->getAppPath($appId);
 			$files = ["CHANGELOG.$languageCode.md", 'CHANGELOG.en.md'];
@@ -76,7 +76,7 @@ class Manager {
 	 * @param string $path The path to the changlog file
 	 * @param string $version The version to query (make sure to only pass in "{major}.{minor}(.{patch}" format)
 	 */
-	protected function retrieveChangelogEntry(string $path, string $version): ?string {
+	protected function retrieveChangelogEntry(string $path, string $version): string|null {
 		$matches = [];
 		$content = file_get_contents($path);
 		if ($content === false) {

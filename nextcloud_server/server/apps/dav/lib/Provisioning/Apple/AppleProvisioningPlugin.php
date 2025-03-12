@@ -5,7 +5,6 @@
  */
 namespace OCA\DAV\Provisioning\Apple;
 
-use OCP\AppFramework\Http;
 use OCP\IL10N;
 use OCP\IRequest;
 use OCP\IURLGenerator;
@@ -22,22 +21,52 @@ class AppleProvisioningPlugin extends ServerPlugin {
 	protected $server;
 
 	/**
+	 * @var IURLGenerator
+	 */
+	protected $urlGenerator;
+
+	/**
+	 * @var IUserSession
+	 */
+	protected $userSession;
+
+	/**
 	 * @var \OC_Defaults
 	 */
 	protected $themingDefaults;
 
 	/**
+	 * @var IRequest
+	 */
+	protected $request;
+
+	/**
+	 * @var IL10N
+	 */
+	protected $l10n;
+
+	/**
+	 * @var \Closure
+	 */
+	protected $uuidClosure;
+
+	/**
 	 * AppleProvisioningPlugin constructor.
 	 */
 	public function __construct(
-		protected IUserSession $userSession,
-		protected IURLGenerator $urlGenerator,
+		IUserSession $userSession,
+		IURLGenerator $urlGenerator,
 		\OC_Defaults $themingDefaults,
-		protected IRequest $request,
-		protected IL10N $l10n,
-		protected \Closure $uuidClosure,
+		IRequest $request,
+		IL10N $l10n,
+		\Closure $uuidClosure
 	) {
+		$this->userSession = $userSession;
+		$this->urlGenerator = $urlGenerator;
 		$this->themingDefaults = $themingDefaults;
+		$this->request = $request;
+		$this->l10n = $l10n;
+		$this->uuidClosure = $uuidClosure;
 	}
 
 	/**
@@ -67,7 +96,7 @@ class AppleProvisioningPlugin extends ServerPlugin {
 		$useSSL = ($serverProtocol === 'https');
 
 		if (!$useSSL) {
-			$response->setStatus(Http::STATUS_OK);
+			$response->setStatus(200);
 			$response->setHeader('Content-Type', 'text/plain; charset=utf-8');
 			$response->setBody($this->l10n->t('Your %s needs to be configured to use HTTPS in order to use CalDAV and CardDAV with iOS/macOS.', [$this->themingDefaults->getName()]));
 
@@ -76,7 +105,11 @@ class AppleProvisioningPlugin extends ServerPlugin {
 
 		$absoluteURL = $this->urlGenerator->getBaseUrl();
 		$parsedUrl = parse_url($absoluteURL);
-		$serverPort = $parsedUrl['port'] ?? 443;
+		if (isset($parsedUrl['port'])) {
+			$serverPort = $parsedUrl['port'];
+		} else {
+			$serverPort = 443;
+		}
 		$server_url = $parsedUrl['host'];
 
 		$description = $this->themingDefaults->getName();
@@ -125,7 +158,7 @@ class AppleProvisioningPlugin extends ServerPlugin {
 		]
 		));
 
-		$response->setStatus(Http::STATUS_OK);
+		$response->setStatus(200);
 		$response->setHeader('Content-Disposition', 'attachment; filename="' . $filename . '"');
 		$response->setHeader('Content-Type', 'application/xml; charset=utf-8');
 		$response->setBody($body);

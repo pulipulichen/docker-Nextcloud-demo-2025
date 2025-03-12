@@ -18,24 +18,45 @@ use OCP\GroupInterface;
 use OCP\IConfig;
 use OCP\IUserManager;
 
-/**
- * @template-extends Proxy<Group_LDAP>
- */
-class Group_Proxy extends Proxy implements GroupInterface, IGroupLDAP, IGetDisplayNameBackend, INamedBackend, IDeleteGroupBackend, IBatchMethodsBackend, IIsAdminBackend {
+class Group_Proxy extends Proxy implements \OCP\GroupInterface, IGroupLDAP, IGetDisplayNameBackend, INamedBackend, IDeleteGroupBackend, IBatchMethodsBackend, IIsAdminBackend {
+	private $backends = [];
+	private ?Group_LDAP $refBackend = null;
+	private Helper $helper;
+	private GroupPluginManager $groupPluginManager;
+	private bool $isSetUp = false;
+	private IConfig $config;
+	private IUserManager $ncUserManager;
+
 	public function __construct(
-		private Helper $helper,
+		Helper $helper,
 		ILDAPWrapper $ldap,
 		AccessFactory $accessFactory,
-		private GroupPluginManager $groupPluginManager,
-		private IConfig $config,
-		private IUserManager $ncUserManager,
+		GroupPluginManager $groupPluginManager,
+		IConfig $config,
+		IUserManager $ncUserManager,
 	) {
-		parent::__construct($helper, $ldap, $accessFactory);
+		parent::__construct($ldap, $accessFactory);
+		$this->helper = $helper;
+		$this->groupPluginManager = $groupPluginManager;
+		$this->config = $config;
+		$this->ncUserManager = $ncUserManager;
 	}
 
+	protected function setup(): void {
+		if ($this->isSetUp) {
+			return;
+		}
 
-	protected function newInstance(string $configPrefix): Group_LDAP {
-		return new Group_LDAP($this->getAccess($configPrefix), $this->groupPluginManager, $this->config, $this->ncUserManager);
+		$serverConfigPrefixes = $this->helper->getServerConfigurationPrefixes(true);
+		foreach ($serverConfigPrefixes as $configPrefix) {
+			$this->backends[$configPrefix] =
+				new Group_LDAP($this->getAccess($configPrefix), $this->groupPluginManager, $this->config, $this->ncUserManager);
+			if (is_null($this->refBackend)) {
+				$this->refBackend = $this->backends[$configPrefix];
+			}
+		}
+
+		$this->isSetUp = true;
 	}
 
 	/**
@@ -120,7 +141,7 @@ class Group_Proxy extends Proxy implements GroupInterface, IGroupLDAP, IGetDispl
 	 * Get all groups a user belongs to
 	 *
 	 * @param string $uid Name of the user
-	 * @return list<string> with group names
+	 * @return string[] with group names
 	 *
 	 * This function fetches all groups a user belongs to. It does not check
 	 * if the user exists at all.
@@ -131,7 +152,9 @@ class Group_Proxy extends Proxy implements GroupInterface, IGroupLDAP, IGetDispl
 		$groups = [];
 		foreach ($this->backends as $backend) {
 			$backendGroups = $backend->getUserGroups($uid);
-			$groups = array_merge($groups, $backendGroups);
+			if (is_array($backendGroups)) {
+				$groups = array_merge($groups, $backendGroups);
+			}
 		}
 
 		return array_values(array_unique($groups));
@@ -229,7 +252,7 @@ class Group_Proxy extends Proxy implements GroupInterface, IGroupLDAP, IGetDispl
 	 */
 	public function getGroupsDetails(array $gids): array {
 		if (!($this instanceof IGroupDetailsBackend || $this->implementsActions(GroupInterface::GROUP_DETAILS))) {
-			throw new \Exception('Should not have been called');
+			throw new \Exception("Should not have been called");
 		}
 
 		$groupData = [];

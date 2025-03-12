@@ -9,7 +9,6 @@ declare(strict_types=1);
 namespace OCA\DAV\Db;
 
 use OCP\AppFramework\Db\Entity;
-use OCP\DB\Types;
 
 /**
  * @method string getUserId()
@@ -35,9 +34,9 @@ class Direct extends Entity {
 	protected $expiration;
 
 	public function __construct() {
-		$this->addType('userId', Types::STRING);
-		$this->addType('fileId', Types::INTEGER);
-		$this->addType('token', Types::STRING);
-		$this->addType('expiration', Types::INTEGER);
+		$this->addType('userId', 'string');
+		$this->addType('fileId', 'int');
+		$this->addType('token', 'string');
+		$this->addType('expiration', 'int');
 	}
 }

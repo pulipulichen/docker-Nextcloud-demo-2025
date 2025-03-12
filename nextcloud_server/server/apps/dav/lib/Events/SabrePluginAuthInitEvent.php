@@ -19,12 +19,14 @@ use Sabre\DAV\Server;
  */
 class SabrePluginAuthInitEvent extends Event {
 
+	/** @var Server */
+	private $server;
+
 	/**
 	 * @since 20.0.0
 	 */
-	public function __construct(
-		private Server $server,
-	) {
+	public function __construct(Server $server) {
+		$this->server = $server;
 	}
 
 	/**

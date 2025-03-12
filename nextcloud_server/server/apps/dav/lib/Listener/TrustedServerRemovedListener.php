@@ -15,9 +15,10 @@ use OCP\Federation\Events\TrustedServerRemovedEvent;
 
 /** @template-implements IEventListener<TrustedServerRemovedEvent> */
 class TrustedServerRemovedListener implements IEventListener {
-	public function __construct(
-		private CardDavBackend $cardDavBackend,
-	) {
+	private CardDavBackend $cardDavBackend;
+
+	public function __construct(CardDavBackend $cardDavBackend) {
+		$this->cardDavBackend = $cardDavBackend;
 	}
 
 	public function handle(Event $event): void {

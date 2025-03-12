@@ -36,7 +36,7 @@ class FederatedSharesDiscoverJob extends TimedJob {
 		$qb->selectDistinct('remote')
 			->from('share_external');
 
-		$result = $qb->executeQuery();
+		$result = $qb->execute();
 		while ($row = $result->fetch()) {
 			$this->discoveryService->discover($row['remote'], 'FEDERATED_SHARING', true);
 			try {

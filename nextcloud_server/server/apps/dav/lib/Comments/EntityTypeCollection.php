@@ -26,13 +26,19 @@ use Sabre\DAV\Exception\NotFound;
  * @package OCA\DAV\Comments
  */
 class EntityTypeCollection extends RootCollection {
+	protected LoggerInterface $logger;
+	protected IUserManager $userManager;
+
+	/** @var \Closure */
+	protected $childExistsFunction;
+
 	public function __construct(
 		string $name,
 		ICommentsManager $commentsManager,
-		protected IUserManager $userManager,
+		IUserManager $userManager,
 		IUserSession $userSession,
-		protected LoggerInterface $logger,
-		protected \Closure $childExistsFunction,
+		LoggerInterface $logger,
+		\Closure $childExistsFunction
 	) {
 		$name = trim($name);
 		if (empty($name)) {
@@ -40,7 +46,10 @@ class EntityTypeCollection extends RootCollection {
 		}
 		$this->name = $name;
 		$this->commentsManager = $commentsManager;
+		$this->logger = $logger;
+		$this->userManager = $userManager;
 		$this->userSession = $userSession;
+		$this->childExistsFunction = $childExistsFunction;
 	}
 
 	/**

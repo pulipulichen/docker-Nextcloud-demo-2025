@@ -18,9 +18,10 @@ use OCP\IURLGenerator;
 
 class ChangePasswordHandler implements IHandler {
 
-	public function __construct(
-		private IURLGenerator $urlGenerator,
-	) {
+	private IURLGenerator $urlGenerator;
+
+	public function __construct(IURLGenerator $urlGenerator) {
+		$this->urlGenerator = $urlGenerator;
 	}
 
 	public function handle(string $service, IRequestContext $context, ?IResponse $previousResponse): ?IResponse {

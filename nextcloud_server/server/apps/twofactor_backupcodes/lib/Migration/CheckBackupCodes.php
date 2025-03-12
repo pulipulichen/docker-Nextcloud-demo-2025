@@ -14,9 +14,11 @@ use OCP\Migration\IRepairStep;
 
 class CheckBackupCodes implements IRepairStep {
 
-	public function __construct(
-		private IJobList $jobList,
-	) {
+	/** @var IJobList */
+	private $jobList;
+
+	public function __construct(IJobList $jobList) {
+		$this->jobList = $jobList;
 	}
 
 	public function getName(): string {

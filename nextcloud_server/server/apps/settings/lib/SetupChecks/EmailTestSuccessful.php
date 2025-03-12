@@ -46,9 +46,7 @@ class EmailTestSuccessful implements ISetupCheck {
 	}
 
 	public function run(): SetupResult {
-		if ($this->config->getSystemValueString('mail_smtpmode', 'smtp') === 'null') {
-			return SetupResult::success($this->l10n->t('Mail delivery is disabled by instance config "%s".', ['mail_smtpmode']));
-		} elseif ($this->wasEmailTestSuccessful()) {
+		if ($this->wasEmailTestSuccessful()) {
 			return SetupResult::success($this->l10n->t('Email test was successfully sent'));
 		} else {
 			// If setup check could link to settings pages, this one should link to OC.generateUrl('/settings/admin')

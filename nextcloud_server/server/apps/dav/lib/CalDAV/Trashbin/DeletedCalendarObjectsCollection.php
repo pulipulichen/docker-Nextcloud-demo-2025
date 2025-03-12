@@ -25,11 +25,16 @@ class DeletedCalendarObjectsCollection implements ICalendarObjectContainer, IACL
 
 	public const NAME = 'objects';
 
-	public function __construct(
-		protected CalDavBackend $caldavBackend,
-		/** @var mixed[] */
-		private array $principalInfo,
-	) {
+	/** @var CalDavBackend */
+	protected $caldavBackend;
+
+	/** @var mixed[] */
+	private $principalInfo;
+
+	public function __construct(CalDavBackend $caldavBackend,
+		array $principalInfo) {
+		$this->caldavBackend = $caldavBackend;
+		$this->principalInfo = $principalInfo;
 	}
 
 	/**
@@ -46,7 +51,7 @@ class DeletedCalendarObjectsCollection implements ICalendarObjectContainer, IACL
 
 		$data = $this->caldavBackend->getCalendarObjectById(
 			$this->principalInfo['uri'],
-			(int)$matches[1],
+			(int) $matches[1],
 		);
 
 		// If the object hasn't been deleted yet then we don't want to find it here

@@ -27,14 +27,16 @@ class Check extends Command {
 	 */
 	private $appManager;
 
-	public function __construct(
-		AppManager $appManager,
-		private UpdateChecker $updateChecker,
-		Installer $installer,
-	) {
+	/**
+	 * @var UpdateChecker $updateChecker
+	 */
+	private $updateChecker;
+
+	public function __construct(AppManager $appManager, UpdateChecker $updateChecker, Installer $installer) {
 		parent::__construct();
 		$this->installer = $installer;
 		$this->appManager = $appManager;
+		$this->updateChecker = $updateChecker;
 	}
 
 	protected function configure(): void {
@@ -50,13 +52,13 @@ class Check extends Command {
 		// Server
 		$r = $this->updateChecker->getUpdateState();
 		if (isset($r['updateAvailable']) && $r['updateAvailable']) {
-			$output->writeln($r['updateVersionString'] . ' is available. Get more information on how to update at ' . $r['updateLink'] . '.');
+			$output->writeln($r['updateVersionString'] . ' is available. Get more information on how to update at '. $r['updateLink'] . '.');
 			$updatesAvailableCount += 1;
 		}
 
 
 		// Apps
-		$apps = $this->appManager->getEnabledApps();
+		$apps = $this->appManager->getInstalledApps();
 		foreach ($apps as $app) {
 			$update = $this->installer->isUpdateAvailable($app);
 			if ($update !== false) {

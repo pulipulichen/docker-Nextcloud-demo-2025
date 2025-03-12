@@ -18,10 +18,11 @@ use Sabre\Xml\XmlSerializable;
 class ShareeList implements XmlSerializable {
 	public const NS_NEXTCLOUD = 'http://nextcloud.org/ns';
 
-	public function __construct(
-		/** @var IShare[] */
-		private array $shares,
-	) {
+	/** @var IShare[] */
+	private $shares;
+
+	public function __construct(array $shares) {
+		$this->shares = $shares;
 	}
 
 	/**

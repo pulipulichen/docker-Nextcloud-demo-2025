@@ -7,13 +7,8 @@
  */
 namespace OCA\Files;
 
-use OC\Files\Filesystem;
 use OCP\Files\FileInfo;
-use OCP\Files\IMimeTypeDetector;
-use OCP\Files\NotFoundException;
 use OCP\ITagManager;
-use OCP\Server;
-use OCP\Util;
 
 /**
  * Helper class for manipulating file information
@@ -22,14 +17,14 @@ class Helper {
 	/**
 	 * @param string $dir
 	 * @return array
-	 * @throws NotFoundException
+	 * @throws \OCP\Files\NotFoundException
 	 */
 	public static function buildFileStorageStatistics($dir) {
 		// information about storage capacities
 		$storageInfo = \OC_Helper::getStorageInfo($dir);
-		$l = Util::getL10N('files');
-		$maxUploadFileSize = Util::maxUploadFilesize($dir, $storageInfo['free']);
-		$maxHumanFileSize = Util::humanFileSize($maxUploadFileSize);
+		$l = \OCP\Util::getL10N('files');
+		$maxUploadFileSize = \OCP\Util::maxUploadFilesize($dir, $storageInfo['free']);
+		$maxHumanFileSize = \OCP\Util::humanFileSize($maxUploadFileSize);
 		$maxHumanFileSize = $l->t('Upload (max. %s)', [$maxHumanFileSize]);
 
 		return [
@@ -50,20 +45,20 @@ class Helper {
 	/**
 	 * Determine icon for a given file
 	 *
-	 * @param FileInfo $file file info
+	 * @param \OCP\Files\FileInfo $file file info
 	 * @return string icon URL
 	 */
 	public static function determineIcon($file) {
 		if ($file['type'] === 'dir') {
-			$icon = Server::get(IMimeTypeDetector::class)->mimeTypeIcon('dir');
+			$icon = \OC::$server->getMimeTypeDetector()->mimeTypeIcon('dir');
 			// TODO: move this part to the client side, using mountType
 			if ($file->isShared()) {
-				$icon = Server::get(IMimeTypeDetector::class)->mimeTypeIcon('dir-shared');
+				$icon = \OC::$server->getMimeTypeDetector()->mimeTypeIcon('dir-shared');
 			} elseif ($file->isMounted()) {
-				$icon = Server::get(IMimeTypeDetector::class)->mimeTypeIcon('dir-external');
+				$icon = \OC::$server->getMimeTypeDetector()->mimeTypeIcon('dir-external');
 			}
 		} else {
-			$icon = Server::get(IMimeTypeDetector::class)->mimeTypeIcon($file->getMimetype());
+			$icon = \OC::$server->getMimeTypeDetector()->mimeTypeIcon($file->getMimetype());
 		}
 
 		return substr($icon, 0, -3) . 'svg';
@@ -73,8 +68,8 @@ class Helper {
 	 * Comparator function to sort files alphabetically and have
 	 * the directories appear first
 	 *
-	 * @param FileInfo $a file
-	 * @param FileInfo $b file
+	 * @param \OCP\Files\FileInfo $a file
+	 * @param \OCP\Files\FileInfo $b file
 	 * @return int -1 if $a must come before $b, 1 otherwise
 	 */
 	public static function compareFileNames(FileInfo $a, FileInfo $b) {
@@ -85,15 +80,15 @@ class Helper {
 		} elseif ($aType !== 'dir' and $bType === 'dir') {
 			return 1;
 		} else {
-			return Util::naturalSortCompare($a->getName(), $b->getName());
+			return \OCP\Util::naturalSortCompare($a->getName(), $b->getName());
 		}
 	}
 
 	/**
 	 * Comparator function to sort files by date
 	 *
-	 * @param FileInfo $a file
-	 * @param FileInfo $b file
+	 * @param \OCP\Files\FileInfo $a file
+	 * @param \OCP\Files\FileInfo $b file
 	 * @return int -1 if $a must come before $b, 1 otherwise
 	 */
 	public static function compareTimestamp(FileInfo $a, FileInfo $b) {
@@ -105,8 +100,8 @@ class Helper {
 	/**
 	 * Comparator function to sort files by size
 	 *
-	 * @param FileInfo $a file
-	 * @param FileInfo $b file
+	 * @param \OCP\Files\FileInfo $a file
+	 * @param \OCP\Files\FileInfo $b file
 	 * @return int -1 if $a must come before $b, 1 otherwise
 	 */
 	public static function compareSize(FileInfo $a, FileInfo $b) {
@@ -118,24 +113,22 @@ class Helper {
 	/**
 	 * Formats the file info to be returned as JSON to the client.
 	 *
-	 * @param FileInfo $i
+	 * @param \OCP\Files\FileInfo $i
 	 * @return array formatted file info
 	 */
 	public static function formatFileInfo(FileInfo $i) {
 		$entry = [];
 
-		$entry['id'] = $i->getId();
-		$entry['parentId'] = $i->getParentId();
-		$entry['mtime'] = $i->getMtime() * 1000;
+		$entry['id'] = $i['fileid'];
+		$entry['parentId'] = $i['parent'];
+		$entry['mtime'] = $i['mtime'] * 1000;
 		// only pick out the needed attributes
 		$entry['name'] = $i->getName();
-		$entry['permissions'] = $i->getPermissions();
-		$entry['mimetype'] = $i->getMimetype();
-		$entry['size'] = $i->getSize();
-		$entry['type'] = $i->getType();
-		$entry['etag'] = $i->getEtag();
-		// TODO: this is using the private implementation of FileInfo
-		// the array access is not part of the public interface
+		$entry['permissions'] = $i['permissions'];
+		$entry['mimetype'] = $i['mimetype'];
+		$entry['size'] = $i['size'];
+		$entry['type'] = $i['type'];
+		$entry['etag'] = $i['etag'];
 		if (isset($i['tags'])) {
 			$entry['tags'] = $i['tags'];
 		}
@@ -145,10 +138,6 @@ class Helper {
 		if (isset($i['is_share_mount_point'])) {
 			$entry['isShareMountPoint'] = $i['is_share_mount_point'];
 		}
-		if (isset($i['extraData'])) {
-			$entry['extraData'] = $i['extraData'];
-		}
-
 		$mountType = null;
 		$mount = $i->getMountPoint();
 		$mountType = $mount->getMountType();
@@ -158,12 +147,15 @@ class Helper {
 			}
 			$entry['mountType'] = $mountType;
 		}
+		if (isset($i['extraData'])) {
+			$entry['extraData'] = $i['extraData'];
+		}
 		return $entry;
 	}
 
 	/**
 	 * Format file info for JSON
-	 * @param FileInfo[] $fileInfos file infos
+	 * @param \OCP\Files\FileInfo[] $fileInfos file infos
 	 * @return array
 	 */
 	public static function formatFileInfos($fileInfos) {
@@ -183,10 +175,10 @@ class Helper {
 	 * @param string $sortAttribute attribute to sort on
 	 * @param bool $sortDescending true for descending sort, false otherwise
 	 * @param string $mimetypeFilter limit returned content to this mimetype or mimepart
-	 * @return FileInfo[] files
+	 * @return \OCP\Files\FileInfo[] files
 	 */
 	public static function getFiles($dir, $sortAttribute = 'name', $sortDescending = false, $mimetypeFilter = '') {
-		$content = Filesystem::getDirectoryContent($dir, $mimetypeFilter);
+		$content = \OC\Files\Filesystem::getDirectoryContent($dir, $mimetypeFilter);
 
 		return self::sortFiles($content, $sortAttribute, $sortDescending);
 	}
@@ -194,34 +186,37 @@ class Helper {
 	/**
 	 * Populate the result set with file tags
 	 *
-	 * @psalm-template T of array{tags?: list<string>, file_source: int, ...array<string, mixed>}
-	 * @param list<T> $fileList
-	 * @return list<T> file list populated with tags
+	 * @param array $fileList
+	 * @param string $fileIdentifier identifier attribute name for values in $fileList
+	 * @param ITagManager $tagManager
+	 * @return array file list populated with tags
 	 */
-	public static function populateTags(array $fileList, ITagManager $tagManager) {
+	public static function populateTags(array $fileList, $fileIdentifier, ITagManager $tagManager) {
+		$ids = [];
+		foreach ($fileList as $fileData) {
+			$ids[] = $fileData[$fileIdentifier];
+		}
 		$tagger = $tagManager->load('files');
-		$tags = $tagger->getTagsForObjects(array_map(static fn (array $fileData) => $fileData['file_source'], $fileList));
+		$tags = $tagger->getTagsForObjects($ids);
 
 		if (!is_array($tags)) {
 			throw new \UnexpectedValueException('$tags must be an array');
 		}
 
 		// Set empty tag array
-		foreach ($fileList as &$fileData) {
-			$fileData['tags'] = [];
+		foreach ($fileList as $key => $fileData) {
+			$fileList[$key]['tags'] = [];
 		}
-		unset($fileData);
 
 		if (!empty($tags)) {
 			foreach ($tags as $fileId => $fileTags) {
-				foreach ($fileList as &$fileData) {
-					if ($fileId !== $fileData['file_source']) {
+				foreach ($fileList as $key => $fileData) {
+					if ($fileId !== $fileData[$fileIdentifier]) {
 						continue;
 					}
 
-					$fileData['tags'] = $fileTags;
+					$fileList[$key]['tags'] = $fileTags;
 				}
-				unset($fileData);
 			}
 		}
 
@@ -231,10 +226,10 @@ class Helper {
 	/**
 	 * Sort the given file info array
 	 *
-	 * @param FileInfo[] $files files to sort
+	 * @param \OCP\Files\FileInfo[] $files files to sort
 	 * @param string $sortAttribute attribute to sort on
 	 * @param bool $sortDescending true for descending sort, false otherwise
-	 * @return FileInfo[] sorted files
+	 * @return \OCP\Files\FileInfo[] sorted files
 	 */
 	public static function sortFiles($files, $sortAttribute = 'name', $sortDescending = false) {
 		$sortFunc = 'compareFileNames';

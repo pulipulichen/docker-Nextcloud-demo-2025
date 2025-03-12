@@ -6,27 +6,19 @@
  */
 namespace OCA\Files_External\Config;
 
-use OC\Files\Cache\Storage;
 use OC\Files\Storage\FailedStorage;
 use OC\Files\Storage\Wrapper\Availability;
 use OC\Files\Storage\Wrapper\KnownMtime;
 use OCA\Files_External\Lib\PersonalMount;
 use OCA\Files_External\Lib\StorageConfig;
-use OCA\Files_External\MountConfig;
 use OCA\Files_External\Service\UserGlobalStoragesService;
 use OCA\Files_External\Service\UserStoragesService;
-use OCP\AppFramework\QueryException;
 use OCP\Files\Config\IMountProvider;
-use OCP\Files\Mount\IMountPoint;
-use OCP\Files\ObjectStore\IObjectStore;
-use OCP\Files\Storage\IConstructableStorage;
-use OCP\Files\Storage\IStorage;
+use OCP\Files\Storage;
 use OCP\Files\Storage\IStorageFactory;
 use OCP\Files\StorageNotAvailableException;
 use OCP\IUser;
-use OCP\Server;
 use Psr\Clock\ClockInterface;
-use Psr\Log\LoggerInterface;
 
 /**
  * Make the old files_external config work with the new public mount config api
@@ -40,31 +32,23 @@ class ConfigAdapter implements IMountProvider {
 	}
 
 	/**
-	 * @param class-string $class
-	 * @return class-string<IObjectStore>
-	 * @throws \InvalidArgumentException
-	 * @psalm-taint-escape callable
-	 */
-	private function validateObjectStoreClassString(string $class): string {
-		if (!\is_subclass_of($class, IObjectStore::class)) {
-			throw new \InvalidArgumentException('Invalid object store');
-		}
-		return $class;
-	}
-
-	/**
 	 * Process storage ready for mounting
 	 *
-	 * @throws QueryException
+	 * @param StorageConfig $storage
+	 * @param IUser $user
+	 * @throws \OCP\AppFramework\QueryException
 	 */
-	private function prepareStorageConfig(StorageConfig &$storage, IUser $user): void {
+	private function prepareStorageConfig(StorageConfig &$storage, IUser $user) {
 		foreach ($storage->getBackendOptions() as $option => $value) {
-			$storage->setBackendOption($option, MountConfig::substitutePlaceholdersInConfig($value, $user->getUID()));
+			$storage->setBackendOption($option, \OCA\Files_External\MountConfig::substitutePlaceholdersInConfig($value, $user->getUID()));
 		}
 
 		$objectStore = $storage->getBackendOption('objectstore');
 		if ($objectStore) {
-			$objectClass = $this->validateObjectStoreClassString($objectStore['class']);
+			$objectClass = $objectStore['class'];
+			if (!is_subclass_of($objectClass, '\OCP\Files\ObjectStore\IObjectStore')) {
+				throw new \InvalidArgumentException('Invalid object store');
+			}
 			$storage->setBackendOption('objectstore', new $objectClass($objectStore));
 		}
 
@@ -76,12 +60,10 @@ class ConfigAdapter implements IMountProvider {
 	 * Construct the storage implementation
 	 *
 	 * @param StorageConfig $storageConfig
+	 * @return Storage
 	 */
-	private function constructStorage(StorageConfig $storageConfig): IStorage {
+	private function constructStorage(StorageConfig $storageConfig) {
 		$class = $storageConfig->getBackend()->getStorageClass();
-		if (!is_a($class, IConstructableStorage::class, true)) {
-			Server::get(LoggerInterface::class)->warning('Building a storage not implementing IConstructableStorage is deprecated since 31.0.0', ['class' => $class]);
-		}
 		$storage = new $class($storageConfig->getBackendOptions());
 
 		// auth mechanism should fire first
@@ -94,7 +76,9 @@ class ConfigAdapter implements IMountProvider {
 	/**
 	 * Get all mountpoints applicable for the user
 	 *
-	 * @return IMountPoint[]
+	 * @param \OCP\IUser $user
+	 * @param \OCP\Files\Storage\IStorageFactory $loader
+	 * @return \OCP\Files\Mount\IMountPoint[]
 	 */
 	public function getMountsForUser(IUser $user, IStorageFactory $loader) {
 		$this->userStoragesService->setUser($user);
@@ -113,11 +97,11 @@ class ConfigAdapter implements IMountProvider {
 		}, $storageConfigs);
 
 
-		Storage::getGlobalCache()->loadForStorageIds(array_map(function (IStorage $storage) {
+		\OC\Files\Cache\Storage::getGlobalCache()->loadForStorageIds(array_map(function (Storage\IStorage $storage) {
 			return $storage->getId();
 		}, $storages));
 
-		$availableStorages = array_map(function (IStorage $storage, StorageConfig $storageConfig): IStorage {
+		$availableStorages = array_map(function (Storage\IStorage $storage, StorageConfig $storageConfig) {
 			try {
 				$availability = $storage->getAvailability();
 				if (!$availability['available'] && !Availability::shouldRecheck($availability)) {
@@ -132,7 +116,7 @@ class ConfigAdapter implements IMountProvider {
 			return $storage;
 		}, $storages, $storageConfigs);
 
-		$mounts = array_map(function (StorageConfig $storageConfig, IStorage $storage) use ($user, $loader) {
+		$mounts = array_map(function (StorageConfig $storageConfig, Storage\IStorage $storage) use ($user, $loader) {
 			$storage->setOwner($user->getUID());
 			if ($storageConfig->getType() === StorageConfig::MOUNT_TYPE_PERSONAL) {
 				return new PersonalMount(

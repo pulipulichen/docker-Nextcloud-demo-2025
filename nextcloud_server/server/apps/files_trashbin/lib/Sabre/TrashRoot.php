@@ -8,10 +8,8 @@ declare(strict_types=1);
  */
 namespace OCA\Files_Trashbin\Sabre;
 
-use OCA\Files_Trashbin\Service\ConfigService;
 use OCA\Files_Trashbin\Trash\ITrashItem;
 use OCA\Files_Trashbin\Trash\ITrashManager;
-use OCA\Files_Trashbin\Trashbin;
 use OCP\Files\FileInfo;
 use OCP\IUser;
 use Sabre\DAV\Exception\Forbidden;
@@ -20,18 +18,19 @@ use Sabre\DAV\ICollection;
 
 class TrashRoot implements ICollection {
 
-	public function __construct(
-		private IUser $user,
-		private ITrashManager $trashManager,
-	) {
+	/** @var IUser */
+	private $user;
+
+	/** @var ITrashManager  */
+	private $trashManager;
+
+	public function __construct(IUser $user, ITrashManager $trashManager) {
+		$this->user = $user;
+		$this->trashManager = $trashManager;
 	}
 
 	public function delete() {
-		if (!ConfigService::getDeleteFromTrashEnabled()) {
-			throw new Forbidden('Not allowed to delete items from the trash bin');
-		}
-
-		Trashbin::deleteAll();
+		\OCA\Files_Trashbin\Trashbin::deleteAll();
 		foreach ($this->trashManager->listTrashRoot($this->user) as $trashItem) {
 			$this->trashManager->removeItem($trashItem);
 		}

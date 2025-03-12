@@ -12,7 +12,6 @@ use OCP\Http\Client\IClientService;
 use OCP\IConfig;
 use OCP\IL10N;
 use OCP\IURLGenerator;
-use OCP\SetupCheck\CheckServerResponseTrait;
 use OCP\SetupCheck\ISetupCheck;
 use OCP\SetupCheck\SetupResult;
 use Psr\Log\LoggerInterface;
@@ -44,7 +43,7 @@ class JavaScriptModules implements ISetupCheck {
 		$testFile = $this->urlGenerator->linkTo('settings', 'js/esm-test.mjs');
 
 		$noResponse = true;
-		foreach ($this->runRequest('HEAD', $testFile) as $response) {
+		foreach ($this->runHEAD($testFile) as $response) {
 			$noResponse = false;
 			if (preg_match('/(text|application)\/javascript/i', $response->getHeader('Content-Type'))) {
 				return SetupResult::success();

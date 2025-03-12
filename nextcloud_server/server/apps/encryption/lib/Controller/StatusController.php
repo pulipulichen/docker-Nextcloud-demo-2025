@@ -17,21 +17,32 @@ use OCP\IRequest;
 
 class StatusController extends Controller {
 
+	/** @var IL10N */
+	private $l;
+
+	/** @var Session */
+	private $session;
+
+	/** @var IManager */
+	private $encryptionManager;
+
 	/**
 	 * @param string $AppName
 	 * @param IRequest $request
-	 * @param IL10N $l
+	 * @param IL10N $l10n
 	 * @param Session $session
 	 * @param IManager $encryptionManager
 	 */
-	public function __construct(
-		$AppName,
+	public function __construct($AppName,
 		IRequest $request,
-		private IL10N $l,
-		private Session $session,
-		private IManager $encryptionManager,
+		IL10N $l10n,
+		Session $session,
+		IManager $encryptionManager
 	) {
 		parent::__construct($AppName, $request);
+		$this->l = $l10n;
+		$this->session = $session;
+		$this->encryptionManager = $encryptionManager;
 	}
 
 	/**

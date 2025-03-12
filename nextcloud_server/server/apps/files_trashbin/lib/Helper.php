@@ -7,18 +7,15 @@
 namespace OCA\Files_Trashbin;
 
 use OC\Files\FileInfo;
-use OC\Files\View;
 use OCP\Constants;
 use OCP\Files\Cache\ICacheEntry;
-use OCP\Files\IMimeTypeDetector;
-use OCP\Server;
 
 class Helper {
 	/**
 	 * Retrieves the contents of a trash bin directory.
 	 *
 	 * @param string $dir path to the directory inside the trashbin
-	 *                    or empty to retrieve the root of the trashbin
+	 * or empty to retrieve the root of the trashbin
 	 * @param string $user
 	 * @param string $sortAttribute attribute to sort on or empty to disable sorting
 	 * @param bool $sortDescending true for descending sort, false otherwise
@@ -28,7 +25,7 @@ class Helper {
 		$result = [];
 		$timestamp = null;
 
-		$view = new View('/' . $user . '/files_trashbin/files');
+		$view = new \OC\Files\View('/' . $user . '/files_trashbin/files');
 
 		if (ltrim($dir, '/') !== '' && !$view->is_dir($dir)) {
 			throw new \Exception('Directory does not exists');
@@ -39,7 +36,7 @@ class Helper {
 		$absoluteDir = $view->getAbsolutePath($dir);
 		$internalPath = $mount->getInternalPath($absoluteDir);
 
-		$extraData = Trashbin::getExtraData($user);
+		$extraData = \OCA\Files_Trashbin\Trashbin::getExtraData($user);
 		$dirContent = $storage->getCache()->getFolderContents($mount->getInternalPath($view->getAbsolutePath($dir)));
 		foreach ($dirContent as $entry) {
 			$entryName = $entry->getName();
@@ -65,7 +62,7 @@ class Helper {
 			$i = [
 				'name' => $name,
 				'mtime' => $timestamp,
-				'mimetype' => $type === 'dir' ? 'httpd/unix-directory' : Server::get(IMimeTypeDetector::class)->detectPath($name),
+				'mimetype' => $type === 'dir' ? 'httpd/unix-directory' : \OC::$server->getMimeTypeDetector()->detectPath($name),
 				'type' => $type,
 				'directory' => ($dir === '/') ? '' : $dir,
 				'size' => $entry->getSize(),
@@ -101,7 +98,7 @@ class Helper {
 			$entry = \OCA\Files\Helper::formatFileInfo($i);
 			$entry['id'] = $i->getId();
 			$entry['etag'] = $entry['mtime']; // add fake etag, it is only needed to identify the preview image
-			$entry['permissions'] = Constants::PERMISSION_READ;
+			$entry['permissions'] = \OCP\Constants::PERMISSION_READ;
 			$files[] = $entry;
 		}
 		return $files;

@@ -15,9 +15,11 @@ use OCP\Group\Events\GroupDeletedEvent;
 
 /** @template-implements IEventListener<GroupDeletedEvent> */
 class GroupDeletedListener implements IEventListener {
-	public function __construct(
-		private DBConfigService $config,
-	) {
+	/** @var DBConfigService */
+	private $config;
+
+	public function __construct(DBConfigService $config) {
+		$this->config = $config;
 	}
 
 	public function handle(Event $event): void {

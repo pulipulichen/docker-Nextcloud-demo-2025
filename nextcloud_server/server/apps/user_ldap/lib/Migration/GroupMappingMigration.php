@@ -14,9 +14,11 @@ use OCP\Migration\SimpleMigrationStep;
 
 abstract class GroupMappingMigration extends SimpleMigrationStep {
 
-	public function __construct(
-		private IDBConnection $dbc,
-	) {
+	/** @var IDBConnection */
+	private $dbc;
+
+	public function __construct(IDBConnection $dbc) {
+		$this->dbc = $dbc;
 	}
 
 	protected function copyGroupMappingData(string $sourceTable, string $destinationTable): void {

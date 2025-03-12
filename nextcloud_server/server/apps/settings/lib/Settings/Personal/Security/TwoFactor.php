@@ -30,15 +30,25 @@ class TwoFactor implements ISettings {
 	/** @var MandatoryTwoFactor */
 	private $mandatoryTwoFactor;
 
-	public function __construct(
-		ProviderLoader $providerLoader,
+	/** @var IUserSession */
+	private $userSession;
+
+	/** @var string|null */
+	private $uid;
+
+	/** @var IConfig */
+	private $config;
+
+	public function __construct(ProviderLoader $providerLoader,
 		MandatoryTwoFactor $mandatoryTwoFactor,
-		private IUserSession $userSession,
-		private IConfig $config,
-		private ?string $userId,
-	) {
+		IUserSession $userSession,
+		IConfig $config,
+		?string $UserId) {
 		$this->providerLoader = $providerLoader;
 		$this->mandatoryTwoFactor = $mandatoryTwoFactor;
+		$this->userSession = $userSession;
+		$this->uid = $UserId;
+		$this->config = $config;
 	}
 
 	public function getForm(): TemplateResponse {

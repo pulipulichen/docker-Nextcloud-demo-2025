@@ -6,9 +6,11 @@
 namespace OCA\User_LDAP;
 
 class ConnectionFactory {
-	public function __construct(
-		private ILDAPWrapper $ldap,
-	) {
+	/** @var ILDAPWrapper */
+	private $ldap;
+
+	public function __construct(ILDAPWrapper $ldap) {
+		$this->ldap = $ldap;
 	}
 
 	public function get($prefix) {

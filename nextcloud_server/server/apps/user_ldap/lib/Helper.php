@@ -11,16 +11,17 @@ use OCP\Cache\CappedMemoryCache;
 use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\IConfig;
 use OCP\IDBConnection;
-use OCP\Server;
 
 class Helper {
+	private IConfig $config;
+	private IDBConnection $connection;
 	/** @var CappedMemoryCache<string> */
 	protected CappedMemoryCache $sanitizeDnCache;
 
-	public function __construct(
-		private IConfig $config,
-		private IDBConnection $connection,
-	) {
+	public function __construct(IConfig $config,
+		IDBConnection $connection) {
+		$this->config = $config;
+		$this->connection = $connection;
 		$this->sanitizeDnCache = new CappedMemoryCache(10000);
 	}
 
@@ -28,7 +29,7 @@ class Helper {
 	 * returns prefixes for each saved LDAP/AD server configuration.
 	 *
 	 * @param bool $activeConfigurations optional, whether only active configuration shall be
-	 *                                   retrieved, defaults to false
+	 * retrieved, defaults to false
 	 * @return array with a list of the available prefixes
 	 *
 	 * Configuration prefixes are used to set up configurations for n LDAP or
@@ -270,7 +271,7 @@ class Helper {
 			throw new \Exception('key uid is expected to be set in $param');
 		}
 
-		$userBackend = Server::get(User_Proxy::class);
+		$userBackend = \OC::$server->get(User_Proxy::class);
 		$uid = $userBackend->loginName2UserName($param['uid']);
 		if ($uid !== false) {
 			$param['uid'] = $uid;

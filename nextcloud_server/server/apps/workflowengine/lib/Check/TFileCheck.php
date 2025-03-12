@@ -11,7 +11,6 @@ namespace OCA\WorkflowEngine\Check;
 use OCA\WorkflowEngine\AppInfo\Application;
 use OCA\WorkflowEngine\Entity\File;
 use OCP\Files\Node;
-use OCP\Files\NotFoundException;
 use OCP\Files\Storage\IStorage;
 use OCP\WorkflowEngine\IEntity;
 
@@ -38,7 +37,7 @@ trait TFileCheck {
 	}
 
 	/**
-	 * @throws NotFoundException
+	 * @throws \OCP\Files\NotFoundException
 	 */
 	public function setEntitySubject(IEntity $entity, $subject): void {
 		if ($entity instanceof File) {

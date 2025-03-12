@@ -12,10 +12,7 @@ use OC\Files\Storage\Common;
 use OC\Files\Storage\PolyFill\CopyDirectory;
 use OCP\Constants;
 use OCP\Files\FileInfo;
-use OCP\Files\IMimeTypeDetector;
 use OCP\Files\StorageNotAvailableException;
-use OCP\ITempManager;
-use OCP\Server;
 use Psr\Log\LoggerInterface;
 
 class FTP extends Common {
@@ -32,23 +29,23 @@ class FTP extends Common {
 	/** @var FtpConnection|null */
 	private $connection;
 
-	public function __construct(array $parameters) {
-		if (isset($parameters['host']) && isset($parameters['user']) && isset($parameters['password'])) {
-			$this->host = $parameters['host'];
-			$this->username = $parameters['user'];
-			$this->password = $parameters['password'];
-			if (isset($parameters['secure'])) {
-				if (is_string($parameters['secure'])) {
-					$this->secure = ($parameters['secure'] === 'true');
+	public function __construct($params) {
+		if (isset($params['host']) && isset($params['user']) && isset($params['password'])) {
+			$this->host = $params['host'];
+			$this->username = $params['user'];
+			$this->password = $params['password'];
+			if (isset($params['secure'])) {
+				if (is_string($params['secure'])) {
+					$this->secure = ($params['secure'] === 'true');
 				} else {
-					$this->secure = (bool)$parameters['secure'];
+					$this->secure = (bool)$params['secure'];
 				}
 			} else {
 				$this->secure = false;
 			}
-			$this->root = isset($parameters['root']) ? '/' . ltrim($parameters['root']) : '/';
-			$this->port = $parameters['port'] ?? 21;
-			$this->utf8Mode = isset($parameters['utf8']) && $parameters['utf8'];
+			$this->root = isset($params['root']) ? '/' . ltrim($params['root']) : '/';
+			$this->port = $params['port'] ?? 21;
+			$this->utf8Mode = isset($params['utf8']) && $params['utf8'];
 		} else {
 			throw new \Exception('Creating ' . self::class . ' storage failed, required parameters not set');
 		}
@@ -69,11 +66,11 @@ class FTP extends Common {
 					$this->password
 				);
 			} catch (\Exception $e) {
-				throw new StorageNotAvailableException('Failed to create ftp connection', 0, $e);
+				throw new StorageNotAvailableException("Failed to create ftp connection", 0, $e);
 			}
 			if ($this->utf8Mode) {
 				if (!$this->connection->setUtf8Mode()) {
-					throw new StorageNotAvailableException('Could not set UTF-8 mode');
+					throw new StorageNotAvailableException("Could not set UTF-8 mode");
 				}
 			}
 		}
@@ -81,15 +78,15 @@ class FTP extends Common {
 		return $this->connection;
 	}
 
-	public function getId(): string {
+	public function getId() {
 		return 'ftp::' . $this->username . '@' . $this->host . '/' . $this->root;
 	}
 
-	protected function buildPath(string $path): string {
+	protected function buildPath($path) {
 		return rtrim($this->root . '/' . $path, '/');
 	}
 
-	public static function checkDependencies(): array|bool {
+	public static function checkDependencies() {
 		if (function_exists('ftp_login')) {
 			return true;
 		} else {
@@ -97,14 +94,14 @@ class FTP extends Common {
 		}
 	}
 
-	public function filemtime(string $path): int|false {
+	public function filemtime($path) {
 		$result = $this->getConnection()->mdtm($this->buildPath($path));
 
 		if ($result === -1) {
 			if ($this->is_dir($path)) {
 				$list = $this->getConnection()->mlsd($this->buildPath($path));
 				if (!$list) {
-					Server::get(LoggerInterface::class)->warning("Unable to get last modified date for ftp folder ($path), failed to list folder contents");
+					\OC::$server->get(LoggerInterface::class)->warning("Unable to get last modified date for ftp folder ($path), failed to list folder contents");
 					return time();
 				}
 				$currentDir = current(array_filter($list, function ($item) {
@@ -118,7 +115,7 @@ class FTP extends Common {
 					}
 					return $time->getTimestamp();
 				} else {
-					Server::get(LoggerInterface::class)->warning("Unable to get last modified date for ftp folder ($path), folder contents doesn't include current folder");
+					\OC::$server->get(LoggerInterface::class)->warning("Unable to get last modified date for ftp folder ($path), folder contents doesn't include current folder");
 					return time();
 				}
 			} else {
@@ -129,7 +126,7 @@ class FTP extends Common {
 		}
 	}
 
-	public function filesize(string $path): false|int|float {
+	public function filesize($path): false|int|float {
 		$result = $this->getConnection()->size($this->buildPath($path));
 		if ($result === -1) {
 			return false;
@@ -138,7 +135,7 @@ class FTP extends Common {
 		}
 	}
 
-	public function rmdir(string $path): bool {
+	public function rmdir($path) {
 		if ($this->is_dir($path)) {
 			$result = $this->getConnection()->rmdir($this->buildPath($path));
 			// recursive rmdir support depends on the ftp server
@@ -154,7 +151,11 @@ class FTP extends Common {
 		}
 	}
 
-	private function recursiveRmDir(string $path): bool {
+	/**
+	 * @param string $path
+	 * @return bool
+	 */
+	private function recursiveRmDir($path): bool {
 		$contents = $this->getDirectoryContent($path);
 		$result = true;
 		foreach ($contents as $content) {
@@ -169,7 +170,7 @@ class FTP extends Common {
 		return $result;
 	}
 
-	public function test(): bool {
+	public function test() {
 		try {
 			return $this->getConnection()->systype() !== false;
 		} catch (\Exception $e) {
@@ -177,7 +178,7 @@ class FTP extends Common {
 		}
 	}
 
-	public function stat(string $path): array|false {
+	public function stat($path) {
 		if (!$this->file_exists($path)) {
 			return false;
 		}
@@ -187,14 +188,14 @@ class FTP extends Common {
 		];
 	}
 
-	public function file_exists(string $path): bool {
+	public function file_exists($path) {
 		if ($path === '' || $path === '.' || $path === '/') {
 			return true;
 		}
 		return $this->filetype($path) !== false;
 	}
 
-	public function unlink(string $path): bool {
+	public function unlink($path) {
 		switch ($this->filetype($path)) {
 			case 'dir':
 				return $this->rmdir($path);
@@ -205,20 +206,20 @@ class FTP extends Common {
 		}
 	}
 
-	public function opendir(string $path) {
+	public function opendir($path) {
 		$files = $this->getConnection()->nlist($this->buildPath($path));
 		return IteratorDirectory::wrap($files);
 	}
 
-	public function mkdir(string $path): bool {
+	public function mkdir($path) {
 		if ($this->is_dir($path)) {
 			return false;
 		}
 		return $this->getConnection()->mkdir($this->buildPath($path)) !== false;
 	}
 
-	public function is_dir(string $path): bool {
-		if ($path === '') {
+	public function is_dir($path) {
+		if ($path === "") {
 			return true;
 		}
 		if ($this->getConnection()->chdir($this->buildPath($path)) === true) {
@@ -229,11 +230,11 @@ class FTP extends Common {
 		}
 	}
 
-	public function is_file(string $path): bool {
+	public function is_file($path) {
 		return $this->filesize($path) !== false;
 	}
 
-	public function filetype(string $path): string|false {
+	public function filetype($path) {
 		if ($this->is_dir($path)) {
 			return 'dir';
 		} elseif ($this->is_file($path)) {
@@ -243,7 +244,7 @@ class FTP extends Common {
 		}
 	}
 
-	public function fopen(string $path, string $mode) {
+	public function fopen($path, $mode) {
 		$useExisting = true;
 		switch ($mode) {
 			case 'r':
@@ -273,10 +274,10 @@ class FTP extends Common {
 					if (!$this->isCreatable(dirname($path))) {
 						return false;
 					}
-					$tmpFile = Server::get(ITempManager::class)->getTemporaryFile();
+					$tmpFile = \OC::$server->getTempManager()->getTemporaryFile();
 				}
 				$source = fopen($tmpFile, $mode);
-				return CallbackWrapper::wrap($source, null, null, function () use ($tmpFile, $path): void {
+				return CallbackWrapper::wrap($source, null, null, function () use ($tmpFile, $path) {
 					$this->writeStream($path, fopen($tmpFile, 'r'));
 					unlink($tmpFile);
 				});
@@ -286,7 +287,7 @@ class FTP extends Common {
 
 	public function writeStream(string $path, $stream, ?int $size = null): int {
 		if ($size === null) {
-			$stream = CountWrapper::wrap($stream, function ($writtenSize) use (&$size): void {
+			$stream = CountWrapper::wrap($stream, function ($writtenSize) use (&$size) {
 				$size = $writtenSize;
 			});
 		}
@@ -309,7 +310,7 @@ class FTP extends Common {
 		return $stream;
 	}
 
-	public function touch(string $path, ?int $mtime = null): bool {
+	public function touch($path, $mtime = null) {
 		if ($this->file_exists($path)) {
 			return false;
 		} else {
@@ -318,14 +319,14 @@ class FTP extends Common {
 		}
 	}
 
-	public function rename(string $source, string $target): bool {
+	public function rename($source, $target) {
 		$this->unlink($target);
 		return $this->getConnection()->rename($this->buildPath($source), $this->buildPath($target));
 	}
 
-	public function getDirectoryContent(string $directory): \Traversable {
+	public function getDirectoryContent($directory): \Traversable {
 		$files = $this->getConnection()->mlsd($this->buildPath($directory));
-		$mimeTypeDetector = Server::get(IMimeTypeDetector::class);
+		$mimeTypeDetector = \OC::$server->getMimeTypeDetector();
 
 		foreach ($files as $file) {
 			$name = $file['name'];

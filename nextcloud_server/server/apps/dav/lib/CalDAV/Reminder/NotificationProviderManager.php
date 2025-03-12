@@ -8,10 +8,6 @@ declare(strict_types=1);
  */
 namespace OCA\DAV\CalDAV\Reminder;
 
-use OCA\DAV\CalDAV\Reminder\NotificationProvider\ProviderNotAvailableException;
-use OCP\AppFramework\QueryException;
-use OCP\Server;
-
 /**
  * Class NotificationProviderManager
  *
@@ -46,7 +42,7 @@ class NotificationProviderManager {
 			if (isset($this->providers[$type])) {
 				return $this->providers[$type];
 			}
-			throw new ProviderNotAvailableException($type);
+			throw new NotificationProvider\ProviderNotAvailableException($type);
 		}
 		throw new NotificationTypeDoesNotExistException($type);
 	}
@@ -55,10 +51,10 @@ class NotificationProviderManager {
 	 * Registers a new provider
 	 *
 	 * @param string $providerClassName
-	 * @throws QueryException
+	 * @throws \OCP\AppFramework\QueryException
 	 */
 	public function registerProvider(string $providerClassName):void {
-		$provider = Server::get($providerClassName);
+		$provider = \OC::$server->query($providerClassName);
 
 		if (!$provider instanceof INotificationProvider) {
 			throw new \InvalidArgumentException('Invalid notification provider registered');

@@ -19,12 +19,6 @@ class UserConfig {
 			'allowed' => [true, false],
 		],
 		[
-			// Whether to show the "confirm file extension change" warning
-			'key' => 'show_dialog_file_extension',
-			'default' => true,
-			'allowed' => [true, false],
-		],
-		[
 			// Whether to show the hidden files or not in the files list
 			'key' => 'show_hidden',
 			'default' => false,
@@ -55,12 +49,12 @@ class UserConfig {
 			'allowed' => [true, false],
 		],
 	];
+
+	protected IConfig $config;
 	protected ?IUser $user = null;
 
-	public function __construct(
-		protected IConfig $config,
-		IUserSession $userSession,
-	) {
+	public function __construct(IConfig $config, IUserSession $userSession) {
+		$this->config = $config;
 		$this->user = $userSession->getUser();
 	}
 

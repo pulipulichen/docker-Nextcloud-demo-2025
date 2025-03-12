@@ -47,7 +47,6 @@ use OCP\AppFramework\App;
 use OCP\AppFramework\Bootstrap\IBootContext;
 use OCP\AppFramework\Bootstrap\IBootstrap;
 use OCP\AppFramework\Bootstrap\IRegistrationContext;
-use OCP\AppFramework\QueryException;
 use OCP\Files\Config\IMountProviderCollection;
 use OCP\Group\Events\GroupDeletedEvent;
 use OCP\User\Events\UserDeletedEvent;
@@ -63,7 +62,7 @@ class Application extends App implements IBackendProvider, IAuthMechanismProvide
 	/**
 	 * Application constructor.
 	 *
-	 * @throws QueryException
+	 * @throws \OCP\AppFramework\QueryException
 	 */
 	public function __construct(array $urlParams = []) {
 		parent::__construct(self::APP_ID, $urlParams);
@@ -76,10 +75,10 @@ class Application extends App implements IBackendProvider, IAuthMechanismProvide
 	}
 
 	public function boot(IBootContext $context): void {
-		$context->injectFn(function (IMountProviderCollection $mountProviderCollection, ConfigAdapter $configAdapter): void {
+		$context->injectFn(function (IMountProviderCollection $mountProviderCollection, ConfigAdapter $configAdapter) {
 			$mountProviderCollection->registerProvider($configAdapter);
 		});
-		$context->injectFn(function (BackendService $backendService, UserPlaceholderHandler $userConfigHandler): void {
+		$context->injectFn(function (BackendService $backendService, UserPlaceholderHandler $userConfigHandler) {
 			$backendService->registerBackendProvider($this);
 			$backendService->registerAuthMechanismProvider($this);
 			$backendService->registerConfigHandler('user', function () use ($userConfigHandler) {

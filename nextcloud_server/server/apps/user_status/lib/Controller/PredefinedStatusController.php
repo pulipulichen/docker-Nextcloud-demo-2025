@@ -24,6 +24,9 @@ use OCP\IRequest;
  */
 class PredefinedStatusController extends OCSController {
 
+	/** @var PredefinedStatusService */
+	private $predefinedStatusService;
+
 	/**
 	 * AStatusController constructor.
 	 *
@@ -31,18 +34,17 @@ class PredefinedStatusController extends OCSController {
 	 * @param IRequest $request
 	 * @param PredefinedStatusService $predefinedStatusService
 	 */
-	public function __construct(
-		string $appName,
+	public function __construct(string $appName,
 		IRequest $request,
-		private PredefinedStatusService $predefinedStatusService,
-	) {
+		PredefinedStatusService $predefinedStatusService) {
 		parent::__construct($appName, $request);
+		$this->predefinedStatusService = $predefinedStatusService;
 	}
 
 	/**
 	 * Get all predefined messages
 	 *
-	 * @return DataResponse<Http::STATUS_OK, list<UserStatusPredefined>, array{}>
+	 * @return DataResponse<Http::STATUS_OK, UserStatusPredefined[], array{}>
 	 *
 	 * 200: Predefined statuses returned
 	 */
@@ -50,8 +52,8 @@ class PredefinedStatusController extends OCSController {
 	#[ApiRoute(verb: 'GET', url: '/api/v1/predefined_statuses/')]
 	public function findAll():DataResponse {
 		// Filtering out the invisible one, that should only be set by API
-		return new DataResponse(array_values(array_filter($this->predefinedStatusService->getDefaultStatuses(), function (array $status) {
+		return new DataResponse(array_filter($this->predefinedStatusService->getDefaultStatuses(), function (array $status) {
 			return !array_key_exists('visible', $status) || $status['visible'] === true;
-		})));
+		}));
 	}
 }

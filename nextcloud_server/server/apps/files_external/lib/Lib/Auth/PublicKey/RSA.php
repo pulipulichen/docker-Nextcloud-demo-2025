@@ -19,10 +19,12 @@ use phpseclib\Crypt\RSA as RSACrypt;
  */
 class RSA extends AuthMechanism {
 
-	public function __construct(
-		IL10N $l,
-		private IConfig $config,
-	) {
+	/** @var IConfig */
+	private $config;
+
+	public function __construct(IL10N $l, IConfig $config) {
+		$this->config = $config;
+
 		$this
 			->setIdentifier('publickey::rsa')
 			->setScheme(self::SCHEME_PUBLICKEY)

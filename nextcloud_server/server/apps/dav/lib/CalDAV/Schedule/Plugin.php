@@ -10,7 +10,6 @@ use DateTimeZone;
 use OCA\DAV\CalDAV\CalDavBackend;
 use OCA\DAV\CalDAV\Calendar;
 use OCA\DAV\CalDAV\CalendarHome;
-use OCA\DAV\CalDAV\CalendarObject;
 use OCA\DAV\CalDAV\DefaultCalendarValidator;
 use OCA\DAV\CalDAV\TipBroker;
 use OCP\IConfig;
@@ -42,6 +41,11 @@ use function Sabre\Uri\split;
 
 class Plugin extends \Sabre\CalDAV\Schedule\Plugin {
 
+	/**
+	 * @var IConfig
+	 */
+	private $config;
+
 	/** @var ITip\Message[] */
 	private $schedulingResponses = [];
 
@@ -50,15 +54,16 @@ class Plugin extends \Sabre\CalDAV\Schedule\Plugin {
 
 	public const CALENDAR_USER_TYPE = '{' . self::NS_CALDAV . '}calendar-user-type';
 	public const SCHEDULE_DEFAULT_CALENDAR_URL = '{' . Plugin::NS_CALDAV . '}schedule-default-calendar-URL';
+	private LoggerInterface $logger;
+	private DefaultCalendarValidator $defaultCalendarValidator;
 
 	/**
 	 * @param IConfig $config
 	 */
-	public function __construct(
-		private IConfig $config,
-		private LoggerInterface $logger,
-		private DefaultCalendarValidator $defaultCalendarValidator,
-	) {
+	public function __construct(IConfig $config, LoggerInterface $logger, DefaultCalendarValidator $defaultCalendarValidator) {
+		$this->config = $config;
+		$this->logger = $logger;
+		$this->defaultCalendarValidator = $defaultCalendarValidator;
 	}
 
 	/**
@@ -138,7 +143,7 @@ class Plugin extends \Sabre\CalDAV\Schedule\Plugin {
 		if ($result === null) {
 			$result = [];
 		}
-
+		
 		// iterate through items and html decode values
 		foreach ($result as $key => $value) {
 			$result[$key] = urldecode($value);
@@ -171,8 +176,8 @@ class Plugin extends \Sabre\CalDAV\Schedule\Plugin {
 			if (!$this->scheduleReply($this->server->httpRequest)) {
 				return;
 			}
-
-			/** @var Calendar $calendarNode */
+			
+			/** @var \OCA\DAV\CalDAV\Calendar $calendarNode */
 			$calendarNode = $this->server->tree->getNodeForPath($calendarPath);
 			// extract addresses for owner
 			$addresses = $this->getAddressesForPrincipal($calendarNode->getOwner());
@@ -187,7 +192,7 @@ class Plugin extends \Sabre\CalDAV\Schedule\Plugin {
 			// determine if we are updating a calendar event
 			if (!$isNew) {
 				// retrieve current calendar event node
-				/** @var CalendarObject $currentNode */
+				/** @var \OCA\DAV\CalDAV\CalendarObject $currentNode */
 				$currentNode = $this->server->tree->getNodeForPath($request->getPath());
 				// convert calendar event string data to VCalendar object
 				/** @var \Sabre\VObject\Component\VCalendar $currentObject */
@@ -197,12 +202,12 @@ class Plugin extends \Sabre\CalDAV\Schedule\Plugin {
 			}
 			// process request
 			$this->processICalendarChange($currentObject, $vCal, $addresses, [], $modified);
-
+	
 			if ($currentObject) {
 				// Destroy circular references so PHP will GC the object.
 				$currentObject->destroy();
 			}
-
+			
 		} catch (SameOrganizerForAllComponentsException $e) {
 			$this->handleSameOrganizerException($e, $vCal, $calendarPath);
 		}
@@ -430,20 +435,12 @@ EOF;
 						} else {
 							// Otherwise if we have really nothing, create a new calendar
 							if ($currentCalendarDeleted) {
-								// If the calendar exists but is in the trash bin, we try to rename its uri
-								// so that we can create the new one and still restore the previous one
-								// otherwise we just purge the calendar by removing it before recreating it
+								// If the calendar exists but is deleted, we need to purge it first
+								// This may cause some issues in a non synchronous database setup
 								$calendar = $this->getCalendar($calendarHome, $uri);
 								if ($calendar instanceof Calendar) {
-									$backend = $calendarHome->getCalDAVBackend();
-									if ($backend instanceof CalDavBackend) {
-										// If the CalDAV backend supports moving calendars
-										$this->moveCalendar($backend, $principalUrl, $uri, $uri . '-back-' . time());
-									} else {
-										// Otherwise just purge the calendar
-										$calendar->disableTrashbin();
-										$calendar->delete();
-									}
+									$calendar->disableTrashbin();
+									$calendar->delete();
 								}
 							}
 							$this->createCalendar($calendarHome, $principalUrl, $uri, $displayName);
@@ -578,9 +575,9 @@ EOF;
 		$calendarTimeZone = new DateTimeZone('UTC');
 
 		$homePath = $result[0][200]['{' . self::NS_CALDAV . '}calendar-home-set']->getHref();
-		/** @var Calendar $node */
+		/** @var \OCA\DAV\CalDAV\Calendar $node */
 		foreach ($this->server->tree->getNodeForPath($homePath)->getChildren() as $node) {
-
+			
 			if (!$node instanceof ICalendar) {
 				continue;
 			}
@@ -710,10 +707,6 @@ EOF;
 		$calendarHome->getCalDAVBackend()->createCalendar($principalUri, $uri, [
 			'{DAV:}displayname' => $displayName,
 		]);
-	}
-
-	private function moveCalendar(CalDavBackend $calDavBackend, string $principalUri, string $oldUri, string $newUri): void {
-		$calDavBackend->moveCalendar($oldUri, $principalUri, $principalUri, $newUri);
 	}
 
 	/**

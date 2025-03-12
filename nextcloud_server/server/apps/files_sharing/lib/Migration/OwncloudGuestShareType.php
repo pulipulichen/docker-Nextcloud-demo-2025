@@ -18,10 +18,16 @@ use OCP\Share\IShare;
  */
 class OwncloudGuestShareType implements IRepairStep {
 
-	public function __construct(
-		private IDBConnection $connection,
-		private IConfig $config,
-	) {
+	/** @var IDBConnection */
+	private $connection;
+
+	/** @var  IConfig */
+	private $config;
+
+
+	public function __construct(IDBConnection $connection, IConfig $config) {
+		$this->connection = $connection;
+		$this->config = $config;
 	}
 
 	/**

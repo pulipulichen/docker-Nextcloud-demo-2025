@@ -19,7 +19,11 @@ use OCP\IUser;
 use OCP\IUserManager;
 
 class RetryJob extends Job {
+	private IClientService $clientService;
 	private string $lookupServer;
+	private IConfig $config;
+	private IUserManager $userManager;
+	private IAccountManager $accountManager;
 	private Signer $signer;
 	protected int $retries = 0;
 	protected bool $retainJob = false;
@@ -32,18 +36,20 @@ class RetryJob extends Job {
 	 * @param IAccountManager $accountManager
 	 * @param Signer $signer
 	 */
-	public function __construct(
-		ITimeFactory $time,
-		private IClientService $clientService,
-		private IConfig $config,
-		private IUserManager $userManager,
-		private IAccountManager $accountManager,
-		Signer $signer,
-	) {
+	public function __construct(ITimeFactory $time,
+		IClientService $clientService,
+		IConfig $config,
+		IUserManager $userManager,
+		IAccountManager $accountManager,
+		Signer $signer) {
 		parent::__construct($time);
+		$this->clientService = $clientService;
+		$this->config = $config;
+		$this->userManager = $userManager;
+		$this->accountManager = $accountManager;
 		$this->signer = $signer;
 
-		$this->lookupServer = $this->config->getSystemValue('lookup_server', 'https://lookup.nextcloud.com');
+		$this->lookupServer = $config->getSystemValue('lookup_server', 'https://lookup.nextcloud.com');
 		if (!empty($this->lookupServer)) {
 			$this->lookupServer = rtrim($this->lookupServer, '/');
 			$this->lookupServer .= '/users';
@@ -60,7 +66,7 @@ class RetryJob extends Job {
 			return;
 		}
 
-		$this->retries = (int)$this->config->getUserValue($this->argument['userId'], 'lookup_server_connector', 'update_retries', '0');
+		$this->retries = (int) $this->config->getUserValue($this->argument['userId'], 'lookup_server_connector', 'update_retries', '0');
 
 		if ($this->shouldRemoveBackgroundJob()) {
 			$jobList->remove($this, $this->argument);
@@ -158,13 +164,9 @@ class RetryJob extends Job {
 		$account = $this->accountManager->getAccount($user);
 
 		$publicData = [];
-		foreach ($account->getAllProperties() as $property) {
+		foreach ($account->getProperties() as $property) {
 			if ($property->getScope() === IAccountManager::SCOPE_PUBLISHED) {
-				$publicData[$property->getName()] = [
-					'value' => $property->getValue(),
-					'verified' => $property->getVerified(),
-					'signature' => $property->getVerificationData(),
-				];
+				$publicData[$property->getName()] = $property->getValue();
 			}
 		}
 

@@ -8,6 +8,7 @@ declare(strict_types=1);
  */
 namespace OCA\UpdateNotification\Settings;
 
+use OC\User\Backend;
 use OCA\UpdateNotification\UpdateChecker;
 use OCP\AppFramework\Http\TemplateResponse;
 use OCP\AppFramework\Services\IInitialState;
@@ -19,6 +20,7 @@ use OCP\IUserManager;
 use OCP\L10N\IFactory;
 use OCP\Settings\ISettings;
 use OCP\Support\Subscription\IRegistry;
+use OCP\User\Backend\ICountUsersBackend;
 use OCP\Util;
 use Psr\Log\LoggerInterface;
 
@@ -33,7 +35,7 @@ class Admin implements ISettings {
 		private IRegistry $subscriptionRegistry,
 		private IUserManager $userManager,
 		private LoggerInterface $logger,
-		private IInitialState $initialState,
+		private IInitialState $initialState
 	) {
 	}
 
@@ -139,6 +141,26 @@ class Admin implements ISettings {
 	}
 
 	private function isWebUpdaterRecommended(): bool {
-		return (int)$this->userManager->countUsersTotal(100) < 100;
+		return $this->getUserCount() < 100;
+	}
+
+	/**
+	 * @see https://github.com/nextcloud/server/blob/39494fbf794d982f6f6551c984e6ca4c4e947d01/lib/private/Support/Subscription/Registry.php#L188-L216 implementation reference
+	 */
+	private function getUserCount(): int {
+		$userCount = 0;
+		$backends = $this->userManager->getBackends();
+		foreach ($backends as $backend) {
+			// TODO: change below to 'if ($backend instanceof ICountUsersBackend) {'
+			if ($backend->implementsActions(Backend::COUNT_USERS)) {
+				/** @var ICountUsersBackend $backend */
+				$backendUsers = $backend->countUsers();
+				if ($backendUsers !== false) {
+					$userCount += $backendUsers;
+				}
+			}
+		}
+
+		return $userCount;
 	}
 }

@@ -16,9 +16,11 @@ use OCP\IGroup;
 
 class AuthorizedGroupService {
 
-	public function __construct(
-		private AuthorizedGroupMapper $mapper,
-	) {
+	/** @var AuthorizedGroupMapper $mapper */
+	private $mapper;
+
+	public function __construct(AuthorizedGroupMapper $mapper) {
+		$this->mapper = $mapper;
 	}
 
 	/**
@@ -44,7 +46,7 @@ class AuthorizedGroupService {
 	private function handleException(\Exception $e): void {
 		if ($e instanceof DoesNotExistException ||
 			$e instanceof MultipleObjectsReturnedException) {
-			throw new NotFoundException('AuthorizedGroup not found');
+			throw new NotFoundException("AuthorizedGroup not found");
 		} else {
 			throw $e;
 		}

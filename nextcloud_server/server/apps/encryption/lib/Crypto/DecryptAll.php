@@ -7,7 +7,6 @@
  */
 namespace OCA\Encryption\Crypto;
 
-use OCA\Encryption\Exceptions\PrivateKeyMissingException;
 use OCA\Encryption\KeyManager;
 use OCA\Encryption\Session;
 use OCA\Encryption\Util;
@@ -19,6 +18,21 @@ use Symfony\Component\Console\Question\Question;
 
 class DecryptAll {
 
+	/** @var Util  */
+	protected $util;
+
+	/** @var QuestionHelper  */
+	protected $questionHelper;
+
+	/** @var  Crypt */
+	protected $crypt;
+
+	/** @var  KeyManager */
+	protected $keyManager;
+
+	/** @var Session  */
+	protected $session;
+
 	/**
 	 * @param Util $util
 	 * @param KeyManager $keyManager
@@ -27,12 +41,17 @@ class DecryptAll {
 	 * @param QuestionHelper $questionHelper
 	 */
 	public function __construct(
-		protected Util $util,
-		protected KeyManager $keyManager,
-		protected Crypt $crypt,
-		protected Session $session,
-		protected QuestionHelper $questionHelper,
+		Util $util,
+		KeyManager $keyManager,
+		Crypt $crypt,
+		Session $session,
+		QuestionHelper $questionHelper
 	) {
+		$this->util = $util;
+		$this->keyManager = $keyManager;
+		$this->crypt = $crypt;
+		$this->session = $session;
+		$this->questionHelper = $questionHelper;
 	}
 
 	/**
@@ -54,7 +73,7 @@ class DecryptAll {
 			$recoveryKeyId = $this->keyManager->getRecoveryKeyId();
 			if (!empty($user)) {
 				$output->writeln('You can only decrypt the users files if you know');
-				$output->writeln('the users password or if they activated the recovery key.');
+				$output->writeln('the users password or if he activated the recovery key.');
 				$output->writeln('');
 				$questionUseLoginPassword = new ConfirmationQuestion(
 					'Do you want to use the users login password to decrypt all files? (y/n) ',
@@ -99,7 +118,7 @@ class DecryptAll {
 	 * @param string $user
 	 * @param string $password
 	 * @return bool|string
-	 * @throws PrivateKeyMissingException
+	 * @throws \OCA\Encryption\Exceptions\PrivateKeyMissingException
 	 */
 	protected function getPrivateKey($user, $password) {
 		$recoveryKeyId = $this->keyManager->getRecoveryKeyId();

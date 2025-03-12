@@ -31,10 +31,10 @@ OC.L10N.register(
     "Thunderbird & Outlook addons" : "Thunderbird & Outlook tilføjelser",
     "Select groups" : "Vælg grupper",
     "Groups" : "Grupper",
-    "Save" : "Gem",
     "and" : "og",
-    "Cancel" : "Annuller",
+    "Cancel" : "Annullér",
     "Delete" : "Slet",
+    "Save" : "Gem",
     "Browse the App Store" : "Gennemse App Store",
     "matches" : "er lig med",
     "does not match" : "er ikke lig med",
@@ -61,6 +61,7 @@ OC.L10N.register(
     "not between" : "ikke mellem",
     "Request user agent" : "Bruger \"user agent\"",
     "is member of" : "er medlem af",
-    "is not member of" : "er ikke medlem af"
+    "is not member of" : "er ikke medlem af",
+    "User group membership" : "Brugers gruppemedlemsskab"
 },
 "nplurals=2; plural=(n != 1);");

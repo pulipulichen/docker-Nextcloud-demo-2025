@@ -15,6 +15,10 @@ use OCP\Share\IShare;
 
 class OfflineUser {
 	/**
+	 * @var string $ocName
+	 */
+	protected $ocName;
+	/**
 	 * @var string $dn
 	 */
 	protected $dn;
@@ -48,19 +52,30 @@ class OfflineUser {
 	 */
 	protected $hasActiveShares;
 	/**
+	 * @var IConfig $config
+	 */
+	protected $config;
+	/**
 	 * @var IDBConnection $db
 	 */
 	protected $db;
-
 	/**
-	 * @param string $ocName
+	 * @var \OCA\User_LDAP\Mapping\UserMapping
 	 */
+	protected $mapping;
+	/** @var IManager */
+	private $shareManager;
+
 	public function __construct(
-		protected $ocName,
-		protected IConfig $config,
-		protected UserMapping $mapping,
-		private IManager $shareManager,
+		$ocName,
+		IConfig $config,
+		UserMapping $mapping,
+		IManager $shareManager
 	) {
+		$this->ocName = $ocName;
+		$this->config = $config;
+		$this->mapping = $mapping;
+		$this->shareManager = $shareManager;
 	}
 
 	/**

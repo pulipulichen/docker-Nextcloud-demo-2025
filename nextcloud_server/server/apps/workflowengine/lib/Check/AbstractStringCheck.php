@@ -14,12 +14,14 @@ abstract class AbstractStringCheck implements ICheck {
 	/** @var array[] Nested array: [Pattern => [ActualValue => Regex Result]] */
 	protected $matches;
 
+	/** @var IL10N */
+	protected $l;
+
 	/**
 	 * @param IL10N $l
 	 */
-	public function __construct(
-		protected IL10N $l,
-	) {
+	public function __construct(IL10N $l) {
+		$this->l = $l;
 	}
 
 	/**

@@ -1,7 +1,5 @@
 <?php
 
-use OCA\User_LDAP\LDAP;
-
 /**
  * SPDX-FileCopyrightText: 2016-2024 Nextcloud GmbH and Nextcloud contributors
  * SPDX-FileCopyrightText: 2016 ownCloud, Inc.
@@ -13,7 +11,7 @@ use OCA\User_LDAP\LDAP;
 \OC_JSON::callCheck();
 
 $prefix = (string)$_POST['ldap_serverconfig_chooser'];
-$ldapWrapper = new LDAP();
+$ldapWrapper = new OCA\User_LDAP\LDAP();
 $connection = new \OCA\User_LDAP\Connection($ldapWrapper, $prefix);
 $configuration = $connection->getConfiguration();
 if (isset($configuration['ldap_agent_password']) && $configuration['ldap_agent_password'] !== '') {

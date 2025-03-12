@@ -12,19 +12,20 @@ use OCP\BackgroundJob\TimedJob;
 use Psr\Log\LoggerInterface;
 
 class SyncJob extends TimedJob {
-	public function __construct(
-		protected SyncFederationAddressBooks $syncService,
-		protected LoggerInterface $logger,
-		ITimeFactory $timeFactory,
-	) {
+	protected SyncFederationAddressBooks $syncService;
+	protected LoggerInterface $logger;
+
+	public function __construct(SyncFederationAddressBooks $syncService, LoggerInterface $logger, ITimeFactory $timeFactory) {
 		parent::__construct($timeFactory);
 		// Run once a day
 		$this->setInterval(24 * 60 * 60);
 		$this->setTimeSensitivity(self::TIME_INSENSITIVE);
+		$this->syncService = $syncService;
+		$this->logger = $logger;
 	}
 
 	protected function run($argument) {
-		$this->syncService->syncThemAll(function ($url, $ex): void {
+		$this->syncService->syncThemAll(function ($url, $ex) {
 			if ($ex instanceof \Exception) {
 				$this->logger->error("Error while syncing $url.", [
 					'app' => 'fed-sync',

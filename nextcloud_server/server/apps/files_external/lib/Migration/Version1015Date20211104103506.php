@@ -20,10 +20,14 @@ use Psr\Log\LoggerInterface;
 
 class Version1015Date20211104103506 extends SimpleMigrationStep {
 
-	public function __construct(
-		private IDBConnection $connection,
-		private LoggerInterface $logger,
-	) {
+	/** @var IDBConnection */
+	private $connection;
+	/** @var LoggerInterface */
+	private $logger;
+
+	public function __construct(IDBConnection $connection, LoggerInterface $logger) {
+		$this->connection = $connection;
+		$this->logger = $logger;
 	}
 
 	public function postSchemaChange(IOutput $output, Closure $schemaClosure, array $options): ?ISchemaWrapper {
@@ -60,7 +64,7 @@ class Version1015Date20211104103506 extends SimpleMigrationStep {
 
 	/**
 	 * @throws Exception
-	 * @return IResult|int
+	 * @return \OCP\DB\IResult|int
 	 */
 	private function getS3Mounts() {
 		$qb = $this->connection->getQueryBuilder();

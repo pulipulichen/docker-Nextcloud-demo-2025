@@ -26,18 +26,39 @@ use OCP\Notification\IManager as NotificationManager;
 
 class TransferOwnershipController extends OCSController {
 
-	public function __construct(
-		string $appName,
+	/** @var string */
+	private $userId;
+	/** @var NotificationManager */
+	private $notificationManager;
+	/** @var ITimeFactory */
+	private $timeFactory;
+	/** @var IJobList */
+	private $jobList;
+	/** @var TransferOwnershipMapper */
+	private $mapper;
+	/** @var IUserManager */
+	private $userManager;
+	/** @var IRootFolder */
+	private $rootFolder;
+
+	public function __construct(string $appName,
 		IRequest $request,
-		private string $userId,
-		private NotificationManager $notificationManager,
-		private ITimeFactory $timeFactory,
-		private IJobList $jobList,
-		private TransferOwnershipMapper $mapper,
-		private IUserManager $userManager,
-		private IRootFolder $rootFolder,
-	) {
+		string $userId,
+		NotificationManager $notificationManager,
+		ITimeFactory $timeFactory,
+		IJobList $jobList,
+		TransferOwnershipMapper $mapper,
+		IUserManager $userManager,
+		IRootFolder $rootFolder) {
 		parent::__construct($appName, $request);
+
+		$this->userId = $userId;
+		$this->notificationManager = $notificationManager;
+		$this->timeFactory = $timeFactory;
+		$this->jobList = $jobList;
+		$this->mapper = $mapper;
+		$this->userManager = $userManager;
+		$this->rootFolder = $rootFolder;
 	}
 
 
@@ -47,7 +68,7 @@ class TransferOwnershipController extends OCSController {
 	 * @param string $recipient Username of the recipient
 	 * @param string $path Path of the file
 	 *
-	 * @return DataResponse<Http::STATUS_OK|Http::STATUS_BAD_REQUEST|Http::STATUS_FORBIDDEN, list<empty>, array{}>
+	 * @return DataResponse<Http::STATUS_OK|Http::STATUS_BAD_REQUEST|Http::STATUS_FORBIDDEN, array<empty>, array{}>
 	 *
 	 * 200: Ownership transferred successfully
 	 * 400: Transferring ownership is not possible
@@ -101,7 +122,7 @@ class TransferOwnershipController extends OCSController {
 	 *
 	 * @param int $id ID of the ownership transfer
 	 *
-	 * @return DataResponse<Http::STATUS_OK|Http::STATUS_FORBIDDEN|Http::STATUS_NOT_FOUND, list<empty>, array{}>
+	 * @return DataResponse<Http::STATUS_OK|Http::STATUS_FORBIDDEN|Http::STATUS_NOT_FOUND, array<empty>, array{}>
 	 *
 	 * 200: Ownership transfer accepted successfully
 	 * 403: Accepting ownership transfer is not allowed
@@ -136,7 +157,7 @@ class TransferOwnershipController extends OCSController {
 	 *
 	 * @param int $id ID of the ownership transfer
 	 *
-	 * @return DataResponse<Http::STATUS_OK|Http::STATUS_FORBIDDEN|Http::STATUS_NOT_FOUND, list<empty>, array{}>
+	 * @return DataResponse<Http::STATUS_OK|Http::STATUS_FORBIDDEN|Http::STATUS_NOT_FOUND, array<empty>, array{}>
 	 *
 	 * 200: Ownership transfer rejected successfully
 	 * 403: Rejecting ownership transfer is not allowed

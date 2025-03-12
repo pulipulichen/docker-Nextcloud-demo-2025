@@ -20,12 +20,17 @@ use Psr\Log\LoggerInterface;
 
 /** @template-implements IEventListener<SubscriptionCreatedEvent|SubscriptionDeletedEvent> */
 class SubscriptionListener implements IEventListener {
-	public function __construct(
-		private IJobList $jobList,
-		private RefreshWebcalService $refreshWebcalService,
-		private ReminderBackend $reminderBackend,
-		private LoggerInterface $logger,
-	) {
+	private IJobList $jobList;
+	private RefreshWebcalService $refreshWebcalService;
+	private ReminderBackend $reminderBackend;
+	private LoggerInterface $logger;
+
+	public function __construct(IJobList $jobList, RefreshWebcalService $refreshWebcalService, ReminderBackend $reminderBackend,
+		LoggerInterface $logger) {
+		$this->jobList = $jobList;
+		$this->refreshWebcalService = $refreshWebcalService;
+		$this->reminderBackend = $reminderBackend;
+		$this->logger = $logger;
 	}
 
 	/**

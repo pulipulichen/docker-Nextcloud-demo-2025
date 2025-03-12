@@ -12,7 +12,6 @@ use OCP\Http\Client\IClientService;
 use OCP\IConfig;
 use OCP\IL10N;
 use OCP\IURLGenerator;
-use OCP\SetupCheck\CheckServerResponseTrait;
 use OCP\SetupCheck\ISetupCheck;
 use OCP\SetupCheck\SetupResult;
 use Psr\Log\LoggerInterface;
@@ -50,7 +49,7 @@ class Woff2Loading implements ISetupCheck {
 
 	protected function checkFont(string $fileExtension, string $url): SetupResult {
 		$noResponse = true;
-		$responses = $this->runRequest('HEAD', $url);
+		$responses = $this->runHEAD($url);
 		foreach ($responses as $response) {
 			$noResponse = false;
 			if ($response->getStatusCode() === 200) {

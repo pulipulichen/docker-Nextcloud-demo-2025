@@ -13,7 +13,6 @@ use OCP\BackgroundJob\IJobList;
 use OCP\EventDispatcher\IEventDispatcher;
 use OCP\Federation\ICloudFederationFactory;
 use OCP\Federation\ICloudFederationProviderManager;
-use OCP\HintException;
 use OCP\Http\Client\IClientService;
 use OCP\OCS\IDiscoveryService;
 use Psr\Log\LoggerInterface;
@@ -46,7 +45,7 @@ class Notifications {
 	 * @param string $sharedByFederatedId
 	 * @param int $shareType (can be a remote user or group share)
 	 * @return bool
-	 * @throws HintException
+	 * @throws \OCP\HintException
 	 * @throws \OC\ServerNotAvailableException
 	 */
 	public function sendRemoteShare($token, $shareWith, $name, $remoteId, $owner, $ownerFederatedId, $sharedBy, $sharedByFederatedId, $shareType) {
@@ -105,16 +104,15 @@ class Notifications {
 	 * @param int $permission
 	 * @param string $filename
 	 * @return array|false
-	 * @throws HintException
+	 * @throws \OCP\HintException
 	 * @throws \OC\ServerNotAvailableException
 	 */
-	public function requestReShare($token, $id, $shareId, $remote, $shareWith, $permission, $filename, $shareType) {
+	public function requestReShare($token, $id, $shareId, $remote, $shareWith, $permission, $filename) {
 		$fields = [
 			'shareWith' => $shareWith,
 			'token' => $token,
 			'permission' => $permission,
 			'remoteId' => $shareId,
-			'shareType' => $shareType,
 		];
 
 		$ocmFields = $fields;
@@ -288,7 +286,7 @@ class Notifications {
 	 * @return array
 	 * @throws \Exception
 	 */
-	protected function tryHttpPostToShareEndpoint($remoteDomain, $urlSuffix, array $fields, $action = 'share') {
+	protected function tryHttpPostToShareEndpoint($remoteDomain, $urlSuffix, array $fields, $action = "share") {
 		if ($this->addressHandler->urlContainProtocol($remoteDomain) === false) {
 			$remoteDomain = 'https://' . $remoteDomain;
 		}

@@ -16,9 +16,11 @@ use OCP\Federation\ICloudFederationProviderManager;
  */
 class Config {
 
-	public function __construct(
-		private ICloudFederationProviderManager $cloudFederationProviderManager,
-	) {
+	/** @var ICloudFederationProviderManager */
+	private $cloudFederationProviderManager;
+
+	public function __construct(ICloudFederationProviderManager $cloudFederationProviderManager) {
+		$this->cloudFederationProviderManager = $cloudFederationProviderManager;
 	}
 
 	/**

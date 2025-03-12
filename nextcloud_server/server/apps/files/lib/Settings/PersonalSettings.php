@@ -11,11 +11,10 @@ namespace OCA\Files\Settings;
 use OCA\Files\AppInfo\Application;
 use OCP\AppFramework\Http\TemplateResponse;
 use OCP\Settings\ISettings;
-use OCP\Util;
 
 class PersonalSettings implements ISettings {
 	public function getForm(): TemplateResponse {
-		Util::addScript(Application::APP_ID, 'settings-personal');
+		\OCP\Util::addScript(Application::APP_ID, 'settings-personal');
 		return new TemplateResponse(Application::APP_ID, 'settings-personal');
 	}
 

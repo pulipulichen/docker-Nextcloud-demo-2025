@@ -8,7 +8,6 @@ declare(strict_types=1);
 
 namespace OCA\DAV\Connector\Sabre;
 
-use OCP\AppFramework\Http;
 use Sabre\DAV\Server;
 use Sabre\DAV\ServerPlugin;
 use Sabre\HTTP\RequestInterface;
@@ -60,7 +59,7 @@ class ChecksumUpdatePlugin extends ServerPlugin {
 				$node->setChecksum($checksum);
 				$response->addHeader('OC-Checksum', $checksum);
 				$response->setHeader('Content-Length', '0');
-				$response->setStatus(Http::STATUS_NO_CONTENT);
+				$response->setStatus(204);
 
 				return false;
 			}

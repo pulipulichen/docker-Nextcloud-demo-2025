@@ -6,17 +6,19 @@
  */
 namespace OCA\Files_External\Lib\Storage;
 
-use OC\Files\Storage\Common;
+abstract class StreamWrapper extends \OC\Files\Storage\Common {
 
-abstract class StreamWrapper extends Common {
+	/**
+	 * @param string $path
+	 * @return string|null
+	 */
+	abstract public function constructUrl($path);
 
-	abstract public function constructUrl(string $path): ?string;
-
-	public function mkdir(string $path): bool {
+	public function mkdir($path) {
 		return mkdir($this->constructUrl($path));
 	}
 
-	public function rmdir(string $path): bool {
+	public function rmdir($path) {
 		if ($this->is_dir($path) && $this->isDeletable($path)) {
 			$dh = $this->opendir($path);
 			if (!is_resource($dh)) {
@@ -38,19 +40,19 @@ abstract class StreamWrapper extends Common {
 		}
 	}
 
-	public function opendir(string $path) {
+	public function opendir($path) {
 		return opendir($this->constructUrl($path));
 	}
 
-	public function filetype(string $path): string|false {
+	public function filetype($path) {
 		return @filetype($this->constructUrl($path));
 	}
 
-	public function file_exists(string $path): bool {
+	public function file_exists($path) {
 		return file_exists($this->constructUrl($path));
 	}
 
-	public function unlink(string $path): bool {
+	public function unlink($path) {
 		$url = $this->constructUrl($path);
 		$success = unlink($url);
 		// normally unlink() is supposed to do this implicitly,
@@ -59,11 +61,11 @@ abstract class StreamWrapper extends Common {
 		return $success;
 	}
 
-	public function fopen(string $path, string $mode) {
+	public function fopen($path, $mode) {
 		return fopen($this->constructUrl($path), $mode);
 	}
 
-	public function touch(string $path, ?int $mtime = null): bool {
+	public function touch($path, $mtime = null) {
 		if ($this->file_exists($path)) {
 			if (is_null($mtime)) {
 				$fh = $this->fopen($path, 'a');
@@ -80,19 +82,26 @@ abstract class StreamWrapper extends Common {
 		}
 	}
 
-	public function getFile(string $path, string $target): bool {
+	/**
+	 * @param string $path
+	 * @param string $target
+	 */
+	public function getFile($path, $target) {
 		return copy($this->constructUrl($path), $target);
 	}
 
-	public function uploadFile(string $path, string $target): bool {
+	/**
+	 * @param string $target
+	 */
+	public function uploadFile($path, $target) {
 		return copy($path, $this->constructUrl($target));
 	}
 
-	public function rename(string $source, string $target): bool {
+	public function rename($source, $target) {
 		return rename($this->constructUrl($source), $this->constructUrl($target));
 	}
 
-	public function stat(string $path): array|false {
+	public function stat($path) {
 		return stat($this->constructUrl($path));
 	}
 }

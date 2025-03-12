@@ -11,14 +11,18 @@ use OCP\IURLGenerator;
 use OCP\Settings\IIconSection;
 
 class Delegation implements IIconSection {
+	/** @var IL10N */
+	private $l;
+	/** @var IURLGenerator */
+	private $url;
+
 	/**
 	 * @param IURLGenerator $url
 	 * @param IL10N $l
 	 */
-	public function __construct(
-		private IURLGenerator $url,
-		private IL10N $l,
-	) {
+	public function __construct(IURLGenerator $url, IL10N $l) {
+		$this->url = $url;
+		$this->l = $l;
 	}
 
 	/**

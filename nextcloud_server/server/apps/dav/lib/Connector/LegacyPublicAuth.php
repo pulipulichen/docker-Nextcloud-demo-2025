@@ -8,7 +8,6 @@
 namespace OCA\DAV\Connector;
 
 use OCA\DAV\Connector\Sabre\PublicAuth;
-use OCP\Defaults;
 use OCP\IRequest;
 use OCP\ISession;
 use OCP\Security\Bruteforce\IThrottler;
@@ -26,15 +25,22 @@ class LegacyPublicAuth extends AbstractBasic {
 	private const BRUTEFORCE_ACTION = 'legacy_public_webdav_auth';
 
 	private ?IShare $share = null;
+	private IManager $shareManager;
+	private ISession $session;
+	private IRequest $request;
+	private IThrottler $throttler;
 
-	public function __construct(
-		private IRequest $request,
-		private IManager $shareManager,
-		private ISession $session,
-		private IThrottler $throttler,
-	) {
+	public function __construct(IRequest $request,
+		IManager $shareManager,
+		ISession $session,
+		IThrottler $throttler) {
+		$this->request = $request;
+		$this->shareManager = $shareManager;
+		$this->session = $session;
+		$this->throttler = $throttler;
+
 		// setup realm
-		$defaults = new Defaults();
+		$defaults = new \OCP\Defaults();
 		$this->realm = $defaults->getName() ?: 'Nextcloud';
 	}
 

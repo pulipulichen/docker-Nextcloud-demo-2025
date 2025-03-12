@@ -14,15 +14,31 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 
 class DisableMasterKey extends Command {
-	public function __construct(
-		protected Util $util,
-		protected IConfig $config,
-		protected QuestionHelper $questionHelper,
-	) {
+
+	/** @var Util */
+	protected $util;
+
+	/** @var IConfig */
+	protected $config;
+
+	/** @var  QuestionHelper */
+	protected $questionHelper;
+
+	/**
+	 * @param Util $util
+	 * @param IConfig $config
+	 * @param QuestionHelper $questionHelper
+	 */
+	public function __construct(Util $util,
+		IConfig $config,
+		QuestionHelper $questionHelper) {
+		$this->util = $util;
+		$this->config = $config;
+		$this->questionHelper = $questionHelper;
 		parent::__construct();
 	}
 
-	protected function configure(): void {
+	protected function configure() {
 		$this
 			->setName('encryption:disable-master-key')
 			->setDescription('Disable the master key and use per-user keys instead. Only available for fresh installations with no existing encrypted data! There is no way to enable it again.');
@@ -33,23 +49,21 @@ class DisableMasterKey extends Command {
 
 		if (!$isMasterKeyEnabled) {
 			$output->writeln('Master key already disabled');
-			return self::SUCCESS;
+		} else {
+			$question = new ConfirmationQuestion(
+				'Warning: Only perform this operation for a fresh installations with no existing encrypted data! '
+				. 'There is no way to enable the master key again. '
+				. 'We strongly recommend to keep the master key, it provides significant performance improvements '
+				. 'and is easier to handle for both, users and administrators. '
+				. 'Do you really want to switch to per-user keys? (y/n) ', false);
+			if ($this->questionHelper->ask($input, $output, $question)) {
+				$this->config->setAppValue('encryption', 'useMasterKey', '0');
+				$output->writeln('Master key successfully disabled.');
+			} else {
+				$output->writeln('aborted.');
+				return 1;
+			}
 		}
-
-		$question = new ConfirmationQuestion(
-			'Warning: Only perform this operation for a fresh installations with no existing encrypted data! '
-			. 'There is no way to enable the master key again. '
-			. 'We strongly recommend to keep the master key, it provides significant performance improvements '
-			. 'and is easier to handle for both, users and administrators. '
-			. 'Do you really want to switch to per-user keys? (y/n) ', false);
-
-		if ($this->questionHelper->ask($input, $output, $question)) {
-			$this->config->setAppValue('encryption', 'useMasterKey', '0');
-			$output->writeln('Master key successfully disabled.');
-			return self::SUCCESS;
-		}
-
-		$output->writeln('aborted.');
-		return self::FAILURE;
+		return 0;
 	}
 }

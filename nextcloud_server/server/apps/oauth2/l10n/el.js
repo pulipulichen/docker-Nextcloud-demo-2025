@@ -14,7 +14,7 @@ OC.L10N.register(
     "Secret key" : "Μυστικό κλειδί",
     "Add client" : "Προσθήκη πελάτη",
     "Add" : "Προσθήκη",
-    "Show client secret" : "Εμφάνιση μυστικού εφαρμογής υπολογιστή",
-    "Delete" : "Διαγραφή"
+    "Delete" : "Διαγραφή",
+    "Show client secret" : "Εμφάνιση μυστικού εφαρμογής υπολογιστή"
 },
 "nplurals=2; plural=(n != 1);");

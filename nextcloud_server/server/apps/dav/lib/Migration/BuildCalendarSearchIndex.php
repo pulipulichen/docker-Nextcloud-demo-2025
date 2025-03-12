@@ -13,11 +13,26 @@ use OCP\Migration\IRepairStep;
 
 class BuildCalendarSearchIndex implements IRepairStep {
 
-	public function __construct(
-		private IDBConnection $db,
-		private IJobList $jobList,
-		private IConfig $config,
-	) {
+	/** @var IDBConnection */
+	private $db;
+
+	/** @var IJobList */
+	private $jobList;
+
+	/** @var IConfig */
+	private $config;
+
+	/**
+	 * @param IDBConnection $db
+	 * @param IJobList $jobList
+	 * @param IConfig $config
+	 */
+	public function __construct(IDBConnection $db,
+		IJobList $jobList,
+		IConfig $config) {
+		$this->db = $db;
+		$this->jobList = $jobList;
+		$this->config = $config;
 	}
 
 	/**
@@ -40,8 +55,8 @@ class BuildCalendarSearchIndex implements IRepairStep {
 		$query = $this->db->getQueryBuilder();
 		$query->select($query->createFunction('MAX(' . $query->getColumnName('id') . ')'))
 			->from('calendarobjects');
-		$result = $query->executeQuery();
-		$maxId = (int)$result->fetchOne();
+		$result = $query->execute();
+		$maxId = (int) $result->fetchOne();
 		$result->closeCursor();
 
 		$output->info('Add background job');

@@ -25,6 +25,12 @@ class DefinitionParameter implements \JsonSerializable {
 	public const FLAG_OPTIONAL = 1;
 	public const FLAG_USER_PROVIDED = 2;
 
+	/** @var string name of parameter */
+	private string $name;
+
+	/** @var string human-readable parameter text */
+	private string $text;
+
 	/** @var string human-readable parameter tooltip */
 	private string $tooltip = '';
 
@@ -34,16 +40,18 @@ class DefinitionParameter implements \JsonSerializable {
 	/** @var int flags, see self::FLAG_* constants */
 	private int $flags = self::FLAG_NONE;
 
+	/** @var mixed */
+	private $defaultValue;
+
 	/**
 	 * @param string $name parameter name
 	 * @param string $text parameter description
 	 * @param mixed $defaultValue default value
 	 */
-	public function __construct(
-		private string $name,
-		private string $text,
-		private $defaultValue = null,
-	) {
+	public function __construct(string $name, string $text, $defaultValue = null) {
+		$this->name = $name;
+		$this->text = $text;
+		$this->defaultValue = $defaultValue;
 	}
 
 	/**

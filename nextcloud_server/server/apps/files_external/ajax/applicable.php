@@ -1,9 +1,4 @@
 <?php
-
-use OCP\IGroupManager;
-use OCP\IUserManager;
-use OCP\Server;
-
 /**
  * SPDX-FileCopyrightText: 2018-2024 Nextcloud GmbH and Nextcloud contributors
  * SPDX-FileCopyrightText: 2016 ownCloud, Inc.
@@ -28,12 +23,12 @@ if (isset($_GET['offset'])) {
 }
 
 $groups = [];
-foreach (Server::get(IGroupManager::class)->search($pattern, $limit, $offset) as $group) {
+foreach (\OC::$server->getGroupManager()->search($pattern, $limit, $offset) as $group) {
 	$groups[$group->getGID()] = $group->getDisplayName();
 }
 
 $users = [];
-foreach (Server::get(IUserManager::class)->searchDisplayName($pattern, $limit, $offset) as $user) {
+foreach (\OC::$server->getUserManager()->searchDisplayName($pattern, $limit, $offset) as $user) {
 	$users[$user->getUID()] = $user->getDisplayName();
 }
 

@@ -6,7 +6,6 @@
 namespace OCA\OAuth2\Db;
 
 use OCP\AppFramework\Db\Entity;
-use OCP\DB\Types;
 
 /**
  * @method string getClientIdentifier()
@@ -29,7 +28,7 @@ class Client extends Entity {
 	protected $secret;
 
 	public function __construct() {
-		$this->addType('id', Types::INTEGER);
+		$this->addType('id', 'int');
 		$this->addType('name', 'string');
 		$this->addType('redirectUri', 'string');
 		$this->addType('clientIdentifier', 'string');

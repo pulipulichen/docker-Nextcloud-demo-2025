@@ -14,7 +14,7 @@ OC.L10N.register(
     "Secret key" : "Titkos kulcs",
     "Add client" : "Kliens hozzáadása",
     "Add" : "Hozzáadás",
-    "Show client secret" : "Kliens titkának megjelenítése",
-    "Delete" : "Törlés"
+    "Delete" : "Törlés",
+    "Show client secret" : "Kliens titkának megjelenítése"
 },
 "nplurals=2; plural=(n != 1);");

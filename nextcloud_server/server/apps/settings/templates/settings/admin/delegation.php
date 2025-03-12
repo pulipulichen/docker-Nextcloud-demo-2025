@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
-\OCP\Util::addScript('settings', 'vue-settings-admin-delegation', 'core');
+script('settings', 'vue-settings-admin-delegation');
 ?>
 
 <div id="admin-right-sub-granting">

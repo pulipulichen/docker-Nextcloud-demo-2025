@@ -20,10 +20,19 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class CleanupRemoteStorages extends Command {
 
-	public function __construct(
-		protected IDBConnection $connection,
-		private ICloudIdManager $cloudIdManager,
-	) {
+	/**
+	 * @var IDBConnection
+	 */
+	protected $connection;
+
+	/**
+	 * @var ICloudIdManager
+	 */
+	private $cloudIdManager;
+
+	public function __construct(IDBConnection $connection, ICloudIdManager $cloudIdManager) {
+		$this->connection = $connection;
+		$this->cloudIdManager = $cloudIdManager;
 		parent::__construct();
 	}
 

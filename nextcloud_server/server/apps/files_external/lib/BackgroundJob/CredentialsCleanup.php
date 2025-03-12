@@ -18,13 +18,21 @@ use OCP\IUserManager;
 use OCP\Security\ICredentialsManager;
 
 class CredentialsCleanup extends TimedJob {
+	private $credentialsManager;
+	private $userGlobalStoragesService;
+	private $userManager;
+
 	public function __construct(
 		ITimeFactory $time,
-		private ICredentialsManager $credentialsManager,
-		private UserGlobalStoragesService $userGlobalStoragesService,
-		private IUserManager $userManager,
+		ICredentialsManager $credentialsManager,
+		UserGlobalStoragesService $userGlobalStoragesService,
+		IUserManager $userManager
 	) {
 		parent::__construct($time);
+
+		$this->credentialsManager = $credentialsManager;
+		$this->userGlobalStoragesService = $userGlobalStoragesService;
+		$this->userManager = $userManager;
 
 		// run every day
 		$this->setInterval(24 * 60 * 60);
@@ -32,7 +40,7 @@ class CredentialsCleanup extends TimedJob {
 	}
 
 	protected function run($argument) {
-		$this->userManager->callForSeenUsers(function (IUser $user): void {
+		$this->userManager->callForSeenUsers(function (IUser $user) {
 			$storages = $this->userGlobalStoragesService->getAllStoragesForUser($user);
 
 			$usesLoginCredentials = array_reduce($storages, function (bool $uses, StorageConfig $storage) {

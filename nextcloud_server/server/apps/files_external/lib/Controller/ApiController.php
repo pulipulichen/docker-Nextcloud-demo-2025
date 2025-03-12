@@ -17,7 +17,6 @@ use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\Attribute\NoAdminRequired;
 use OCP\AppFramework\Http\DataResponse;
 use OCP\AppFramework\OCSController;
-use OCP\Constants;
 use OCP\IRequest;
 
 /**
@@ -25,13 +24,18 @@ use OCP\IRequest;
  */
 class ApiController extends OCSController {
 
+	private UserGlobalStoragesService $userGlobalStoragesService;
+	private UserStoragesService $userStoragesService;
+
 	public function __construct(
 		string $appName,
 		IRequest $request,
-		private UserGlobalStoragesService $userGlobalStoragesService,
-		private UserStoragesService $userStoragesService,
+		UserGlobalStoragesService $userGlobalStorageService,
+		UserStoragesService $userStorageService
 	) {
 		parent::__construct($appName, $request);
+		$this->userGlobalStoragesService = $userGlobalStorageService;
+		$this->userStoragesService = $userStorageService;
 	}
 
 	/**
@@ -51,10 +55,10 @@ class ApiController extends OCSController {
 
 		$isSystemMount = $mountConfig->getType() === StorageConfig::MOUNT_TYPE_ADMIN;
 
-		$permissions = Constants::PERMISSION_READ;
+		$permissions = \OCP\Constants::PERMISSION_READ;
 		// personal mounts can be deleted
 		if (!$isSystemMount) {
-			$permissions |= Constants::PERMISSION_DELETE;
+			$permissions |= \OCP\Constants::PERMISSION_DELETE;
 		}
 
 		$entry = [
@@ -74,7 +78,7 @@ class ApiController extends OCSController {
 	/**
 	 * Get the mount points visible for this user
 	 *
-	 * @return DataResponse<Http::STATUS_OK, list<Files_ExternalMount>, array{}>
+	 * @return DataResponse<Http::STATUS_OK, Files_ExternalMount[], array{}>
 	 *
 	 * 200: User mounts returned
 	 */

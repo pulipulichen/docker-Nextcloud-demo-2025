@@ -453,9 +453,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _nextcloud_auth__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @nextcloud/auth */ "./node_modules/@nextcloud/auth/dist/index.mjs");
 /* harmony import */ var _nextcloud_paths__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @nextcloud/paths */ "./node_modules/@nextcloud/paths/dist/index.mjs");
 /* harmony import */ var _nextcloud_moment__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @nextcloud/moment */ "./node_modules/@nextcloud/moment/dist/index.mjs");
-/* harmony import */ var _davClient_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./davClient.js */ "./apps/files_versions/src/utils/davClient.js");
-/* harmony import */ var _davRequest_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./davRequest.js */ "./apps/files_versions/src/utils/davRequest.js");
-/* harmony import */ var _logger_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./logger.js */ "./apps/files_versions/src/utils/logger.js");
+/* harmony import */ var _utils_davClient_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../utils/davClient.js */ "./apps/files_versions/src/utils/davClient.js");
+/* harmony import */ var _utils_davRequest_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../utils/davRequest.js */ "./apps/files_versions/src/utils/davRequest.js");
+/* harmony import */ var _utils_logger_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../utils/logger.js */ "./apps/files_versions/src/utils/logger.js");
 
 
 
@@ -466,8 +466,8 @@ __webpack_require__.r(__webpack_exports__);
 async function fetchVersions(fileInfo) {
   const path = `/versions/${(0,_nextcloud_auth__WEBPACK_IMPORTED_MODULE_1__.getCurrentUser)()?.uid}/versions/${fileInfo.id}`;
   try {
-    const response = await _davClient_js__WEBPACK_IMPORTED_MODULE_4__["default"].getDirectoryContents(path, {
-      data: _davRequest_js__WEBPACK_IMPORTED_MODULE_5__["default"],
+    const response = await _utils_davClient_js__WEBPACK_IMPORTED_MODULE_4__["default"].getDirectoryContents(path, {
+      data: _utils_davRequest_js__WEBPACK_IMPORTED_MODULE_5__["default"],
       details: true
     });
     return response.data
@@ -479,7 +479,7 @@ async function fetchVersions(fileInfo) {
       return mime !== '';
     }).map(version => formatVersion(version, fileInfo));
   } catch (exception) {
-    _logger_js__WEBPACK_IMPORTED_MODULE_6__["default"].error('Could not fetch version', {
+    _utils_logger_js__WEBPACK_IMPORTED_MODULE_6__["default"].error('Could not fetch version', {
       exception
     });
     throw exception;
@@ -490,12 +490,12 @@ async function fetchVersions(fileInfo) {
  */
 async function restoreVersion(version) {
   try {
-    _logger_js__WEBPACK_IMPORTED_MODULE_6__["default"].debug('Restoring version', {
+    _utils_logger_js__WEBPACK_IMPORTED_MODULE_6__["default"].debug('Restoring version', {
       url: version.url
     });
-    await _davClient_js__WEBPACK_IMPORTED_MODULE_4__["default"].moveFile(`/versions/${(0,_nextcloud_auth__WEBPACK_IMPORTED_MODULE_1__.getCurrentUser)()?.uid}/versions/${version.fileId}/${version.fileVersion}`, `/versions/${(0,_nextcloud_auth__WEBPACK_IMPORTED_MODULE_1__.getCurrentUser)()?.uid}/restore/target`);
+    await _utils_davClient_js__WEBPACK_IMPORTED_MODULE_4__["default"].moveFile(`/versions/${(0,_nextcloud_auth__WEBPACK_IMPORTED_MODULE_1__.getCurrentUser)()?.uid}/versions/${version.fileId}/${version.fileVersion}`, `/versions/${(0,_nextcloud_auth__WEBPACK_IMPORTED_MODULE_1__.getCurrentUser)()?.uid}/restore/target`);
   } catch (exception) {
-    _logger_js__WEBPACK_IMPORTED_MODULE_6__["default"].error('Could not restore version', {
+    _utils_logger_js__WEBPACK_IMPORTED_MODULE_6__["default"].error('Could not restore version', {
       exception
     });
     throw exception;
@@ -540,7 +540,7 @@ function formatVersion(version, fileInfo) {
   };
 }
 async function setVersionLabel(version, newLabel) {
-  return await _davClient_js__WEBPACK_IMPORTED_MODULE_4__["default"].customRequest(version.filename, {
+  return await _utils_davClient_js__WEBPACK_IMPORTED_MODULE_4__["default"].customRequest(version.filename, {
     method: 'PROPPATCH',
     data: `<?xml version="1.0"?>
 					<d:propertyupdate xmlns:d="DAV:"
@@ -556,7 +556,7 @@ async function setVersionLabel(version, newLabel) {
   });
 }
 async function deleteVersion(version) {
-  await _davClient_js__WEBPACK_IMPORTED_MODULE_4__["default"].deleteFile(version.filename);
+  await _utils_davClient_js__WEBPACK_IMPORTED_MODULE_4__["default"].deleteFile(version.filename);
 }
 
 /***/ }),
@@ -3361,4 +3361,4 @@ __webpack_require__.r(__webpack_exports__);
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=files_versions-files_versions.js.map?v=61ed2b4e7da672a2fe38
+//# sourceMappingURL=files_versions-files_versions.js.map?v=d43054d5600dbfcd0d92

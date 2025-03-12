@@ -42,7 +42,7 @@ class LoginListener implements IEventListener {
 
 	public function onPostLogin(IUser $user): void {
 		$this->logger->info(
-			self::class . ' - {user} postLogin',
+			__CLASS__ . ' - {user} postLogin',
 			[
 				'app' => 'user_ldap',
 				'user' => $user->getUID(),
@@ -67,7 +67,7 @@ class LoginListener implements IEventListener {
 			$groupObject = $this->groupManager->get($groupId);
 			if ($groupObject === null) {
 				$this->logger->error(
-					self::class . ' - group {group} could not be found (user {user})',
+					__CLASS__ . ' - group {group} could not be found (user {user})',
 					[
 						'app' => 'user_ldap',
 						'user' => $userId,
@@ -81,7 +81,7 @@ class LoginListener implements IEventListener {
 			} catch (Exception $e) {
 				if ($e->getReason() !== Exception::REASON_UNIQUE_CONSTRAINT_VIOLATION) {
 					$this->logger->error(
-						self::class . ' - group {group} membership failed to be added (user {user})',
+						__CLASS__ . ' - group {group} membership failed to be added (user {user})',
 						[
 							'app' => 'user_ldap',
 							'user' => $userId,
@@ -96,7 +96,7 @@ class LoginListener implements IEventListener {
 			$this->groupBackend->addRelationshipToCaches($userId, null, $groupId);
 			$this->dispatcher->dispatchTyped(new UserAddedEvent($groupObject, $userObject));
 			$this->logger->info(
-				self::class . ' - {user} added to {group}',
+				__CLASS__ . ' - {user} added to {group}',
 				[
 					'app' => 'user_ldap',
 					'user' => $userId,
@@ -110,7 +110,7 @@ class LoginListener implements IEventListener {
 			} catch (Exception $e) {
 				if ($e->getReason() !== Exception::REASON_DATABASE_OBJECT_NOT_FOUND) {
 					$this->logger->error(
-						self::class . ' - group {group} membership failed to be removed (user {user})',
+						__CLASS__ . ' - group {group} membership failed to be removed (user {user})',
 						[
 							'app' => 'user_ldap',
 							'user' => $userId,
@@ -125,7 +125,7 @@ class LoginListener implements IEventListener {
 			$groupObject = $this->groupManager->get($groupId);
 			if ($groupObject === null) {
 				$this->logger->error(
-					self::class . ' - group {group} could not be found (user {user})',
+					__CLASS__ . ' - group {group} could not be found (user {user})',
 					[
 						'app' => 'user_ldap',
 						'user' => $userId,

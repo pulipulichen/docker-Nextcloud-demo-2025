@@ -21,14 +21,16 @@ use OCP\User\Events\UserDeletedEvent;
  */
 class UserDeletedListener implements IEventListener {
 
+	/** @var StatusService */
+	private $service;
+
 	/**
 	 * UserDeletedListener constructor.
 	 *
 	 * @param StatusService $service
 	 */
-	public function __construct(
-		private StatusService $service,
-	) {
+	public function __construct(StatusService $service) {
+		$this->service = $service;
 	}
 
 

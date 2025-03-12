@@ -28,6 +28,10 @@ class Result extends BaseResult {
 	/**
 	 * @deprecated 20.0.0
 	 */
+	public string $authorName;
+	/**
+	 * @deprecated 20.0.0
+	 */
 	public $path;
 	/**
 	 * @deprecated 20.0.0
@@ -41,10 +45,7 @@ class Result extends BaseResult {
 	public function __construct(
 		string $search,
 		IComment $comment,
-		/**
-		 * @deprecated 20.0.0
-		 */
-		public string $authorName,
+		string $authorName,
 		string $path,
 	) {
 		parent::__construct(
@@ -55,6 +56,7 @@ class Result extends BaseResult {
 
 		$this->comment = $this->getRelevantMessagePart($comment->getMessage(), $search);
 		$this->authorId = $comment->getActorId();
+		$this->authorName = $authorName;
 		$this->fileName = basename($path);
 		$this->path = $this->getVisiblePath($path);
 	}

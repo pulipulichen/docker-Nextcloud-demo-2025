@@ -8,12 +8,13 @@
 namespace OCA\User_LDAP;
 
 abstract class BackendUtility {
+	protected $access;
+
 	/**
 	 * constructor, make sure the subclasses call this one!
 	 * @param Access $access an instance of Access for LDAP interaction
 	 */
-	public function __construct(
-		protected Access $access,
-	) {
+	public function __construct(Access $access) {
+		$this->access = $access;
 	}
 }

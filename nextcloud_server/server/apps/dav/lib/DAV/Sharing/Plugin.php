@@ -12,7 +12,6 @@ use OCA\DAV\CalDAV\CalendarHome;
 use OCA\DAV\Connector\Sabre\Auth;
 use OCA\DAV\DAV\Sharing\Xml\Invite;
 use OCA\DAV\DAV\Sharing\Xml\ShareRequest;
-use OCP\AppFramework\Http;
 use OCP\IConfig;
 use OCP\IRequest;
 use Sabre\DAV\Exception\NotFound;
@@ -27,18 +26,26 @@ class Plugin extends ServerPlugin {
 	public const NS_OWNCLOUD = 'http://owncloud.org/ns';
 	public const NS_NEXTCLOUD = 'http://nextcloud.com/ns';
 
+	/** @var Auth */
+	private $auth;
+
+	/** @var IRequest */
+	private $request;
+
+	/** @var IConfig */
+	private $config;
+
 	/**
 	 * Plugin constructor.
 	 *
-	 * @param Auth $auth
+	 * @param Auth $authBackEnd
 	 * @param IRequest $request
 	 * @param IConfig $config
 	 */
-	public function __construct(
-		private Auth $auth,
-		private IRequest $request,
-		private IConfig $config,
-	) {
+	public function __construct(Auth $authBackEnd, IRequest $request, IConfig $config) {
+		$this->auth = $authBackEnd;
+		$this->request = $request;
+		$this->config = $config;
 	}
 
 	/**
@@ -103,7 +110,7 @@ class Plugin extends ServerPlugin {
 		$path = $request->getPath();
 
 		// Only handling xml
-		$contentType = (string)$request->getHeader('Content-Type');
+		$contentType = (string) $request->getHeader('Content-Type');
 		if (!str_contains($contentType, 'application/xml') && !str_contains($contentType, 'text/xml')) {
 			return;
 		}
@@ -158,7 +165,7 @@ class Plugin extends ServerPlugin {
 
 				$node->updateShares($message->set, $message->remove);
 
-				$response->setStatus(Http::STATUS_OK);
+				$response->setStatus(200);
 				// Adding this because sending a response body may cause issues,
 				// and I wanted some type of indicator the response was handled.
 				$response->setHeader('X-Sabre-Status', 'everything-went-well');

@@ -9,6 +9,8 @@ OC.L10N.register(
     "Federation" : "Federado",
     "+ Add trusted server" : "+ Aldoni fidindan servilon",
     "Trusted server" : "Fidinda servilo",
-    "Add" : "Aldoni"
+    "Add" : "Aldoni",
+    "Federation allows you to connect with other trusted servers to exchange the user directory." : "„Federado“ ebligas vin konekti al aliaj fidindaj serviloj por interŝanĝi liston de uzantoj.",
+    "Federation allows you to connect with other trusted servers to exchange the user directory. For example this will be used to auto-complete external users for federated sharing." : "„Federado“ ebligas vin konekti al aliaj fidindaj serviloj por interŝanĝi liston de uzantoj. Ekzemple, tio uziĝos por aŭtomate kompletigi forajn uzantojn en federa kunhavigo."
 },
 "nplurals=2; plural=(n != 1);");

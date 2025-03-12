@@ -18,13 +18,21 @@ use OCP\EventDispatcher\Event;
 use OCP\EventDispatcher\IEventListener;
 use OCP\IInitialStateService;
 use OCP\IUserSession;
-use OCP\Util;
 
 /** @template-implements IEventListener<BeforeTemplateRenderedEvent> */
 class BeforeTemplateRenderedListener implements IEventListener {
 
 	/** @var ProfileManager */
 	private $profileManager;
+
+	/** @var IUserSession */
+	private $userSession;
+
+	/** @var IInitialStateService */
+	private $initialState;
+
+	/** @var JSDataService */
+	private $jsDataService;
 
 	/**
 	 * BeforeTemplateRenderedListener constructor.
@@ -36,11 +44,14 @@ class BeforeTemplateRenderedListener implements IEventListener {
 	 */
 	public function __construct(
 		ProfileManager $profileManager,
-		private IUserSession $userSession,
-		private IInitialStateService $initialState,
-		private JSDataService $jsDataService,
+		IUserSession $userSession,
+		IInitialStateService $initialState,
+		JSDataService $jsDataService
 	) {
 		$this->profileManager = $profileManager;
+		$this->userSession = $userSession;
+		$this->initialState = $initialState;
+		$this->jsDataService = $jsDataService;
 	}
 
 	/**
@@ -69,7 +80,7 @@ class BeforeTemplateRenderedListener implements IEventListener {
 			return ['profileEnabled' => $this->profileManager->isProfileEnabled($user)];
 		});
 
-		Util::addScript('user_status', 'menu');
-		Util::addStyle('user_status', 'user-status-menu');
+		\OCP\Util::addScript('user_status', 'menu');
+		\OCP\Util::addStyle('user_status', 'user-status-menu');
 	}
 }

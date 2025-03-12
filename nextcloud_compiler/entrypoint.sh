@@ -2,7 +2,7 @@
 
 # 判斷 NEXTCLOUD_ENV 是否為 development
 if [ "$NEXTCLOUD_ENV" = "development" ]; then
-  npm run watch --silent >/dev/null 2>&1
+  npm run watch
 else
-  npm run build --silent >/dev/null 2>&1
+  npm run build
 fi

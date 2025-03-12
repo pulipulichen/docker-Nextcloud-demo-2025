@@ -368,9 +368,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _nextcloud_event_bus__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @nextcloud/event-bus */ "./node_modules/@nextcloud/event-bus/dist/index.mjs");
 /* harmony import */ var _nextcloud_l10n__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @nextcloud/l10n */ "./node_modules/@nextcloud/l10n/dist/index.mjs");
 /* harmony import */ var _css_fileEntryInlineSystemTags_scss__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../css/fileEntryInlineSystemTags.scss */ "./apps/systemtags/src/css/fileEntryInlineSystemTags.scss");
-/* harmony import */ var _utils_colorUtils_ts__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../utils/colorUtils.ts */ "./apps/systemtags/src/utils/colorUtils.ts");
-/* harmony import */ var _services_api_ts__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../services/api.ts */ "./apps/systemtags/src/services/api.ts");
-/* harmony import */ var _utils_ts__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../utils.ts */ "./apps/systemtags/src/utils.ts");
+/* harmony import */ var _utils_colorUtils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../utils/colorUtils */ "./apps/systemtags/src/utils/colorUtils.ts");
+/* harmony import */ var _services_api__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../services/api */ "./apps/systemtags/src/services/api.ts");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../utils */ "./apps/systemtags/src/utils.ts");
 /* harmony import */ var _logger_ts__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../logger.ts */ "./apps/systemtags/src/logger.ts");
 
 
@@ -392,8 +392,8 @@ const renderTag = function (tag) {
   const cachedTag = cache.find(t => t.displayName === tag);
   if (cachedTag?.color) {
     // Make sure contrast is good and follow WCAG guidelines
-    const mainBackgroundColor = getComputedStyle(document.body).getPropertyValue('--color-main-background').replace('#', '') || ((0,_utils_colorUtils_ts__WEBPACK_IMPORTED_MODULE_4__.isDarkModeEnabled)() ? '000000' : 'ffffff');
-    const primaryElement = (0,_utils_colorUtils_ts__WEBPACK_IMPORTED_MODULE_4__.elementColor)(`#${cachedTag.color}`, `#${mainBackgroundColor}`);
+    const mainBackgroundColor = getComputedStyle(document.body).getPropertyValue('--color-main-background').replace('#', '') || ((0,_utils_colorUtils__WEBPACK_IMPORTED_MODULE_4__.isDarkModeEnabled)() ? '000000' : 'ffffff');
+    const primaryElement = (0,_utils_colorUtils__WEBPACK_IMPORTED_MODULE_4__.elementColor)(`#${cachedTag.color}`, `#${mainBackgroundColor}`);
     tagElement.style.setProperty('--systemtag-color', primaryElement);
     tagElement.setAttribute('data-systemtag-color', 'true');
   }
@@ -404,7 +404,7 @@ const renderTag = function (tag) {
 };
 const renderInline = async function (node) {
   // Ensure we have the system tags as an array
-  const tags = (0,_utils_ts__WEBPACK_IMPORTED_MODULE_6__.getNodeSystemTags)(node);
+  const tags = (0,_utils__WEBPACK_IMPORTED_MODULE_6__.getNodeSystemTags)(node);
   const systemTagsElement = document.createElement('ul');
   systemTagsElement.classList.add('files-list__system-tags');
   systemTagsElement.setAttribute('aria-label', (0,_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_2__.t)('files', 'Assigned collaborative tags'));
@@ -417,7 +417,7 @@ const renderInline = async function (node) {
     try {
       // Best would be to support attributes from webdav,
       // but currently the library does not support it
-      cache.push(...(await (0,_services_api_ts__WEBPACK_IMPORTED_MODULE_5__.fetchTags)()));
+      cache.push(...(await (0,_services_api__WEBPACK_IMPORTED_MODULE_5__.fetchTags)()));
     } catch (error) {
       _logger_ts__WEBPACK_IMPORTED_MODULE_7__["default"].error('Failed to fetch tags', {
         error
@@ -725,7 +725,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _nextcloud_router__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @nextcloud/router */ "./node_modules/@nextcloud/router/dist/index.mjs");
 /* harmony import */ var _nextcloud_l10n__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @nextcloud/l10n */ "./node_modules/@nextcloud/l10n/dist/index.mjs");
 /* harmony import */ var _davClient_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./davClient.js */ "./apps/systemtags/src/services/davClient.ts");
-/* harmony import */ var _utils_ts__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../utils.ts */ "./apps/systemtags/src/utils.ts");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../utils */ "./apps/systemtags/src/utils.ts");
 /* harmony import */ var _logger_ts__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../logger.ts */ "./apps/systemtags/src/logger.ts");
 /* harmony import */ var _nextcloud_event_bus__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @nextcloud/event-bus */ "./node_modules/@nextcloud/event-bus/dist/index.mjs");
 /* harmony import */ var _nextcloud_password_confirmation__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @nextcloud/password-confirmation */ "./node_modules/@nextcloud/password-confirmation/dist/index.mjs");
@@ -763,7 +763,7 @@ const fetchTags = async () => {
       details: true,
       glob: '/systemtags/*' // Filter out first empty tag
     });
-    return (0,_utils_ts__WEBPACK_IMPORTED_MODULE_4__.parseTags)(tags);
+    return (0,_utils__WEBPACK_IMPORTED_MODULE_4__.parseTags)(tags);
   } catch (error) {
     _logger_ts__WEBPACK_IMPORTED_MODULE_5__["default"].error((0,_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_2__.t)('systemtags', 'Failed to load tags'), {
       error
@@ -780,7 +780,7 @@ const fetchTag = async tagId => {
       data: fetchTagsPayload,
       details: true
     });
-    return (0,_utils_ts__WEBPACK_IMPORTED_MODULE_4__.parseTags)([tag])[0];
+    return (0,_utils__WEBPACK_IMPORTED_MODULE_4__.parseTags)([tag])[0];
   } catch (error) {
     _logger_ts__WEBPACK_IMPORTED_MODULE_5__["default"].error((0,_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_2__.t)('systemtags', 'Failed to load tag'), {
       error
@@ -809,7 +809,7 @@ const fetchLastUsedTagIds = async () => {
  */
 const createTag = async tag => {
   const path = '/systemtags';
-  const tagToPost = (0,_utils_ts__WEBPACK_IMPORTED_MODULE_4__.formatTag)(tag);
+  const tagToPost = (0,_utils__WEBPACK_IMPORTED_MODULE_4__.formatTag)(tag);
   try {
     const {
       headers
@@ -820,7 +820,7 @@ const createTag = async tag => {
     const contentLocation = headers.get('content-location');
     if (contentLocation) {
       (0,_nextcloud_event_bus__WEBPACK_IMPORTED_MODULE_6__.emit)('systemtags:tag:created', tag);
-      return (0,_utils_ts__WEBPACK_IMPORTED_MODULE_4__.parseIdFromLocation)(contentLocation);
+      return (0,_utils__WEBPACK_IMPORTED_MODULE_4__.parseIdFromLocation)(contentLocation);
     }
     _logger_ts__WEBPACK_IMPORTED_MODULE_5__["default"].error((0,_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_2__.t)('systemtags', 'Missing "Content-Location" header'));
     throw new Error((0,_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_2__.t)('systemtags', 'Missing "Content-Location" header'));
@@ -4046,4 +4046,4 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/**
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=systemtags-init.js.map?v=01cb3a855266df538d40
+//# sourceMappingURL=systemtags-init.js.map?v=492bab3d55fa01516a32

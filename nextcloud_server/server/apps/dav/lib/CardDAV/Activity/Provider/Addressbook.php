@@ -8,7 +8,6 @@ declare(strict_types=1);
  */
 namespace OCA\DAV\CardDAV\Activity\Provider;
 
-use OCP\Activity\Exceptions\UnknownActivityException;
 use OCP\Activity\IEvent;
 use OCP\Activity\IEventMerger;
 use OCP\Activity\IManager;
@@ -27,15 +26,25 @@ class Addressbook extends Base {
 	public const SUBJECT_UNSHARE_USER = 'addressbook_user_unshare';
 	public const SUBJECT_UNSHARE_GROUP = 'addressbook_group_unshare';
 
-	public function __construct(
-		protected IFactory $languageFactory,
+	/** @var IFactory */
+	protected $languageFactory;
+
+	/** @var IManager */
+	protected $activityManager;
+
+	/** @var IEventMerger */
+	protected $eventMerger;
+
+	public function __construct(IFactory $languageFactory,
 		IURLGenerator $url,
-		protected IManager $activityManager,
+		IManager $activityManager,
 		IUserManager $userManager,
 		IGroupManager $groupManager,
-		protected IEventMerger $eventMerger,
-	) {
+		IEventMerger $eventMerger) {
 		parent::__construct($userManager, $groupManager, $url);
+		$this->languageFactory = $languageFactory;
+		$this->activityManager = $activityManager;
+		$this->eventMerger = $eventMerger;
 	}
 
 	/**
@@ -43,11 +52,11 @@ class Addressbook extends Base {
 	 * @param IEvent $event
 	 * @param IEvent|null $previousEvent
 	 * @return IEvent
-	 * @throws UnknownActivityException
+	 * @throws \InvalidArgumentException
 	 */
 	public function parse($language, IEvent $event, ?IEvent $previousEvent = null): IEvent {
 		if ($event->getApp() !== 'dav' || $event->getType() !== 'contacts') {
-			throw new UnknownActivityException();
+			throw new \InvalidArgumentException();
 		}
 
 		$l = $this->languageFactory->get('dav', $language);
@@ -93,7 +102,7 @@ class Addressbook extends Base {
 		} elseif ($event->getSubject() === self::SUBJECT_UNSHARE_GROUP . '_by') {
 			$subject = $l->t('{actor} unshared address book {addressbook} from group {group}');
 		} else {
-			throw new UnknownActivityException();
+			throw new \InvalidArgumentException();
 		}
 
 		$parsedParameters = $this->getParameters($event, $l);

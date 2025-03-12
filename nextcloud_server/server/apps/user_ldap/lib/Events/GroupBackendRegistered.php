@@ -19,10 +19,14 @@ use OCP\EventDispatcher\Event;
  */
 class GroupBackendRegistered extends Event {
 
-	public function __construct(
-		private IGroupLDAP $backend,
-		private GroupPluginManager $pluginManager,
-	) {
+	/** @var GroupPluginManager */
+	private $pluginManager;
+	/** @var IGroupLDAP */
+	private $backend;
+
+	public function __construct(IGroupLDAP $backend, GroupPluginManager $pluginManager) {
+		$this->pluginManager = $pluginManager;
+		$this->backend = $backend;
 	}
 
 	public function getBackend(): IGroupLDAP {

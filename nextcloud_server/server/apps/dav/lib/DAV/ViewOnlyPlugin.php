@@ -24,10 +24,12 @@ use Sabre\HTTP\RequestInterface;
  */
 class ViewOnlyPlugin extends ServerPlugin {
 	private ?Server $server = null;
+	private ?Folder $userFolder;
 
 	public function __construct(
-		private ?Folder $userFolder,
+		?Folder $userFolder,
 	) {
+		$this->userFolder = $userFolder;
 	}
 
 	/**
@@ -72,7 +74,7 @@ class ViewOnlyPlugin extends ServerPlugin {
 					$nodes = $this->userFolder->getById($node->getId());
 					$node = array_pop($nodes);
 					if (!$node) {
-						throw new NotFoundException('Version file not accessible by current user');
+						throw new NotFoundException("Version file not accessible by current user");
 					}
 				}
 			} else {

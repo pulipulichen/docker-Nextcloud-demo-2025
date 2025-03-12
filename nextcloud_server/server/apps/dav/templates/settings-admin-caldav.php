@@ -4,7 +4,7 @@
  * SPDX-FileCopyrightText: 2017 Nextcloud GmbH and Nextcloud contributors
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
-\OCP\Util::addScript('dav', 'settings-admin-caldav', 'core');
+script('dav', 'settings-admin-caldav');
 
 ?>
 

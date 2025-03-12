@@ -5,9 +5,10 @@
  */
 
 style('settings', 'settings');
-\OCP\Util::addScript('settings', 'settings', 'core');
+script('settings', 'settings');
 \OCP\Util::addScript('settings', 'legacy-admin');
-\OCP\Util::addScript('core', 'setupchecks', 'core');
+script('core', 'setupchecks');
+script('files', 'jquery.fileupload');
 
 ?>
 
@@ -19,7 +20,7 @@ style('settings', 'settings');
 		<ul>
 			<?php foreach ($_['forms']['personal'] as $form) {
 				if (isset($form['anchor'])) {
-					$anchor = \OCP\Server::get(\OCP\IURLGenerator::class)->linkToRoute('settings.PersonalSettings.index', ['section' => $form['anchor']]);
+					$anchor = \OC::$server->getURLGenerator()->linkToRoute('settings.PersonalSettings.index', ['section' => $form['anchor']]);
 					$class = 'nav-icon-' . $form['anchor'];
 					$sectionName = $form['section-name']; ?>
 					<li <?php print_unescaped($form['active'] ? ' class="active"' : ''); ?> data-section-id="<?php print_unescaped($form['anchor']); ?>" data-section-type="personal">
@@ -46,7 +47,7 @@ style('settings', 'settings');
 		<ul>
 			<?php foreach ($_['forms']['admin'] as $form) {
 				if (isset($form['anchor'])) {
-					$anchor = \OCP\Server::get(\OCP\IURLGenerator::class)->linkToRoute('settings.AdminSettings.index', ['section' => $form['anchor']]);
+					$anchor = \OC::$server->getURLGenerator()->linkToRoute('settings.AdminSettings.index', ['section' => $form['anchor']]);
 					$class = 'nav-icon-' . $form['anchor'];
 					$sectionName = $form['section-name']; ?>
 					<li <?php print_unescaped($form['active'] ? ' class="active"' : ''); ?> data-section-id="<?php print_unescaped($form['anchor']); ?>" data-section-type="admin">
@@ -66,6 +67,6 @@ style('settings', 'settings');
 		</ul>
 	</nav>
 </div>
-<main id="app-content" <?php if (!empty($_['activeSectionId'])) { ?> data-active-section-id="<?php print_unescaped($_['activeSectionId']) ?>" <?php } if (!empty($_['activeSectionType'])) { ?> data-active-section-type="<?php print_unescaped($_['activeSectionType']) ?>" <?php } ?>>
+<div id="app-content" <?php if (!empty($_['activeSectionId'])) { ?> data-active-section-id="<?php print_unescaped($_['activeSectionId']) ?>" <?php } if (!empty($_['activeSectionType'])) { ?> data-active-section-type="<?php print_unescaped($_['activeSectionType']) ?>" <?php } ?>>
 	<?php print_unescaped($_['content']); ?>
-</main>
+</div>

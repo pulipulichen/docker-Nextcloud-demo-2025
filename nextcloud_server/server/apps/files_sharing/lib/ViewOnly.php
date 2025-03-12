@@ -17,9 +17,11 @@ use OCP\Files\NotFoundException;
  */
 class ViewOnly {
 
-	public function __construct(
-		private Folder $userFolder,
-	) {
+	/** @var Folder */
+	private $userFolder;
+
+	public function __construct(Folder $userFolder) {
+		$this->userFolder = $userFolder;
 	}
 
 	/**
@@ -86,13 +88,20 @@ class ViewOnly {
 		}
 
 		// Extract extra permissions
-		/** @var SharedStorage $storage */
+		/** @var \OCA\Files_Sharing\SharedStorage $storage */
 		$share = $storage->getShare();
 
-		// Check whether download-permission was denied (granted if not set)
-		$attributes = $share->getAttributes();
-		$canDownload = $attributes?->getAttribute('permissions', 'download');
+		$canDownload = true;
 
-		return $canDownload !== false;
+		// Check if read-only and on whether permission can download is both set and disabled.
+		$attributes = $share->getAttributes();
+		if ($attributes !== null) {
+			$canDownload = $attributes->getAttribute('permissions', 'download');
+		}
+
+		if ($canDownload !== null && !$canDownload) {
+			return false;
+		}
+		return true;
 	}
 }

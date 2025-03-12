@@ -18,19 +18,22 @@ use OCP\IUserSession;
 
 class SettingsController extends Controller {
 
+	/** @var BackupCodeStorage */
+	private $storage;
+
+	/** @var IUserSession */
+	private $userSession;
+
 	/**
 	 * @param string $appName
 	 * @param IRequest $request
 	 * @param BackupCodeStorage $storage
 	 * @param IUserSession $userSession
 	 */
-	public function __construct(
-		$appName,
-		IRequest $request,
-		private BackupCodeStorage $storage,
-		private IUserSession $userSession,
-	) {
+	public function __construct($appName, IRequest $request, BackupCodeStorage $storage, IUserSession $userSession) {
 		parent::__construct($appName, $request);
+		$this->userSession = $userSession;
+		$this->storage = $storage;
 	}
 
 	/**

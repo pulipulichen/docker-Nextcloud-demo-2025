@@ -76,7 +76,7 @@ class CardDavBackend implements BackendInterface, SyncSupport {
 			->where($query->expr()->eq('principaluri', $query->createNamedParameter($principalUri)));
 
 		$result = $query->executeQuery();
-		$column = (int)$result->fetchOne();
+		$column = (int) $result->fetchOne();
 		$result->closeCursor();
 		return $column;
 	}
@@ -200,7 +200,7 @@ class CardDavBackend implements BackendInterface, SyncSupport {
 
 		$addressBooks = [];
 
-		$result = $query->executeQuery();
+		$result = $query->execute();
 		while ($row = $result->fetch()) {
 			$addressBooks[$row['id']] = [
 				'id' => $row['id'],
@@ -330,7 +330,7 @@ class CardDavBackend implements BackendInterface, SyncSupport {
 				$query->where($query->expr()->eq('id', $query->createNamedParameter($addressBookId)))
 					->executeStatement();
 
-				$this->addChange($addressBookId, '', 2);
+				$this->addChange($addressBookId, "", 2);
 
 				$addressBookRow = $this->getAddressBookById((int)$addressBookId);
 				$shares = $this->getShares((int)$addressBookId);
@@ -351,7 +351,6 @@ class CardDavBackend implements BackendInterface, SyncSupport {
 	 * @param array $properties
 	 * @return int
 	 * @throws BadRequest
-	 * @throws Exception
 	 */
 	public function createAddressBook($principalUri, $url, array $properties) {
 		if (strlen($url) > 255) {
@@ -396,7 +395,7 @@ class CardDavBackend implements BackendInterface, SyncSupport {
 					'synctoken' => $query->createParameter('synctoken'),
 				])
 				->setParameters($values)
-				->executeStatement();
+				->execute();
 
 			$addressBookId = $query->getLastInsertId();
 			return [
@@ -417,7 +416,7 @@ class CardDavBackend implements BackendInterface, SyncSupport {
 	 * @return void
 	 */
 	public function deleteAddressBook($addressBookId) {
-		$this->atomic(function () use ($addressBookId): void {
+		$this->atomic(function () use ($addressBookId) {
 			$addressBookId = (int)$addressBookId;
 			$addressBookData = $this->getAddressBookById($addressBookId);
 			$shares = $this->getShares($addressBookId);
@@ -480,7 +479,7 @@ class CardDavBackend implements BackendInterface, SyncSupport {
 
 		$cards = [];
 
-		$result = $query->executeQuery();
+		$result = $query->execute();
 		while ($row = $result->fetch()) {
 			$row['etag'] = '"' . $row['etag'] . '"';
 
@@ -517,7 +516,7 @@ class CardDavBackend implements BackendInterface, SyncSupport {
 			->andWhere($query->expr()->eq('uri', $query->createNamedParameter($cardUri)))
 			->setMaxResults(1);
 
-		$result = $query->executeQuery();
+		$result = $query->execute();
 		$row = $result->fetch();
 		if (!$row) {
 			return false;
@@ -561,7 +560,7 @@ class CardDavBackend implements BackendInterface, SyncSupport {
 
 		foreach ($chunks as $uris) {
 			$query->setParameter('uri', $uris, IQueryBuilder::PARAM_STR_ARRAY);
-			$result = $query->executeQuery();
+			$result = $query->execute();
 
 			while ($row = $result->fetch()) {
 				$row['etag'] = '"' . $row['etag'] . '"';
@@ -635,7 +634,7 @@ class CardDavBackend implements BackendInterface, SyncSupport {
 					'etag' => $query->createNamedParameter($etag),
 					'uid' => $query->createNamedParameter($uid),
 				])
-				->executeStatement();
+				->execute();
 
 			$etagCacheKey = "$addressBookId#$cardUri";
 			$this->etagCache[$etagCacheKey] = $etag;
@@ -698,7 +697,7 @@ class CardDavBackend implements BackendInterface, SyncSupport {
 				->set('uid', $query->createNamedParameter($uid))
 				->where($query->expr()->eq('uri', $query->createNamedParameter($cardUri)))
 				->andWhere($query->expr()->eq('addressbookid', $query->createNamedParameter($addressBookId)))
-				->executeStatement();
+				->execute();
 
 			$this->etagCache[$etagCacheKey] = $etag;
 
@@ -940,7 +939,7 @@ class CardDavBackend implements BackendInterface, SyncSupport {
 	 * @return void
 	 */
 	protected function addChange(int $addressBookId, string $objectUri, int $operation): void {
-		$this->atomic(function () use ($addressBookId, $objectUri, $operation): void {
+		$this->atomic(function () use ($addressBookId, $objectUri, $operation) {
 			$query = $this->db->getQueryBuilder();
 			$query->select('synctoken')
 				->from('addressbooks')
@@ -1015,7 +1014,7 @@ class CardDavBackend implements BackendInterface, SyncSupport {
 	 * @param list<string> $remove
 	 */
 	public function updateShares(IShareable $shareable, array $add, array $remove): void {
-		$this->atomic(function () use ($shareable, $add, $remove): void {
+		$this->atomic(function () use ($shareable, $add, $remove) {
 			$addressBookId = $shareable->getResourceId();
 			$addressBookData = $this->getAddressBookById($addressBookId);
 			$oldShares = $this->getShares($addressBookId);
@@ -1033,11 +1032,11 @@ class CardDavBackend implements BackendInterface, SyncSupport {
 	 * @param string $pattern which should match within the $searchProperties
 	 * @param array $searchProperties defines the properties within the query pattern should match
 	 * @param array $options = array() to define the search behavior
-	 *                       - 'types' boolean (since 15.0.0) If set to true, fields that come with a TYPE property will be an array
-	 *                       - 'escape_like_param' - If set to false wildcards _ and % are not escaped, otherwise they are
-	 *                       - 'limit' - Set a numeric limit for the search results
-	 *                       - 'offset' - Set the offset for the limited search results
-	 *                       - 'wildcard' - Whether the search should use wildcards
+	 * 	  - 'types' boolean (since 15.0.0) If set to true, fields that come with a TYPE property will be an array
+	 *    - 'escape_like_param' - If set to false wildcards _ and % are not escaped, otherwise they are
+	 *    - 'limit' - Set a numeric limit for the search results
+	 *    - 'offset' - Set the offset for the limited search results
+	 *    - 'wildcard' - Whether the search should use wildcards
 	 * @psalm-param array{types?: bool, escape_like_param?: bool, limit?: int, offset?: int, wildcard?: bool} $options
 	 * @return array an array of contacts which are arrays of key-value-pairs
 	 */
@@ -1062,7 +1061,7 @@ class CardDavBackend implements BackendInterface, SyncSupport {
 		array $options = []): array {
 		return $this->atomic(function () use ($principalUri, $pattern, $searchProperties, $options) {
 			$addressBookIds = array_map(static function ($row):int {
-				return (int)$row['id'];
+				return (int) $row['id'];
 			}, $this->getAddressBooksForUser($principalUri));
 
 			return $this->searchByAddressBookIds($addressBookIds, $pattern, $searchProperties, $options);
@@ -1166,7 +1165,7 @@ class CardDavBackend implements BackendInterface, SyncSupport {
 			 */
 		}
 
-		$result = $query2->executeQuery();
+		$result = $query2->execute();
 		$matches = $result->fetchAll();
 		$result->closeCursor();
 		$matches = array_map(function ($match) {
@@ -1187,7 +1186,7 @@ class CardDavBackend implements BackendInterface, SyncSupport {
 		}
 
 		return array_map(function ($array) {
-			$array['addressbookid'] = (int)$array['addressbookid'];
+			$array['addressbookid'] = (int) $array['addressbookid'];
 			$modified = false;
 			$array['carddata'] = $this->readBlob($array['carddata'], $modified);
 			if ($modified) {
@@ -1208,7 +1207,7 @@ class CardDavBackend implements BackendInterface, SyncSupport {
 			->from($this->dbCardsPropertiesTable)
 			->where($query->expr()->eq('name', $query->createNamedParameter($name)))
 			->andWhere($query->expr()->eq('addressbookid', $query->createNamedParameter($bookId)))
-			->executeQuery();
+			->execute();
 
 		$all = $result->fetchAll(PDO::FETCH_COLUMN);
 		$result->closeCursor();
@@ -1228,7 +1227,7 @@ class CardDavBackend implements BackendInterface, SyncSupport {
 			->where($query->expr()->eq('id', $query->createParameter('id')))
 			->setParameter('id', $id);
 
-		$result = $query->executeQuery();
+		$result = $query->execute();
 		$uri = $result->fetch();
 		$result->closeCursor();
 
@@ -1252,7 +1251,7 @@ class CardDavBackend implements BackendInterface, SyncSupport {
 		$query->select('*')->from($this->dbCardsTable)
 			->where($query->expr()->eq('uri', $query->createNamedParameter($uri)))
 			->andWhere($query->expr()->eq('addressbookid', $query->createNamedParameter($addressBookId)));
-		$queryResult = $query->executeQuery();
+		$queryResult = $query->execute();
 		$contact = $queryResult->fetch();
 		$queryResult->closeCursor();
 
@@ -1293,7 +1292,7 @@ class CardDavBackend implements BackendInterface, SyncSupport {
 	 * @param string $vCardSerialized
 	 */
 	protected function updateProperties($addressBookId, $cardUri, $vCardSerialized) {
-		$this->atomic(function () use ($addressBookId, $cardUri, $vCardSerialized): void {
+		$this->atomic(function () use ($addressBookId, $cardUri, $vCardSerialized) {
 			$cardId = $this->getCardId($addressBookId, $cardUri);
 			$vCard = $this->readCard($vCardSerialized);
 
@@ -1325,7 +1324,7 @@ class CardDavBackend implements BackendInterface, SyncSupport {
 				$query->setParameter('name', $property->name);
 				$query->setParameter('value', mb_strcut($property->getValue(), 0, 254));
 				$query->setParameter('preferred', $preferred);
-				$query->executeStatement();
+				$query->execute();
 			}
 		}, $this->db);
 	}
@@ -1351,7 +1350,7 @@ class CardDavBackend implements BackendInterface, SyncSupport {
 		$query->delete($this->dbCardsPropertiesTable)
 			->where($query->expr()->eq('cardid', $query->createNamedParameter($cardId)))
 			->andWhere($query->expr()->eq('addressbookid', $query->createNamedParameter($addressBookId)));
-		$query->executeStatement();
+		$query->execute();
 	}
 
 	/**
@@ -1363,7 +1362,7 @@ class CardDavBackend implements BackendInterface, SyncSupport {
 			->where($query->expr()->eq('uri', $query->createNamedParameter($uri)))
 			->andWhere($query->expr()->eq('addressbookid', $query->createNamedParameter($addressBookId)));
 
-		$result = $query->executeQuery();
+		$result = $query->execute();
 		$cardIds = $result->fetch();
 		$result->closeCursor();
 
@@ -1399,7 +1398,7 @@ class CardDavBackend implements BackendInterface, SyncSupport {
 			->from('addressbookchanges');
 
 		$result = $query->executeQuery();
-		$maxId = (int)$result->fetchOne();
+		$maxId = (int) $result->fetchOne();
 		$result->closeCursor();
 		if (!$maxId || $maxId < $keep) {
 			return 0;

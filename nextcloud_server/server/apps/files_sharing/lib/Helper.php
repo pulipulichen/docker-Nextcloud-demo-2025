@@ -9,33 +9,31 @@ namespace OCA\Files_Sharing;
 use OC\Files\Filesystem;
 use OC\Files\View;
 use OCA\Files_Sharing\AppInfo\Application;
-use OCP\IConfig;
-use OCP\Server;
-use OCP\Util;
 
 class Helper {
 	public static function registerHooks() {
-		Util::connectHook('OC_Filesystem', 'post_rename', '\OCA\Files_Sharing\Updater', 'renameHook');
-		Util::connectHook('OC_Filesystem', 'post_delete', '\OCA\Files_Sharing\Hooks', 'unshareChildren');
+		\OCP\Util::connectHook('OC_Filesystem', 'post_rename', '\OCA\Files_Sharing\Updater', 'renameHook');
+		\OCP\Util::connectHook('OC_Filesystem', 'post_delete', '\OCA\Files_Sharing\Hooks', 'unshareChildren');
 
-		Util::connectHook('OC_User', 'post_deleteUser', '\OCA\Files_Sharing\Hooks', 'deleteUser');
+		\OCP\Util::connectHook('OC_User', 'post_deleteUser', '\OCA\Files_Sharing\Hooks', 'deleteUser');
 	}
 
 	/**
 	 * check if file name already exists and generate unique target
 	 *
 	 * @param string $path
+	 * @param array $excludeList
 	 * @param View $view
 	 * @return string $path
 	 */
-	public static function generateUniqueTarget($path, $view) {
+	public static function generateUniqueTarget($path, $excludeList, $view) {
 		$pathinfo = pathinfo($path);
-		$ext = isset($pathinfo['extension']) ? '.' . $pathinfo['extension'] : '';
+		$ext = isset($pathinfo['extension']) ? '.'.$pathinfo['extension'] : '';
 		$name = $pathinfo['filename'];
 		$dir = $pathinfo['dirname'];
 		$i = 2;
-		while ($view->file_exists($path)) {
-			$path = Filesystem::normalizePath($dir . '/' . $name . ' (' . $i . ')' . $ext);
+		while ($view->file_exists($path) || in_array($path, $excludeList)) {
+			$path = Filesystem::normalizePath($dir . '/' . $name . ' ('.$i.')' . $ext);
 			$i++;
 		}
 
@@ -45,7 +43,7 @@ class Helper {
 	/**
 	 * get default share folder
 	 *
-	 * @param View|null $view
+	 * @param \OC\Files\View|null $view
 	 * @param string|null $userId
 	 * @return string
 	 */
@@ -54,7 +52,7 @@ class Helper {
 			$view = Filesystem::getView();
 		}
 
-		$config = Server::get(IConfig::class);
+		$config = \OC::$server->getConfig();
 		$systemDefault = $config->getSystemValue('share_folder', '/');
 		$allowCustomShareFolder = $config->getSystemValueBool('sharing.allow_custom_share_folder', true);
 
@@ -88,6 +86,6 @@ class Helper {
 	 * @param string $shareFolder
 	 */
 	public static function setShareFolder($shareFolder) {
-		Server::get(IConfig::class)->setSystemValue('share_folder', $shareFolder);
+		\OC::$server->getConfig()->setSystemValue('share_folder', $shareFolder);
 	}
 }

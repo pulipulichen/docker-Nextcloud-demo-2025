@@ -8,25 +8,26 @@
 namespace OCA\Federation\DAV;
 
 use OCA\Federation\DbHandler;
-use OCP\Defaults;
 use Sabre\DAV\Auth\Backend\AbstractBasic;
 use Sabre\HTTP\RequestInterface;
 use Sabre\HTTP\ResponseInterface;
 
 class FedAuth extends AbstractBasic {
 
+	/** @var DbHandler */
+	private $db;
+
 	/**
 	 * FedAuth constructor.
 	 *
 	 * @param DbHandler $db
 	 */
-	public function __construct(
-		private DbHandler $db,
-	) {
+	public function __construct(DbHandler $db) {
+		$this->db = $db;
 		$this->principalPrefix = 'principals/system/';
 
 		// setup realm
-		$defaults = new Defaults();
+		$defaults = new \OCP\Defaults();
 		$this->realm = $defaults->getName();
 	}
 

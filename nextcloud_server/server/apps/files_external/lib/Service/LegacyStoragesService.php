@@ -7,8 +7,6 @@
 namespace OCA\Files_External\Service;
 
 use OCA\Files_External\Lib\StorageConfig;
-use OCA\Files_External\MountConfig;
-use OCP\Server;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -39,7 +37,7 @@ abstract class LegacyStoragesService {
 		&$storageConfig,
 		$mountType,
 		$applicable,
-		$storageOptions,
+		$storageOptions
 	) {
 		$backend = $this->backendService->getBackend($storageOptions['backend']);
 		if (!$backend) {
@@ -64,13 +62,13 @@ abstract class LegacyStoragesService {
 			$storageOptions['priority'] = $backend->getPriority();
 		}
 		$storageConfig->setPriority($storageOptions['priority']);
-		if ($mountType === MountConfig::MOUNT_TYPE_USER) {
+		if ($mountType === \OCA\Files_External\MountConfig::MOUNT_TYPE_USER) {
 			$applicableUsers = $storageConfig->getApplicableUsers();
 			if ($applicable !== 'all') {
 				$applicableUsers[] = $applicable;
 				$storageConfig->setApplicableUsers($applicableUsers);
 			}
-		} elseif ($mountType === MountConfig::MOUNT_TYPE_GROUP) {
+		} elseif ($mountType === \OCA\Files_External\MountConfig::MOUNT_TYPE_GROUP) {
 			$applicableGroups = $storageConfig->getApplicableGroups();
 			$applicableGroups[] = $applicable;
 			$storageConfig->setApplicableGroups($applicableGroups);
@@ -125,13 +123,13 @@ abstract class LegacyStoragesService {
 					$parts = explode('/', ltrim($rootMountPath, '/'), 3);
 					if (count($parts) < 3) {
 						// something went wrong, skip
-						Server::get(LoggerInterface::class)->error('Could not parse mount point "' . $rootMountPath . '"', ['app' => 'files_external']);
+						\OC::$server->get(LoggerInterface::class)->error('Could not parse mount point "' . $rootMountPath . '"', ['app' => 'files_external']);
 						continue;
 					}
 					$relativeMountPath = rtrim($parts[2], '/');
 					// note: we cannot do this after the loop because the decrypted config
 					// options might be needed for the config hash
-					$storageOptions['options'] = MountConfig::decryptPasswords($storageOptions['options']);
+					$storageOptions['options'] = \OCA\Files_External\MountConfig::decryptPasswords($storageOptions['options']);
 					if (!isset($storageOptions['backend'])) {
 						$storageOptions['backend'] = $storageOptions['class']; // legacy compat
 					}
@@ -149,7 +147,7 @@ abstract class LegacyStoragesService {
 						// but at this point we don't know the max-id, so use
 						// first group it by config hash
 						$storageOptions['mountpoint'] = $rootMountPath;
-						$configId = MountConfig::makeConfigHash($storageOptions);
+						$configId = \OCA\Files_External\MountConfig::makeConfigHash($storageOptions);
 						if (isset($storagesWithConfigHash[$configId])) {
 							$currentStorage = $storagesWithConfigHash[$configId];
 						}
@@ -173,7 +171,7 @@ abstract class LegacyStoragesService {
 						}
 					} catch (\UnexpectedValueException $e) {
 						// don't die if a storage backend doesn't exist
-						Server::get(LoggerInterface::class)->error('Could not load storage.', [
+						\OC::$server->get(LoggerInterface::class)->error('Could not load storage.', [
 							'app' => 'files_external',
 							'exception' => $e,
 						]);

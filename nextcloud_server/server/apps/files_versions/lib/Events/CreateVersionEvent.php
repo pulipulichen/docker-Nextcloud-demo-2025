@@ -21,15 +21,17 @@ class CreateVersionEvent extends Event {
 	/** @var bool */
 	private $createVersion;
 
+	/** @var Node */
+	private $node;
+
 	/**
 	 * CreateVersionEvent constructor.
 	 *
 	 * @param Node $node
 	 */
-	public function __construct(
-		private Node $node,
-	) {
+	public function __construct(Node $node) {
 		$this->createVersion = true;
+		$this->node = $node;
 	}
 
 	/**

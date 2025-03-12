@@ -14,12 +14,13 @@ use Sabre\DAV\PropPatch;
 class AppleProvisioningNode implements INode, IProperties {
 	public const FILENAME = 'apple-provisioning.mobileconfig';
 
+	protected $timeFactory;
+
 	/**
 	 * @param ITimeFactory $timeFactory
 	 */
-	public function __construct(
-		protected ITimeFactory $timeFactory,
-	) {
+	public function __construct(ITimeFactory $timeFactory) {
+		$this->timeFactory = $timeFactory;
 	}
 
 	/**

@@ -15,9 +15,11 @@ use OCP\Migration\IRepairStep;
 
 class RemoveClassifiedEventActivity implements IRepairStep {
 
-	public function __construct(
-		private IDBConnection $connection,
-	) {
+	/** @var IDBConnection */
+	private $connection;
+
+	public function __construct(IDBConnection $connection) {
+		$this->connection = $connection;
 	}
 
 	/**
@@ -56,7 +58,7 @@ class RemoveClassifiedEventActivity implements IRepairStep {
 			->from('calendarobjects', 'o')
 			->leftJoin('o', 'calendars', 'c', $query->expr()->eq('c.id', 'o.calendarid'))
 			->where($query->expr()->eq('o.classification', $query->createNamedParameter(CalDavBackend::CLASSIFICATION_PRIVATE)));
-		$result = $query->executeQuery();
+		$result = $query->execute();
 
 		while ($row = $result->fetch()) {
 			if ($row['principaluri'] === null) {
@@ -67,7 +69,7 @@ class RemoveClassifiedEventActivity implements IRepairStep {
 				->setParameter('type', 'calendar')
 				->setParameter('calendar_id', $row['calendarid'])
 				->setParameter('event_uid', '%' . $this->connection->escapeLikeParameter('{"id":"' . $row['uid'] . '"') . '%');
-			$deletedEvents += $delete->executeStatement();
+			$deletedEvents += $delete->execute();
 		}
 		$result->closeCursor();
 
@@ -90,7 +92,7 @@ class RemoveClassifiedEventActivity implements IRepairStep {
 			->from('calendarobjects', 'o')
 			->leftJoin('o', 'calendars', 'c', $query->expr()->eq('c.id', 'o.calendarid'))
 			->where($query->expr()->eq('o.classification', $query->createNamedParameter(CalDavBackend::CLASSIFICATION_CONFIDENTIAL)));
-		$result = $query->executeQuery();
+		$result = $query->execute();
 
 		while ($row = $result->fetch()) {
 			if ($row['principaluri'] === null) {
@@ -102,7 +104,7 @@ class RemoveClassifiedEventActivity implements IRepairStep {
 				->setParameter('calendar_id', $row['calendarid'])
 				->setParameter('event_uid', '%' . $this->connection->escapeLikeParameter('{"id":"' . $row['uid'] . '"') . '%')
 				->setParameter('filtered_name', '%' . $this->connection->escapeLikeParameter('{"id":"' . $row['uid'] . '","name":"Busy"') . '%');
-			$deletedEvents += $delete->executeStatement();
+			$deletedEvents += $delete->execute();
 		}
 		$result->closeCursor();
 

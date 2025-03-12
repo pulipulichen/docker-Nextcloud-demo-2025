@@ -106,7 +106,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _nextcloud_axios__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @nextcloud/axios */ "./node_modules/@nextcloud/axios/dist/index.mjs");
 /* harmony import */ var p_queue__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! p-queue */ "./node_modules/p-queue/dist/index.js");
 /* harmony import */ var _services_WebdavClient_ts__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../services/WebdavClient.ts */ "./apps/files/src/services/WebdavClient.ts");
-/* harmony import */ var _logger_ts__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../logger.ts */ "./apps/files/src/logger.ts");
+/* harmony import */ var _logger__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../logger */ "./apps/files/src/logger.ts");
 
 
 
@@ -134,7 +134,7 @@ const convertFiles = async function (fileIds, targetMimeType) {
     const failed = results.filter(result => result.status === 'rejected');
     if (failed.length > 0) {
       const messages = failed.map(result => result.reason?.response?.data?.ocs?.meta?.message);
-      _logger_ts__WEBPACK_IMPORTED_MODULE_6__["default"].error('Failed to convert files', {
+      _logger__WEBPACK_IMPORTED_MODULE_6__["default"].error('Failed to convert files', {
         fileIds,
         targetMimeType,
         messages
@@ -182,7 +182,7 @@ const convertFiles = async function (fileIds, targetMimeType) {
     const currentDir = window.OCP.Files.Router.query.dir;
     const newPaths = results.filter(result => result.status === 'fulfilled').map(result => result.value.data.ocs.data.path).filter(path => path.startsWith(currentDir));
     // Fetch the new files
-    _logger_ts__WEBPACK_IMPORTED_MODULE_6__["default"].debug('Files to fetch', {
+    _logger__WEBPACK_IMPORTED_MODULE_6__["default"].debug('Files to fetch', {
       newPaths
     });
     const newFiles = await Promise.all(newPaths.map(path => (0,_services_WebdavClient_ts__WEBPACK_IMPORTED_MODULE_5__.fetchNode)(path)));
@@ -198,7 +198,7 @@ const convertFiles = async function (fileIds, targetMimeType) {
   } catch (error) {
     // Should not happen as we use allSettled and handle errors above
     (0,_nextcloud_dialogs__WEBPACK_IMPORTED_MODULE_2__.showError)((0,_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_3__.t)('files', 'Failed to convert files'));
-    _logger_ts__WEBPACK_IMPORTED_MODULE_6__["default"].error('Failed to convert files', {
+    _logger__WEBPACK_IMPORTED_MODULE_6__["default"].error('Failed to convert files', {
       fileIds,
       targetMimeType,
       error
@@ -230,7 +230,7 @@ const convertFile = async function (fileId, targetMimeType) {
       }));
       return;
     }
-    _logger_ts__WEBPACK_IMPORTED_MODULE_6__["default"].error('Failed to convert file', {
+    _logger__WEBPACK_IMPORTED_MODULE_6__["default"].error('Failed to convert file', {
       fileId,
       targetMimeType,
       error
@@ -2301,16 +2301,16 @@ function registerTypeFilter() {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _nextcloud_files__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @nextcloud/files */ "./node_modules/@nextcloud/files/dist/index.mjs");
-/* harmony import */ var _actions_deleteAction_ts__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./actions/deleteAction.ts */ "./apps/files/src/actions/deleteAction.ts");
-/* harmony import */ var _actions_downloadAction_ts__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./actions/downloadAction.ts */ "./apps/files/src/actions/downloadAction.ts");
+/* harmony import */ var _actions_deleteAction__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./actions/deleteAction */ "./apps/files/src/actions/deleteAction.ts");
+/* harmony import */ var _actions_downloadAction__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./actions/downloadAction */ "./apps/files/src/actions/downloadAction.ts");
 /* harmony import */ var _actions_openLocallyAction_ts__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./actions/openLocallyAction.ts */ "./apps/files/src/actions/openLocallyAction.ts");
-/* harmony import */ var _actions_favoriteAction_ts__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./actions/favoriteAction.ts */ "./apps/files/src/actions/favoriteAction.ts");
-/* harmony import */ var _actions_moveOrCopyAction_ts__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./actions/moveOrCopyAction.ts */ "./apps/files/src/actions/moveOrCopyAction.ts");
-/* harmony import */ var _actions_openFolderAction_ts__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./actions/openFolderAction.ts */ "./apps/files/src/actions/openFolderAction.ts");
-/* harmony import */ var _actions_openInFilesAction_ts__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./actions/openInFilesAction.ts */ "./apps/files/src/actions/openInFilesAction.ts");
-/* harmony import */ var _actions_renameAction_ts__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./actions/renameAction.ts */ "./apps/files/src/actions/renameAction.ts");
-/* harmony import */ var _actions_sidebarAction_ts__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./actions/sidebarAction.ts */ "./apps/files/src/actions/sidebarAction.ts");
-/* harmony import */ var _actions_viewInFolderAction_ts__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./actions/viewInFolderAction.ts */ "./apps/files/src/actions/viewInFolderAction.ts");
+/* harmony import */ var _actions_favoriteAction__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./actions/favoriteAction */ "./apps/files/src/actions/favoriteAction.ts");
+/* harmony import */ var _actions_moveOrCopyAction__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./actions/moveOrCopyAction */ "./apps/files/src/actions/moveOrCopyAction.ts");
+/* harmony import */ var _actions_openFolderAction__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./actions/openFolderAction */ "./apps/files/src/actions/openFolderAction.ts");
+/* harmony import */ var _actions_openInFilesAction__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./actions/openInFilesAction */ "./apps/files/src/actions/openInFilesAction.ts");
+/* harmony import */ var _actions_renameAction__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./actions/renameAction */ "./apps/files/src/actions/renameAction.ts");
+/* harmony import */ var _actions_sidebarAction__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./actions/sidebarAction */ "./apps/files/src/actions/sidebarAction.ts");
+/* harmony import */ var _actions_viewInFolderAction__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./actions/viewInFolderAction */ "./apps/files/src/actions/viewInFolderAction.ts");
 /* harmony import */ var _filters_HiddenFilesFilter_ts__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./filters/HiddenFilesFilter.ts */ "./apps/files/src/filters/HiddenFilesFilter.ts");
 /* harmony import */ var _filters_TypeFilter_ts__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./filters/TypeFilter.ts */ "./apps/files/src/filters/TypeFilter.ts");
 /* harmony import */ var _filters_ModifiedFilter_ts__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./filters/ModifiedFilter.ts */ "./apps/files/src/filters/ModifiedFilter.ts");
@@ -2318,12 +2318,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _newMenu_newTemplatesFolder_ts__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./newMenu/newTemplatesFolder.ts */ "./apps/files/src/newMenu/newTemplatesFolder.ts");
 /* harmony import */ var _newMenu_newFromTemplate_ts__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./newMenu/newFromTemplate.ts */ "./apps/files/src/newMenu/newFromTemplate.ts");
 /* harmony import */ var _views_favorites_ts__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./views/favorites.ts */ "./apps/files/src/views/favorites.ts");
-/* harmony import */ var _views_recent_ts__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./views/recent.ts */ "./apps/files/src/views/recent.ts");
-/* harmony import */ var _views_personal_files_ts__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./views/personal-files.ts */ "./apps/files/src/views/personal-files.ts");
-/* harmony import */ var _views_files_ts__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./views/files.ts */ "./apps/files/src/views/files.ts");
+/* harmony import */ var _views_recent__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./views/recent */ "./apps/files/src/views/recent.ts");
+/* harmony import */ var _views_personal_files__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./views/personal-files */ "./apps/files/src/views/personal-files.ts");
+/* harmony import */ var _views_files__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./views/files */ "./apps/files/src/views/files.ts");
 /* harmony import */ var _views_folderTree_ts__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ./views/folderTree.ts */ "./apps/files/src/views/folderTree.ts");
 /* harmony import */ var _services_ServiceWorker_js__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! ./services/ServiceWorker.js */ "./apps/files/src/services/ServiceWorker.js");
-/* harmony import */ var _services_LivePhotos_ts__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! ./services/LivePhotos.ts */ "./apps/files/src/services/LivePhotos.ts");
+/* harmony import */ var _services_LivePhotos__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! ./services/LivePhotos */ "./apps/files/src/services/LivePhotos.ts");
 /* harmony import */ var _nextcloud_sharing_public__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(/*! @nextcloud/sharing/public */ "./node_modules/@nextcloud/sharing/dist/public.mjs");
 /* harmony import */ var _actions_convertAction_ts__WEBPACK_IMPORTED_MODULE_25__ = __webpack_require__(/*! ./actions/convertAction.ts */ "./apps/files/src/actions/convertAction.ts");
 /**
@@ -2358,16 +2358,16 @@ __webpack_require__.r(__webpack_exports__);
 
 // Register file actions
 (0,_actions_convertAction_ts__WEBPACK_IMPORTED_MODULE_25__.registerConvertActions)();
-(0,_nextcloud_files__WEBPACK_IMPORTED_MODULE_0__.registerFileAction)(_actions_deleteAction_ts__WEBPACK_IMPORTED_MODULE_1__.action);
-(0,_nextcloud_files__WEBPACK_IMPORTED_MODULE_0__.registerFileAction)(_actions_downloadAction_ts__WEBPACK_IMPORTED_MODULE_2__.action);
+(0,_nextcloud_files__WEBPACK_IMPORTED_MODULE_0__.registerFileAction)(_actions_deleteAction__WEBPACK_IMPORTED_MODULE_1__.action);
+(0,_nextcloud_files__WEBPACK_IMPORTED_MODULE_0__.registerFileAction)(_actions_downloadAction__WEBPACK_IMPORTED_MODULE_2__.action);
 (0,_nextcloud_files__WEBPACK_IMPORTED_MODULE_0__.registerFileAction)(_actions_openLocallyAction_ts__WEBPACK_IMPORTED_MODULE_3__.action);
-(0,_nextcloud_files__WEBPACK_IMPORTED_MODULE_0__.registerFileAction)(_actions_favoriteAction_ts__WEBPACK_IMPORTED_MODULE_4__.action);
-(0,_nextcloud_files__WEBPACK_IMPORTED_MODULE_0__.registerFileAction)(_actions_moveOrCopyAction_ts__WEBPACK_IMPORTED_MODULE_5__.action);
-(0,_nextcloud_files__WEBPACK_IMPORTED_MODULE_0__.registerFileAction)(_actions_openFolderAction_ts__WEBPACK_IMPORTED_MODULE_6__.action);
-(0,_nextcloud_files__WEBPACK_IMPORTED_MODULE_0__.registerFileAction)(_actions_openInFilesAction_ts__WEBPACK_IMPORTED_MODULE_7__.action);
-(0,_nextcloud_files__WEBPACK_IMPORTED_MODULE_0__.registerFileAction)(_actions_renameAction_ts__WEBPACK_IMPORTED_MODULE_8__.action);
-(0,_nextcloud_files__WEBPACK_IMPORTED_MODULE_0__.registerFileAction)(_actions_sidebarAction_ts__WEBPACK_IMPORTED_MODULE_9__.action);
-(0,_nextcloud_files__WEBPACK_IMPORTED_MODULE_0__.registerFileAction)(_actions_viewInFolderAction_ts__WEBPACK_IMPORTED_MODULE_10__.action);
+(0,_nextcloud_files__WEBPACK_IMPORTED_MODULE_0__.registerFileAction)(_actions_favoriteAction__WEBPACK_IMPORTED_MODULE_4__.action);
+(0,_nextcloud_files__WEBPACK_IMPORTED_MODULE_0__.registerFileAction)(_actions_moveOrCopyAction__WEBPACK_IMPORTED_MODULE_5__.action);
+(0,_nextcloud_files__WEBPACK_IMPORTED_MODULE_0__.registerFileAction)(_actions_openFolderAction__WEBPACK_IMPORTED_MODULE_6__.action);
+(0,_nextcloud_files__WEBPACK_IMPORTED_MODULE_0__.registerFileAction)(_actions_openInFilesAction__WEBPACK_IMPORTED_MODULE_7__.action);
+(0,_nextcloud_files__WEBPACK_IMPORTED_MODULE_0__.registerFileAction)(_actions_renameAction__WEBPACK_IMPORTED_MODULE_8__.action);
+(0,_nextcloud_files__WEBPACK_IMPORTED_MODULE_0__.registerFileAction)(_actions_sidebarAction__WEBPACK_IMPORTED_MODULE_9__.action);
+(0,_nextcloud_files__WEBPACK_IMPORTED_MODULE_0__.registerFileAction)(_actions_viewInFolderAction__WEBPACK_IMPORTED_MODULE_10__.action);
 // Register new menu entry
 (0,_nextcloud_files__WEBPACK_IMPORTED_MODULE_0__.addNewFileMenuEntry)(_newMenu_newFolder_ts__WEBPACK_IMPORTED_MODULE_14__.entry);
 (0,_nextcloud_files__WEBPACK_IMPORTED_MODULE_0__.addNewFileMenuEntry)(_newMenu_newTemplatesFolder_ts__WEBPACK_IMPORTED_MODULE_15__.entry);
@@ -2375,9 +2375,9 @@ __webpack_require__.r(__webpack_exports__);
 // Register files views when not on public share
 if ((0,_nextcloud_sharing_public__WEBPACK_IMPORTED_MODULE_24__.isPublicShare)() === false) {
   (0,_views_favorites_ts__WEBPACK_IMPORTED_MODULE_17__.registerFavoritesView)();
-  (0,_views_files_ts__WEBPACK_IMPORTED_MODULE_20__["default"])();
-  (0,_views_recent_ts__WEBPACK_IMPORTED_MODULE_18__["default"])();
-  (0,_views_personal_files_ts__WEBPACK_IMPORTED_MODULE_19__["default"])();
+  (0,_views_files__WEBPACK_IMPORTED_MODULE_20__["default"])();
+  (0,_views_recent__WEBPACK_IMPORTED_MODULE_18__["default"])();
+  (0,_views_personal_files__WEBPACK_IMPORTED_MODULE_19__["default"])();
   (0,_views_folderTree_ts__WEBPACK_IMPORTED_MODULE_21__.registerFolderTreeView)();
 }
 // Register file list filters
@@ -2395,7 +2395,7 @@ if ((0,_nextcloud_sharing_public__WEBPACK_IMPORTED_MODULE_24__.isPublicShare)() 
 (0,_nextcloud_files__WEBPACK_IMPORTED_MODULE_0__.registerDavProperty)('nc:metadata-blurhash', {
   nc: 'http://nextcloud.org/ns'
 });
-(0,_services_LivePhotos_ts__WEBPACK_IMPORTED_MODULE_23__.initLivePhotos)();
+(0,_services_LivePhotos__WEBPACK_IMPORTED_MODULE_23__.initLivePhotos)();
 
 /***/ }),
 
@@ -2538,7 +2538,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _nextcloud_files__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @nextcloud/files */ "./node_modules/@nextcloud/files/dist/index.mjs");
 /* harmony import */ var _nextcloud_initial_state__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @nextcloud/initial-state */ "./node_modules/@nextcloud/initial-state/dist/index.mjs");
-/* harmony import */ var _utils_newNodeDialog_ts__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils/newNodeDialog.ts */ "./apps/files/src/utils/newNodeDialog.ts");
+/* harmony import */ var _utils_newNodeDialog__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils/newNodeDialog */ "./apps/files/src/utils/newNodeDialog.ts");
 /* harmony import */ var _nextcloud_l10n__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @nextcloud/l10n */ "./node_modules/@nextcloud/l10n/dist/index.mjs");
 /* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.runtime.esm.js");
 /**
@@ -2595,7 +2595,7 @@ function registerTemplateEntries() {
       order: 11,
       async handler(context, content) {
         const templatePicker = getTemplatePicker(context);
-        const name = await (0,_utils_newNodeDialog_ts__WEBPACK_IMPORTED_MODULE_2__.newNodeName)(`${provider.label}${provider.extension}`, content, {
+        const name = await (0,_utils_newNodeDialog__WEBPACK_IMPORTED_MODULE_2__.newNodeName)(`${provider.label}${provider.extension}`, content, {
           label: (0,_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_3__.translate)('files', 'Filename'),
           name: provider.label
         });
@@ -2629,7 +2629,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _nextcloud_router__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @nextcloud/router */ "./node_modules/@nextcloud/router/dist/index.mjs");
 /* harmony import */ var path__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! path */ "./node_modules/path/path.js");
 /* harmony import */ var path__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(path__WEBPACK_IMPORTED_MODULE_6__);
-/* harmony import */ var _utils_newNodeDialog_ts__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../utils/newNodeDialog.ts */ "./apps/files/src/utils/newNodeDialog.ts");
+/* harmony import */ var _utils_newNodeDialog__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../utils/newNodeDialog */ "./apps/files/src/utils/newNodeDialog.ts");
 /* harmony import */ var _mdi_svg_svg_plus_svg_raw__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @mdi/svg/svg/plus.svg?raw */ "./node_modules/@mdi/svg/svg/plus.svg?raw");
 /* harmony import */ var _nextcloud_axios__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! @nextcloud/axios */ "./node_modules/@nextcloud/axios/dist/index.mjs");
 /* harmony import */ var _logger_ts__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../logger.ts */ "./apps/files/src/logger.ts");
@@ -2704,7 +2704,7 @@ const entry = {
     return (context.permissions & _nextcloud_files__WEBPACK_IMPORTED_MODULE_2__.Permission.CREATE) !== 0;
   },
   async handler(context, content) {
-    const name = await (0,_utils_newNodeDialog_ts__WEBPACK_IMPORTED_MODULE_7__.newNodeName)((0,_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_4__.translate)('files', 'Templates'), content, {
+    const name = await (0,_utils_newNodeDialog__WEBPACK_IMPORTED_MODULE_7__.newNodeName)((0,_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_4__.translate)('files', 'Templates'), content, {
       name: (0,_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_4__.translate)('files', 'New template folder')
     });
     if (name !== null) {
@@ -3472,9 +3472,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _services_WebdavClient_ts__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../services/WebdavClient.ts */ "./apps/files/src/services/WebdavClient.ts");
 /* harmony import */ var _mdi_svg_svg_folder_svg_raw__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @mdi/svg/svg/folder.svg?raw */ "./node_modules/@mdi/svg/svg/folder.svg?raw");
 /* harmony import */ var _mdi_svg_svg_star_svg_raw__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @mdi/svg/svg/star.svg?raw */ "./node_modules/@mdi/svg/svg/star.svg?raw");
-/* harmony import */ var _services_Favorites_ts__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../services/Favorites.ts */ "./apps/files/src/services/Favorites.ts");
-/* harmony import */ var _utils_hashUtils_ts__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../utils/hashUtils.ts */ "./apps/files/src/utils/hashUtils.ts");
-/* harmony import */ var _logger_ts__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../logger.ts */ "./apps/files/src/logger.ts");
+/* harmony import */ var _services_Favorites__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../services/Favorites */ "./apps/files/src/services/Favorites.ts");
+/* harmony import */ var _utils_hashUtils__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../utils/hashUtils */ "./apps/files/src/utils/hashUtils.ts");
+/* harmony import */ var _logger__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../logger */ "./apps/files/src/logger.ts");
 
 
 
@@ -3498,11 +3498,11 @@ const generateFavoriteFolderView = function (folder) {
     },
     parent: 'favorites',
     columns: [],
-    getContents: _services_Favorites_ts__WEBPACK_IMPORTED_MODULE_6__.getContents
+    getContents: _services_Favorites__WEBPACK_IMPORTED_MODULE_6__.getContents
   });
 };
 const generateIdFromPath = function (path) {
-  return `favorite-${(0,_utils_hashUtils_ts__WEBPACK_IMPORTED_MODULE_7__.hashCode)(path)}`;
+  return `favorite-${(0,_utils_hashUtils__WEBPACK_IMPORTED_MODULE_7__.hashCode)(path)}`;
 };
 const registerFavoritesView = async () => {
   const Navigation = (0,_nextcloud_files__WEBPACK_IMPORTED_MODULE_1__.getNavigation)();
@@ -3515,11 +3515,11 @@ const registerFavoritesView = async () => {
     icon: _mdi_svg_svg_star_svg_raw__WEBPACK_IMPORTED_MODULE_5__,
     order: 15,
     columns: [],
-    getContents: _services_Favorites_ts__WEBPACK_IMPORTED_MODULE_6__.getContents
+    getContents: _services_Favorites__WEBPACK_IMPORTED_MODULE_6__.getContents
   }));
   const favoriteFolders = (await (0,_nextcloud_files__WEBPACK_IMPORTED_MODULE_1__.getFavoriteNodes)(_services_WebdavClient_ts__WEBPACK_IMPORTED_MODULE_3__.client)).filter(node => node.type === _nextcloud_files__WEBPACK_IMPORTED_MODULE_1__.FileType.Folder);
   const favoriteFoldersViews = favoriteFolders.map((folder, index) => generateFavoriteFolderView(folder, index));
-  _logger_ts__WEBPACK_IMPORTED_MODULE_8__["default"].debug('Generating favorites view', {
+  _logger__WEBPACK_IMPORTED_MODULE_8__["default"].debug('Generating favorites view', {
     favoriteFolders
   });
   favoriteFoldersViews.forEach(view => Navigation.register(view));
@@ -3532,7 +3532,7 @@ const registerFavoritesView = async () => {
     }
     // Sanity check
     if (node.path === null || !node.root?.startsWith('/files')) {
-      _logger_ts__WEBPACK_IMPORTED_MODULE_8__["default"].error('Favorite folder is not within user files root', {
+      _logger__WEBPACK_IMPORTED_MODULE_8__["default"].error('Favorite folder is not within user files root', {
         node
       });
       return;
@@ -3548,7 +3548,7 @@ const registerFavoritesView = async () => {
     }
     // Sanity check
     if (node.path === null || !node.root?.startsWith('/files')) {
-      _logger_ts__WEBPACK_IMPORTED_MODULE_8__["default"].error('Favorite folder is not within user files root', {
+      _logger__WEBPACK_IMPORTED_MODULE_8__["default"].error('Favorite folder is not within user files root', {
         node
       });
       return;
@@ -5674,4 +5674,4 @@ var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=files-init.js.map?v=52ac0dcfde776776c394
+//# sourceMappingURL=files-init.js.map?v=29e112b626ab8d1d4258

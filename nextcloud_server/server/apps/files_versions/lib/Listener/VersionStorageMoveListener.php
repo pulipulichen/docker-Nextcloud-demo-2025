@@ -11,7 +11,6 @@ namespace OCA\Files_Versions\Listener;
 
 use Exception;
 use OC\Files\Node\NonExistingFile;
-use OC\Files\Node\NonExistingFolder;
 use OCA\Files_Versions\Versions\IVersionBackend;
 use OCA\Files_Versions\Versions\IVersionManager;
 use OCA\Files_Versions\Versions\IVersionsImporterBackend;
@@ -65,7 +64,7 @@ class VersionStorageMoveListener implements IEventListener {
 		$user = $this->userSession->getUser() ?? $source->getOwner();
 
 		if ($user === null) {
-			throw new Exception('Cannot move versions across storages without a user.');
+			throw new Exception("Cannot move versions across storages without a user.");
 		}
 
 		if ($event instanceof BeforeNodeRenamedEvent) {
@@ -131,7 +130,7 @@ class VersionStorageMoveListener implements IEventListener {
 	}
 
 	private function getNodeStorage(Node $node): IStorage {
-		if ($node instanceof NonExistingFile || $node instanceof NonExistingFolder) {
+		if ($node instanceof NonExistingFile) {
 			return $node->getParent()->getStorage();
 		} else {
 			return $node->getStorage();

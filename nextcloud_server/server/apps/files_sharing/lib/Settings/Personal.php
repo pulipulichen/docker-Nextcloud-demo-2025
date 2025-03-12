@@ -16,11 +16,17 @@ use OCP\Settings\ISettings;
 
 class Personal implements ISettings {
 
-	public function __construct(
-		private IConfig $config,
-		private IInitialState $initialState,
-		private string $userId,
-	) {
+	/** @var IConfig */
+	private $config;
+	/** @var IInitialState */
+	private $initialState;
+	/** @var string */
+	private $userId;
+
+	public function __construct(IConfig $config, IInitialState $initialState, string $userId) {
+		$this->config = $config;
+		$this->initialState = $initialState;
+		$this->userId = $userId;
 	}
 
 	public function getForm(): TemplateResponse {

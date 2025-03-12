@@ -14,14 +14,16 @@ use OCP\UserStatus\IProvider;
 
 class UserStatusProvider implements IProvider, ISettableProvider {
 
+	/** @var StatusService */
+	private $service;
+
 	/**
 	 * UserStatusProvider constructor.
 	 *
 	 * @param StatusService $service
 	 */
-	public function __construct(
-		private StatusService $service,
-	) {
+	public function __construct(StatusService $service) {
+		$this->service = $service;
 	}
 
 	/**

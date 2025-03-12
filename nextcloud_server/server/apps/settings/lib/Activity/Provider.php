@@ -8,7 +8,6 @@ declare(strict_types=1);
  */
 namespace OCA\Settings\Activity;
 
-use OCP\Activity\Exceptions\UnknownActivityException;
 use OCP\Activity\IEvent;
 use OCP\Activity\IManager;
 use OCP\Activity\IProvider;
@@ -31,15 +30,29 @@ class Provider implements IProvider {
 	public const APP_TOKEN_FILESYSTEM_GRANTED = 'app_token_filesystem_granted';
 	public const APP_TOKEN_FILESYSTEM_REVOKED = 'app_token_filesystem_revoked';
 
+	/** @var IFactory */
+	protected $languageFactory;
+
 	/** @var IL10N */
 	protected $l;
 
-	public function __construct(
-		protected IFactory $languageFactory,
-		protected IURLGenerator $url,
-		protected IUserManager $userManager,
-		private IManager $activityManager,
-	) {
+	/** @var IURLGenerator */
+	protected $url;
+
+	/** @var IUserManager */
+	protected $userManager;
+
+	/** @var IManager */
+	private $activityManager;
+
+	public function __construct(IFactory $languageFactory,
+		IURLGenerator $url,
+		IUserManager $userManager,
+		IManager $activityManager) {
+		$this->languageFactory = $languageFactory;
+		$this->url = $url;
+		$this->userManager = $userManager;
+		$this->activityManager = $activityManager;
 	}
 
 	/**
@@ -47,12 +60,12 @@ class Provider implements IProvider {
 	 * @param IEvent $event
 	 * @param IEvent|null $previousEvent
 	 * @return IEvent
-	 * @throws UnknownActivityException
+	 * @throws \InvalidArgumentException
 	 * @since 11.0.0
 	 */
 	public function parse($language, IEvent $event, ?IEvent $previousEvent = null): IEvent {
 		if ($event->getApp() !== 'settings') {
-			throw new UnknownActivityException('Unknown app');
+			throw new \InvalidArgumentException('Unknown app');
 		}
 
 		$this->l = $this->languageFactory->get('settings', $language);
@@ -92,7 +105,7 @@ class Provider implements IProvider {
 		} elseif ($event->getSubject() === self::APP_TOKEN_FILESYSTEM_REVOKED) {
 			$subject = $this->l->t('You revoked filesystem access from app password "{token}"');
 		} else {
-			throw new UnknownActivityException('Unknown subject');
+			throw new \InvalidArgumentException('Unknown subject');
 		}
 
 		$parsedParameters = $this->getParameters($event);
@@ -104,7 +117,7 @@ class Provider implements IProvider {
 	/**
 	 * @param IEvent $event
 	 * @return array
-	 * @throws UnknownActivityException
+	 * @throws \InvalidArgumentException
 	 */
 	protected function getParameters(IEvent $event): array {
 		$subject = $event->getSubject();
@@ -148,9 +161,12 @@ class Provider implements IProvider {
 				];
 		}
 
-		throw new UnknownActivityException('Unknown subject');
+		throw new \InvalidArgumentException('Unknown subject');
 	}
 
+	/**
+	 * @throws \InvalidArgumentException
+	 */
 	protected function setSubjects(IEvent $event, string $subject, array $parameters): void {
 		$event->setRichSubject($subject, $parameters);
 	}

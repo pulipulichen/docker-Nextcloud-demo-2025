@@ -6,8 +6,6 @@
 
 namespace OCA\Settings\Controller;
 
-use InvalidArgumentException;
-use OC\AppFramework\Middleware\Security\Exceptions\NotAdminException;
 use OCA\Settings\AppInfo\Application;
 use OCP\AppFramework\Http\TemplateResponse;
 use OCP\AppFramework\Services\IInitialState;
@@ -23,8 +21,7 @@ use OCP\Settings\ISettings;
 use OCP\Util;
 
 /**
- * @psalm-import-type DeclarativeSettingsFormSchemaWithValues from IDeclarativeSettingsForm
- * @psalm-import-type DeclarativeSettingsFormSchemaWithoutValues from IDeclarativeSettingsForm
+ * @psalm-import-type DeclarativeSettingsFormField from IDeclarativeSettingsForm
  */
 trait CommonSettingsTrait {
 
@@ -78,7 +75,7 @@ trait CommonSettingsTrait {
 				/** @psalm-suppress PossiblyNullArgument */
 				$declarativeFormIDs = $this->declarativeSettingsManager->getFormIDs($this->userSession->getUser(), $type, $section->getID());
 
-				if (empty($settings) && empty($declarativeFormIDs)) {
+				if (empty($settings) && empty($declarativeFormIDs) && !($section->getID() === 'additional' && count(\OC_App::getForms('admin')) > 0)) {
 					continue;
 				}
 
@@ -109,26 +106,16 @@ trait CommonSettingsTrait {
 	}
 
 	/**
-	 * @param list<ISettings> $settings
-	 * @param list<DeclarativeSettingsFormSchemaWithValues> $declarativeSettings
+	 * @param array<int, list<\OCP\Settings\ISettings>> $settings
 	 * @return array{content: string}
 	 */
-	private function formatSettings(array $settings, array $declarativeSettings): array {
-		$settings = array_merge($settings, $declarativeSettings);
-
-		usort($settings, function ($first, $second) {
-			$priorityOne = $first instanceof ISettings ? $first->getPriority() : $first['priority'];
-			$priorityTwo = $second instanceof ISettings ? $second->getPriority() : $second['priority'];
-			return $priorityOne - $priorityTwo;
-		});
-
+	private function formatSettings(array $settings): array {
 		$html = '';
-		foreach ($settings as $setting) {
-			if ($setting instanceof ISettings) {
+		foreach ($settings as $prioritizedSettings) {
+			foreach ($prioritizedSettings as $setting) {
+				/** @var ISettings $setting */
 				$form = $setting->getForm();
 				$html .= $form->renderAs('')->render();
-			} else {
-				$html .= '<div id="' . $setting['app'] . '_' . $setting['id'] . '"></div>';
 			}
 		}
 		return ['content' => $html];
@@ -138,37 +125,33 @@ trait CommonSettingsTrait {
 	 * @psalm-param 'admin'|'personal' $type
 	 */
 	private function getIndexResponse(string $type, string $section): TemplateResponse {
-		$user = $this->userSession->getUser();
-		assert($user !== null, 'No user logged in for settings');
-
-		$this->declarativeSettingsManager->loadSchemas();
-		$declarativeSettings = $this->declarativeSettingsManager->getFormsWithValues($user, $type, $section);
-
 		if ($type === 'personal') {
-			$settings = array_values($this->settingsManager->getPersonalSettings($section));
 			if ($section === 'theming') {
 				$this->navigationManager->setActiveEntry('accessibility_settings');
 			} else {
 				$this->navigationManager->setActiveEntry('settings');
 			}
 		} elseif ($type === 'admin') {
-			$settings = array_values($this->settingsManager->getAllowedAdminSettings($section, $user));
-			if (empty($settings) && empty($declarativeSettings)) {
-				throw new NotAdminException('Logged in user does not have permission to access these settings.');
-			}
 			$this->navigationManager->setActiveEntry('admin_settings');
-		} else {
-			throw new InvalidArgumentException('$type must be either "admin" or "personal"');
 		}
 
-		if (!empty($declarativeSettings)) {
-			Util::addScript(Application::APP_ID, 'declarative-settings-forms');
-			$this->initialState->provideInitialState('declarative-settings-forms', $declarativeSettings);
-		}
+		$this->declarativeSettingsManager->loadSchemas();
 
-		$settings = array_merge(...$settings);
-		$templateParams = $this->formatSettings($settings, $declarativeSettings);
+		$templateParams = [];
 		$templateParams = array_merge($templateParams, $this->getNavigationParameters($type, $section));
+		$templateParams = array_merge($templateParams, $this->getSettings($section));
+
+		/** @psalm-suppress PossiblyNullArgument */
+		$declarativeFormIDs = $this->declarativeSettingsManager->getFormIDs($this->userSession->getUser(), $type, $section);
+		if (!empty($declarativeFormIDs)) {
+			foreach ($declarativeFormIDs as $app => $ids) {
+				/** @psalm-suppress PossiblyUndefinedArrayOffset */
+				$templateParams['content'] .= join(array_map(fn (string $id) => '<div id="' . $app . '_' . $id . '"></div>', $ids));
+			}
+			Util::addScript(Application::APP_ID, 'declarative-settings-forms');
+			/** @psalm-suppress PossiblyNullArgument */
+			$this->initialState->provideInitialState('declarative-settings-forms', $this->declarativeSettingsManager->getFormsWithValues($this->userSession->getUser(), $type, $section));
+		}
 
 		$activeSection = $this->settingsManager->getSection($type, $section);
 		if ($activeSection) {
@@ -179,4 +162,6 @@ trait CommonSettingsTrait {
 
 		return new TemplateResponse('settings', 'settings/frame', $templateParams);
 	}
+
+	abstract protected function getSettings($section);
 }

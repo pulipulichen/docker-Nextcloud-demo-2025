@@ -5,7 +5,6 @@
  */
 namespace OCA\Comments\Activity;
 
-use OCP\Activity\Exceptions\UnknownActivityException;
 use OCP\Activity\IEvent;
 use OCP\Activity\IManager;
 use OCP\Activity\IProvider;
@@ -33,12 +32,12 @@ class Provider implements IProvider {
 	 * @param IEvent $event
 	 * @param IEvent|null $previousEvent
 	 * @return IEvent
-	 * @throws UnknownActivityException
+	 * @throws \InvalidArgumentException
 	 * @since 11.0.0
 	 */
 	public function parse($language, IEvent $event, ?IEvent $previousEvent = null): IEvent {
 		if ($event->getApp() !== 'comments') {
-			throw new UnknownActivityException();
+			throw new \InvalidArgumentException();
 		}
 
 		$this->l = $this->languageFactory->get('comments', $language);
@@ -54,19 +53,19 @@ class Provider implements IProvider {
 			if ($this->activityManager->isFormattingFilteredObject()) {
 				try {
 					return $this->parseShortVersion($event);
-				} catch (UnknownActivityException) {
+				} catch (\InvalidArgumentException $e) {
 					// Ignore and simply use the long version...
 				}
 			}
 
 			return $this->parseLongVersion($event);
+		} else {
+			throw new \InvalidArgumentException();
 		}
-		throw new UnknownActivityException();
-
 	}
 
 	/**
-	 * @throws UnknownActivityException
+	 * @throws \InvalidArgumentException
 	 */
 	protected function parseShortVersion(IEvent $event): IEvent {
 		$subjectParameters = $this->getSubjectParameters($event);
@@ -81,14 +80,14 @@ class Provider implements IProvider {
 				]);
 			}
 		} else {
-			throw new UnknownActivityException();
+			throw new \InvalidArgumentException();
 		}
 
 		return $event;
 	}
 
 	/**
-	 * @throws UnknownActivityException
+	 * @throws \InvalidArgumentException
 	 */
 	protected function parseLongVersion(IEvent $event): IEvent {
 		$subjectParameters = $this->getSubjectParameters($event);
@@ -113,7 +112,7 @@ class Provider implements IProvider {
 					]);
 			}
 		} else {
-			throw new UnknownActivityException();
+			throw new \InvalidArgumentException();
 		}
 
 		return $event;
@@ -149,7 +148,7 @@ class Provider implements IProvider {
 		$commentId = $messageParameters['commentId'] ?? $messageParameters[0];
 
 		try {
-			$comment = $this->commentsManager->get((string)$commentId);
+			$comment = $this->commentsManager->get((string) $commentId);
 			$message = $comment->getMessage();
 
 			$mentionCount = 1;

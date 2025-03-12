@@ -16,10 +16,14 @@ use Sabre\DAV\IFile;
  * but handled directly by external storage services like S3 with Multipart Upload
  */
 class PartFile implements IFile {
-	public function __construct(
-		private Directory $root,
-		private array $partInfo,
-	) {
+	/** @var Directory */
+	private $root;
+	/** @var array */
+	private $partInfo;
+
+	public function __construct(Directory $root, array $partInfo) {
+		$this->root = $root;
+		$this->partInfo = $partInfo;
 	}
 
 	/**

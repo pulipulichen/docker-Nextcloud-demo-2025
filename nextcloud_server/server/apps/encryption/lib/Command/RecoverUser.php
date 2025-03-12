@@ -16,16 +16,33 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 
 class RecoverUser extends Command {
-	public function __construct(
-		protected Util $util,
+
+	/** @var Util */
+	protected $util;
+
+	/** @var IUserManager */
+	protected $userManager;
+
+	/** @var  QuestionHelper */
+	protected $questionHelper;
+
+	/**
+	 * @param Util $util
+	 * @param IConfig $config
+	 * @param IUserManager $userManager
+	 * @param QuestionHelper $questionHelper
+	 */
+	public function __construct(Util $util,
 		IConfig $config,
-		protected IUserManager $userManager,
-		protected QuestionHelper $questionHelper,
-	) {
+		IUserManager $userManager,
+		QuestionHelper $questionHelper) {
+		$this->util = $util;
+		$this->questionHelper = $questionHelper;
+		$this->userManager = $userManager;
 		parent::__construct();
 	}
 
-	protected function configure(): void {
+	protected function configure() {
 		$this
 			->setName('encryption:recover-user')
 			->setDescription('Recover user data in case of password lost. This only works if the user enabled the recovery key.');
@@ -42,20 +59,20 @@ class RecoverUser extends Command {
 
 		if ($isMasterKeyEnabled) {
 			$output->writeln('You use the master key, no individual user recovery needed.');
-			return self::SUCCESS;
+			return 0;
 		}
 
 		$uid = $input->getArgument('user');
 		$userExists = $this->userManager->userExists($uid);
 		if ($userExists === false) {
 			$output->writeln('User "' . $uid . '" unknown.');
-			return self::FAILURE;
+			return 1;
 		}
 
 		$recoveryKeyEnabled = $this->util->isRecoveryEnabledForUser($uid);
 		if ($recoveryKeyEnabled === false) {
 			$output->writeln('Recovery key is not enabled for: ' . $uid);
-			return self::FAILURE;
+			return 1;
 		}
 
 		$question = new Question('Please enter the recovery key password: ');
@@ -71,6 +88,6 @@ class RecoverUser extends Command {
 		$output->write('Start to recover users files... This can take some time...');
 		$this->userManager->get($uid)->setPassword($newLoginPassword, $recoveryPassword);
 		$output->writeln('Done.');
-		return self::SUCCESS;
+		return 0;
 	}
 }

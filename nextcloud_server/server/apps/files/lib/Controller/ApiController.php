@@ -8,7 +8,6 @@
 namespace OCA\Files\Controller;
 
 use OC\Files\Node\Node;
-use OCA\Files\Helper;
 use OCA\Files\ResponseDefinitions;
 use OCA\Files\Service\TagService;
 use OCA\Files\Service\UserConfig;
@@ -29,19 +28,14 @@ use OCP\AppFramework\Http\Response;
 use OCP\AppFramework\Http\StreamResponse;
 use OCP\Files\File;
 use OCP\Files\Folder;
-use OCP\Files\InvalidPathException;
 use OCP\Files\IRootFolder;
 use OCP\Files\NotFoundException;
-use OCP\Files\NotPermittedException;
-use OCP\Files\Storage\ISharedStorage;
-use OCP\Files\StorageNotAvailableException;
 use OCP\IConfig;
 use OCP\IL10N;
 use OCP\IPreview;
 use OCP\IRequest;
 use OCP\IUser;
 use OCP\IUserSession;
-use OCP\PreConditionNotMetException;
 use OCP\Share\IManager;
 use OCP\Share\IShare;
 use Psr\Log\LoggerInterface;
@@ -53,8 +47,7 @@ use Throwable;
  * @package OCA\Files\Controller
  */
 class ApiController extends Controller {
-	public function __construct(
-		string $appName,
+	public function __construct(string $appName,
 		IRequest $request,
 		private IUserSession $userSession,
 		private TagService $tagService,
@@ -75,7 +68,6 @@ class ApiController extends Controller {
 	 * Gets a thumbnail of the specified file
 	 *
 	 * @since API version 1.0
-	 * @deprecated 32.0.0 Use the preview endpoint provided by core instead
 	 *
 	 * @param int $x Width of the thumbnail
 	 * @param int $y Height of the thumbnail
@@ -89,35 +81,26 @@ class ApiController extends Controller {
 	#[NoAdminRequired]
 	#[NoCSRFRequired]
 	#[StrictCookiesRequired]
-	#[OpenAPI(scope: OpenAPI::SCOPE_DEFAULT)]
 	public function getThumbnail($x, $y, $file) {
 		if ($x < 1 || $y < 1) {
 			return new DataResponse(['message' => 'Requested size must be numeric and a positive value.'], Http::STATUS_BAD_REQUEST);
 		}
 
 		try {
-			$file = $this->userFolder?->get($file);
-			if ($file === null
-				|| !($file instanceof File)
-				|| ($file->getId() <= 0)
-			) {
+			$file = $this->userFolder->get($file);
+			if ($file instanceof Folder) {
 				throw new NotFoundException();
 			}
 
-			// Validate the user is allowed to download the file (preview is some kind of download)
-			$storage = $file->getStorage();
-			if ($storage->instanceOfStorage(ISharedStorage::class)) {
-				/** @var ISharedStorage $storage */
-				$attributes = $storage->getShare()->getAttributes();
-				if ($attributes !== null && $attributes->getAttribute('permissions', 'download') === false) {
-					throw new NotFoundException();
-				}
+			if ($file->getId() <= 0) {
+				return new DataResponse(['message' => 'File not found.'], Http::STATUS_NOT_FOUND);
 			}
 
+			/** @var File $file */
 			$preview = $this->previewManager->getPreview($file, $x, $y, true);
 
 			return new FileDisplayResponse($preview, Http::STATUS_OK, ['Content-Type' => $preview->getMimeType()]);
-		} catch (NotFoundException|NotPermittedException|InvalidPathException) {
+		} catch (NotFoundException $e) {
 			return new DataResponse(['message' => 'File not found.'], Http::STATUS_NOT_FOUND);
 		} catch (\Exception $e) {
 			return new DataResponse([], Http::STATUS_BAD_REQUEST);
@@ -140,11 +123,11 @@ class ApiController extends Controller {
 		if (!is_null($tags)) {
 			try {
 				$this->tagService->updateFileTags($path, $tags);
-			} catch (NotFoundException $e) {
+			} catch (\OCP\Files\NotFoundException $e) {
 				return new DataResponse([
 					'message' => $e->getMessage()
 				], Http::STATUS_NOT_FOUND);
-			} catch (StorageNotAvailableException $e) {
+			} catch (\OCP\Files\StorageNotAvailableException $e) {
 				return new DataResponse([
 					'message' => $e->getMessage()
 				], Http::STATUS_SERVICE_UNAVAILABLE);
@@ -166,7 +149,7 @@ class ApiController extends Controller {
 		$shareTypesForNodes = $this->getShareTypesForNodes($nodes);
 		return array_values(array_map(function (Node $node) use ($shareTypesForNodes) {
 			$shareTypes = $shareTypesForNodes[$node->getId()] ?? [];
-			$file = Helper::formatFileInfo($node->getFileInfo());
+			$file = \OCA\Files\Helper::formatFileInfo($node->getFileInfo());
 			$file['hasPreview'] = $this->previewManager->isAvailable($node);
 			$parts = explode('/', dirname($node->getPath()), 4);
 			if (isset($parts[3])) {
@@ -290,7 +273,6 @@ class ApiController extends Controller {
 	 */
 	#[NoAdminRequired]
 	#[ApiRoute(verb: 'GET', url: '/api/v1/folder-tree')]
-	#[OpenAPI(scope: OpenAPI::SCOPE_DEFAULT)]
 	public function getFolderTree(string $path = '/', int $depth = 1): JSONResponse {
 		$user = $this->userSession->getUser();
 		if (!($user instanceof IUser)) {
@@ -399,7 +381,7 @@ class ApiController extends Controller {
 	 *
 	 * @param bool $value
 	 * @return Response
-	 * @throws PreConditionNotMetException
+	 * @throws \OCP\PreConditionNotMetException
 	 */
 	#[NoAdminRequired]
 	public function showHiddenFiles(bool $value): Response {
@@ -412,7 +394,7 @@ class ApiController extends Controller {
 	 *
 	 * @param bool $value
 	 * @return Response
-	 * @throws PreConditionNotMetException
+	 * @throws \OCP\PreConditionNotMetException
 	 */
 	#[NoAdminRequired]
 	public function cropImagePreviews(bool $value): Response {
@@ -425,7 +407,7 @@ class ApiController extends Controller {
 	 *
 	 * @param bool $show
 	 * @return Response
-	 * @throws PreConditionNotMetException
+	 * @throws \OCP\PreConditionNotMetException
 	 */
 	#[NoAdminRequired]
 	public function showGridView(bool $show): Response {

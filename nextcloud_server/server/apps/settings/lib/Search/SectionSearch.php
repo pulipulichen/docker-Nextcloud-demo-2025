@@ -21,12 +21,26 @@ use OCP\Settings\IManager;
 
 class SectionSearch implements IProvider {
 
-	public function __construct(
-		protected IManager $settingsManager,
-		protected IGroupManager $groupManager,
-		protected IURLGenerator $urlGenerator,
-		protected IL10N $l,
-	) {
+	/** @var IManager */
+	protected $settingsManager;
+
+	/** @var IGroupManager */
+	protected $groupManager;
+
+	/** @var IURLGenerator */
+	protected $urlGenerator;
+
+	/** @var IL10N */
+	protected $l;
+
+	public function __construct(IManager $settingsManager,
+		IGroupManager $groupManager,
+		IURLGenerator $urlGenerator,
+		IL10N $l) {
+		$this->settingsManager = $settingsManager;
+		$this->groupManager = $groupManager;
+		$this->urlGenerator = $urlGenerator;
+		$this->l = $l;
 	}
 
 	/**

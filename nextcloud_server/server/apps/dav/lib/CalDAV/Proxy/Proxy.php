@@ -9,7 +9,6 @@ declare(strict_types=1);
 namespace OCA\DAV\CalDAV\Proxy;
 
 use OCP\AppFramework\Db\Entity;
-use OCP\DB\Types;
 
 /**
  * @method string getOwnerId()
@@ -29,8 +28,8 @@ class Proxy extends Entity {
 	protected $permissions;
 
 	public function __construct() {
-		$this->addType('ownerId', Types::STRING);
-		$this->addType('proxyId', Types::STRING);
-		$this->addType('permissions', Types::INTEGER);
+		$this->addType('ownerId', 'string');
+		$this->addType('proxyId', 'string');
+		$this->addType('permissions', 'int');
 	}
 }

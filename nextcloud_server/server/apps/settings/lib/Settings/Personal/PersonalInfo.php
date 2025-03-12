@@ -11,7 +11,7 @@ namespace OCA\Settings\Settings\Personal;
 
 use OC\Profile\ProfileManager;
 use OCA\FederatedFileSharing\FederatedShareProvider;
-use OCA\Provisioning_API\Controller\AUserDataOCSController;
+use OCA\Provisioning_API\Controller\AUserData;
 use OCP\Accounts\IAccount;
 use OCP\Accounts\IAccountManager;
 use OCP\Accounts\IAccountProperty;
@@ -27,27 +27,62 @@ use OCP\IUser;
 use OCP\IUserManager;
 use OCP\L10N\IFactory;
 use OCP\Notification\IManager;
-use OCP\Server;
 use OCP\Settings\ISettings;
 
 class PersonalInfo implements ISettings {
 
+	/** @var IConfig */
+	private $config;
+
+	/** @var IUserManager */
+	private $userManager;
+
+	/** @var IAccountManager */
+	private $accountManager;
+
 	/** @var ProfileManager */
 	private $profileManager;
 
+	/** @var IGroupManager */
+	private $groupManager;
+
+	/** @var IAppManager */
+	private $appManager;
+
+	/** @var IFactory */
+	private $l10nFactory;
+
+	/** @var IL10N */
+	private $l;
+
+	/** @var IInitialState */
+	private $initialStateService;
+
+	/** @var IManager */
+	private $manager;
+
 	public function __construct(
-		private IConfig $config,
-		private IUserManager $userManager,
-		private IGroupManager $groupManager,
-		private IAccountManager $accountManager,
+		IConfig $config,
+		IUserManager $userManager,
+		IGroupManager $groupManager,
+		IAccountManager $accountManager,
 		ProfileManager $profileManager,
-		private IAppManager $appManager,
-		private IFactory $l10nFactory,
-		private IL10N $l,
-		private IInitialState $initialStateService,
-		private IManager $manager,
+		IAppManager $appManager,
+		IFactory $l10nFactory,
+		IL10N $l,
+		IInitialState $initialStateService,
+		IManager $manager
 	) {
+		$this->config = $config;
+		$this->userManager = $userManager;
+		$this->accountManager = $accountManager;
 		$this->profileManager = $profileManager;
+		$this->groupManager = $groupManager;
+		$this->appManager = $appManager;
+		$this->l10nFactory = $l10nFactory;
+		$this->l = $l;
+		$this->initialStateService = $initialStateService;
+		$this->manager = $manager;
 	}
 
 	public function getForm(): TemplateResponse {
@@ -56,7 +91,7 @@ class PersonalInfo implements ISettings {
 		$lookupServerUploadEnabled = false;
 		if ($federatedFileSharingEnabled) {
 			/** @var FederatedShareProvider $shareProvider */
-			$shareProvider = Server::get(FederatedShareProvider::class);
+			$shareProvider = \OC::$server->query(FederatedShareProvider::class);
 			$lookupServerUploadEnabled = $shareProvider->isLookupServerUploadEnabled();
 		}
 
@@ -107,8 +142,7 @@ class PersonalInfo implements ISettings {
 			'headline' => $this->getProperty($account, IAccountManager::PROPERTY_HEADLINE),
 			'biography' => $this->getProperty($account, IAccountManager::PROPERTY_BIOGRAPHY),
 			'birthdate' => $this->getProperty($account, IAccountManager::PROPERTY_BIRTHDATE),
-			'firstDayOfWeek' => $this->config->getUserValue($uid, 'core', AUserDataOCSController::USER_FIELD_FIRST_DAY_OF_WEEK),
-			'pronouns' => $this->getProperty($account, IAccountManager::PROPERTY_PRONOUNS),
+			'firstDayOfWeek' => $this->config->getUserValue($uid, 'core', AUserData::USER_FIELD_FIRST_DAY_OF_WEEK),
 		];
 
 		$accountParameters = [
@@ -163,8 +197,8 @@ class PersonalInfo implements ISettings {
 
 	/**
 	 * @return int whether the form should be rather on the top or bottom of
-	 *             the admin section. The forms are arranged in ascending order of the
-	 *             priority values. It is required to return a value between 0 and 100.
+	 * the admin section. The forms are arranged in ascending order of the
+	 * priority values. It is required to return a value between 0 and 100.
 	 *
 	 * E.g.: 70
 	 * @since 9.1
@@ -266,8 +300,8 @@ class PersonalInfo implements ISettings {
 		}
 
 		$uid = $user->getUID();
+		$userLocaleString = $this->config->getUserValue($uid, 'core', 'locale', $this->l10nFactory->findLocale());
 		$userLang = $this->config->getUserValue($uid, 'core', 'lang', $this->l10nFactory->findLanguage());
-		$userLocaleString = $this->config->getUserValue($uid, 'core', 'locale', $this->l10nFactory->findLocale($userLang));
 		$localeCodes = $this->l10nFactory->findAvailableLocales();
 		$userLocale = array_filter($localeCodes, fn ($value) => $userLocaleString === $value['code']);
 

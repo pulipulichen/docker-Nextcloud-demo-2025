@@ -1,10 +1,8 @@
 <?php
-
 /**
  * SPDX-FileCopyrightText: 2017 Nextcloud GmbH and Nextcloud contributors
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
-
 namespace OCA\User_LDAP\Jobs;
 
 use OC\ServerNotAvailableException;
@@ -16,7 +14,6 @@ use OCA\User_LDAP\LDAP;
 use OCA\User_LDAP\Mapping\UserMapping;
 use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\BackgroundJob\TimedJob;
-use OCP\EventDispatcher\IEventDispatcher;
 use OCP\IAvatarManager;
 use OCP\IConfig;
 use OCP\IDBConnection;
@@ -27,38 +24,44 @@ use Psr\Log\LoggerInterface;
 class Sync extends TimedJob {
 	public const MAX_INTERVAL = 12 * 60 * 60; // 12h
 	public const MIN_INTERVAL = 30 * 60; // 30min
+	/** @var  Helper */
+	protected $ldapHelper;
+	/** @var  LDAP */
+	protected $ldap;
+	/** @var UserMapping */
+	protected $mapper;
+	/** @var  IConfig */
+	protected $config;
+	/** @var  IAvatarManager */
+	protected $avatarManager;
+	/** @var  IDBConnection */
+	protected $dbc;
+	/** @var  IUserManager */
+	protected $ncUserManager;
+	/** @var  LoggerInterface */
+	protected $logger;
+	/** @var  IManager */
+	protected $notificationManager;
+	/** @var ConnectionFactory */
+	protected $connectionFactory;
+	/** @var AccessFactory */
+	protected $accessFactory;
 
-	protected LDAP $ldap;
-
-	public function __construct(
-		ITimeFactory $timeFactory,
-		private IEventDispatcher $dispatcher,
-		private IConfig $config,
-		private IDBConnection $dbc,
-		private IAvatarManager $avatarManager,
-		private IUserManager $ncUserManager,
-		private LoggerInterface $logger,
-		private IManager $notificationManager,
-		private UserMapping $mapper,
-		private Helper $ldapHelper,
-		private ConnectionFactory $connectionFactory,
-		private AccessFactory $accessFactory,
-	) {
-		parent::__construct($timeFactory);
+	public function __construct(ITimeFactory $time) {
+		parent::__construct($time);
 		$this->setInterval(
-			(int)$this->config->getAppValue(
+			(int)\OC::$server->getConfig()->getAppValue(
 				'user_ldap',
 				'background_sync_interval',
 				(string)self::MIN_INTERVAL
 			)
 		);
-		$this->ldap = new LDAP($this->config->getSystemValueString('ldap_log_file'));
 	}
 
 	/**
-	 * Updates the interval
+	 * updates the interval
 	 *
-	 * The idea is to adjust the interval depending on the amount of known users
+	 * the idea is to adjust the interval depending on the amount of known users
 	 * and the attempt to update each user one day. At most it would run every
 	 * 30 minutes, and at least every 12 hours.
 	 */
@@ -76,8 +79,9 @@ class Sync extends TimedJob {
 
 	/**
 	 * returns the smallest configured paging size
+	 * @return int
 	 */
-	protected function getMinPagingSize(): int {
+	protected function getMinPagingSize() {
 		$configKeys = $this->config->getAppKeys('user_ldap');
 		$configKeys = array_filter($configKeys, function ($key) {
 			return str_contains($key, 'ldap_paging_size');
@@ -94,8 +98,10 @@ class Sync extends TimedJob {
 	 * @param array $argument
 	 */
 	public function run($argument) {
+		$this->setArgument($argument);
+
 		$isBackgroundJobModeAjax = $this->config
-			->getAppValue('core', 'backgroundjobs_mode', 'ajax') === 'ajax';
+				->getAppValue('core', 'backgroundjobs_mode', 'ajax') === 'ajax';
 		if ($isBackgroundJobModeAjax) {
 			return;
 		}
@@ -128,10 +134,10 @@ class Sync extends TimedJob {
 	}
 
 	/**
-	 * @param array{offset: int, prefix: string} $cycleData
+	 * @param array $cycleData
 	 * @return bool whether more results are expected from the same configuration
 	 */
-	public function runCycle(array $cycleData): bool {
+	public function runCycle($cycleData) {
 		$connection = $this->connectionFactory->get($cycleData['prefix']);
 		$access = $this->accessFactory->get($connection);
 		$access->setUserMapper($this->mapper);
@@ -156,22 +162,24 @@ class Sync extends TimedJob {
 	}
 
 	/**
-	 * Returns the info about the current cycle that should be run, if any,
+	 * returns the info about the current cycle that should be run, if any,
 	 * otherwise null
+	 *
+	 * @return array|null
 	 */
-	public function getCycle(): ?array {
+	public function getCycle() {
 		$prefixes = $this->ldapHelper->getServerConfigurationPrefixes(true);
 		if (count($prefixes) === 0) {
 			return null;
 		}
 
 		$cycleData = [
-			'prefix' => $this->config->getAppValue('user_ldap', 'background_sync_prefix', 'none'),
+			'prefix' => $this->config->getAppValue('user_ldap', 'background_sync_prefix', null),
 			'offset' => (int)$this->config->getAppValue('user_ldap', 'background_sync_offset', '0'),
 		];
 
 		if (
-			$cycleData['prefix'] !== 'none'
+			$cycleData['prefix'] !== null
 			&& in_array($cycleData['prefix'], $prefixes)
 		) {
 			return $cycleData;
@@ -183,21 +191,21 @@ class Sync extends TimedJob {
 	/**
 	 * Save the provided cycle information in the DB
 	 *
-	 * @param array{prefix: ?string, offset: int} $cycleData
+	 * @param array $cycleData
 	 */
-	public function setCycle(array $cycleData): void {
+	public function setCycle(array $cycleData) {
 		$this->config->setAppValue('user_ldap', 'background_sync_prefix', $cycleData['prefix']);
-		$this->config->setAppValue('user_ldap', 'background_sync_offset', (string)$cycleData['offset']);
+		$this->config->setAppValue('user_ldap', 'background_sync_offset', $cycleData['offset']);
 	}
 
 	/**
 	 * returns data about the next cycle that should run, if any, otherwise
 	 * null. It also always goes for the next LDAP configuration!
 	 *
-	 * @param ?array{prefix: string, offset: int} $cycleData the old cycle
-	 * @return ?array{prefix: string, offset: int}
+	 * @param array|null $cycleData the old cycle
+	 * @return array|null
 	 */
-	public function determineNextCycle(?array $cycleData = null): ?array {
+	public function determineNextCycle(?array $cycleData = null) {
 		$prefixes = $this->ldapHelper->getServerConfigurationPrefixes(true);
 		if (count($prefixes) === 0) {
 			return null;
@@ -217,12 +225,13 @@ class Sync extends TimedJob {
 	}
 
 	/**
-	 * Checks whether the provided cycle should be run. Currently, only the
+	 * Checks whether the provided cycle should be run. Currently only the
 	 * last configuration change goes into account (at least one hour).
 	 *
-	 * @param array{prefix: string} $cycleData
+	 * @param $cycleData
+	 * @return bool
 	 */
-	public function qualifiesToRun(array $cycleData): bool {
+	public function qualifiesToRun($cycleData) {
 		$lastChange = (int)$this->config->getAppValue('user_ldap', $cycleData['prefix'] . '_lastChange', '0');
 		if ((time() - $lastChange) > 60 * 30) {
 			return true;
@@ -231,20 +240,23 @@ class Sync extends TimedJob {
 	}
 
 	/**
-	 * Increases the offset of the current cycle for the next run
+	 * increases the offset of the current cycle for the next run
 	 *
-	 * @param array{prefix: string, offset: int} $cycleData
+	 * @param $cycleData
 	 */
-	protected function increaseOffset(array $cycleData): void {
+	protected function increaseOffset($cycleData) {
 		$ldapConfig = new Configuration($cycleData['prefix']);
 		$cycleData['offset'] += (int)$ldapConfig->ldapPagingSize;
 		$this->setCycle($cycleData);
 	}
 
 	/**
-	 * Determines the next configuration prefix based on the last one (if any)
+	 * determines the next configuration prefix based on the last one (if any)
+	 *
+	 * @param string|null $lastPrefix
+	 * @return string|null
 	 */
-	protected function getNextPrefix(?string $lastPrefix): ?string {
+	protected function getNextPrefix($lastPrefix) {
 		$prefixes = $this->ldapHelper->getServerConfigurationPrefixes(true);
 		$noOfPrefixes = count($prefixes);
 		if ($noOfPrefixes === 0) {
@@ -264,9 +276,73 @@ class Sync extends TimedJob {
 	}
 
 	/**
-	 * Only used in tests
+	 * "fixes" DI
 	 */
-	public function overwritePropertiesForTest(LDAP $ldapWrapper): void {
-		$this->ldap = $ldapWrapper;
+	public function setArgument($argument) {
+		if (isset($argument['config'])) {
+			$this->config = $argument['config'];
+		} else {
+			$this->config = \OC::$server->getConfig();
+		}
+
+		if (isset($argument['helper'])) {
+			$this->ldapHelper = $argument['helper'];
+		} else {
+			$this->ldapHelper = new Helper($this->config, \OC::$server->getDatabaseConnection());
+		}
+
+		if (isset($argument['ldapWrapper'])) {
+			$this->ldap = $argument['ldapWrapper'];
+		} else {
+			$this->ldap = new LDAP($this->config->getSystemValueString('ldap_log_file'));
+		}
+
+		if (isset($argument['avatarManager'])) {
+			$this->avatarManager = $argument['avatarManager'];
+		} else {
+			$this->avatarManager = \OC::$server->get(IAvatarManager::class);
+		}
+
+		if (isset($argument['dbc'])) {
+			$this->dbc = $argument['dbc'];
+		} else {
+			$this->dbc = \OC::$server->getDatabaseConnection();
+		}
+
+		if (isset($argument['ncUserManager'])) {
+			$this->ncUserManager = $argument['ncUserManager'];
+		} else {
+			$this->ncUserManager = \OC::$server->getUserManager();
+		}
+
+		if (isset($argument['logger'])) {
+			$this->logger = $argument['logger'];
+		} else {
+			$this->logger = \OC::$server->get(LoggerInterface::class);
+		}
+
+		if (isset($argument['notificationManager'])) {
+			$this->notificationManager = $argument['notificationManager'];
+		} else {
+			$this->notificationManager = \OC::$server->getNotificationManager();
+		}
+
+		if (isset($argument['mapper'])) {
+			$this->mapper = $argument['mapper'];
+		} else {
+			$this->mapper = \OCP\Server::get(UserMapping::class);
+		}
+
+		if (isset($argument['connectionFactory'])) {
+			$this->connectionFactory = $argument['connectionFactory'];
+		} else {
+			$this->connectionFactory = new ConnectionFactory($this->ldap);
+		}
+
+		if (isset($argument['accessFactory'])) {
+			$this->accessFactory = $argument['accessFactory'];
+		} else {
+			$this->accessFactory = \OCP\Server::get(AccessFactory::class);
+		}
 	}
 }

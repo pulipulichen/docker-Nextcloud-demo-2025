@@ -9,9 +9,9 @@
     "test": "tests"
   },
   "scripts": {
-    "build": "webpack --node-env production --progress --display errors-only",
+    "build": "webpack --node-env production --display errors-only --no-progress",
     "postbuild": "build/npm-post-build.sh",
-    "dev": "webpack --node-env development --progress --display errors-only",
+    "dev": "webpack --node-env development --display errors-only --no-progress",
     "watch": "webpack --node-env development --progress --watch",
     "lint": "eslint $(for appdir in $(ls apps); do if ! $(git check-ignore -q $appdir); then printf \"apps/$appdir \"; fi; done) core --no-error-on-unmatched-pattern",
     "lint:fix": "eslint $(for appdir in $(ls apps); do if ! $(git check-ignore -q $appdir); then printf \"apps/$appdir \"; fi; done) core --no-error-on-unmatched-pattern --fix",

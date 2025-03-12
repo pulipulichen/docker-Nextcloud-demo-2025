@@ -573,7 +573,7 @@ $.widget("ech.multiselect", {
 		} else {
 			menu.css({
 				top: pos.top + button.outerHeight(),
-				'inset-inline-start': pos.left
+				left: pos.left
 			});
 		}
 

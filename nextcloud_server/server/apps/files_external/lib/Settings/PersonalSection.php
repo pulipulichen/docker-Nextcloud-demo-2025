@@ -12,13 +12,25 @@ use OCP\IURLGenerator;
 use OCP\IUserSession;
 
 class PersonalSection extends Section {
+	/** @var IUserSession */
+	private $userSession;
+
+	/** @var UserGlobalStoragesService */
+	private $userGlobalStoragesService;
+
+	/** @var BackendService */
+	private $backendService;
+
 	public function __construct(
 		IURLGenerator $url,
 		IL10N $l,
-		private IUserSession $userSession,
-		private UserGlobalStoragesService $userGlobalStoragesService,
-		private BackendService $backendService,
+		IUserSession $userSession,
+		UserGlobalStoragesService $userGlobalStoragesService,
+		BackendService $backendService
 	) {
 		parent::__construct($url, $l);
+		$this->userSession = $userSession;
+		$this->userGlobalStoragesService = $userGlobalStoragesService;
+		$this->backendService = $backendService;
 	}
 }

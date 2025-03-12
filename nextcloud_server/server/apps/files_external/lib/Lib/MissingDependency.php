@@ -11,15 +11,17 @@ namespace OCA\Files_External\Lib;
  */
 class MissingDependency {
 
+	/** @var string */
+	private $dependency;
+
 	/** @var string|null Custom message */
 	private $message = null;
 
 	/**
 	 * @param string $dependency
 	 */
-	public function __construct(
-		private $dependency,
-	) {
+	public function __construct($dependency) {
+		$this->dependency = $dependency;
 	}
 
 	public function getDependency(): string {

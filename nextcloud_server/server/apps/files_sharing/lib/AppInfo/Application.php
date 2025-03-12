@@ -119,10 +119,10 @@ class Application extends App implements IBootstrap {
 	}
 
 	public function registerEventsScripts(IEventDispatcher $dispatcher): void {
-		$dispatcher->addListener(ResourcesLoadAdditionalScriptsEvent::class, function (): void {
-			Util::addScript('files_sharing', 'collaboration');
+		$dispatcher->addListener(ResourcesLoadAdditionalScriptsEvent::class, function () {
+			\OCP\Util::addScript('files_sharing', 'collaboration');
 		});
-		$dispatcher->addListener(BeforeTemplateRenderedEvent::class, function (): void {
+		$dispatcher->addListener(\OCP\AppFramework\Http\Events\BeforeTemplateRenderedEvent::class, function () {
 			/**
 			 * Always add main sharing script
 			 */
@@ -130,12 +130,12 @@ class Application extends App implements IBootstrap {
 		});
 
 		// notifications api to accept incoming user shares
-		$dispatcher->addListener(ShareCreatedEvent::class, function (ShareCreatedEvent $event): void {
+		$dispatcher->addListener(ShareCreatedEvent::class, function (ShareCreatedEvent $event) {
 			/** @var Listener $listener */
 			$listener = $this->getContainer()->query(Listener::class);
 			$listener->shareNotification($event);
 		});
-		$dispatcher->addListener(IGroup::class . '::postAddUser', function ($event): void {
+		$dispatcher->addListener(IGroup::class . '::postAddUser', function ($event) {
 			if (!$event instanceof OldGenericEvent) {
 				return;
 			}

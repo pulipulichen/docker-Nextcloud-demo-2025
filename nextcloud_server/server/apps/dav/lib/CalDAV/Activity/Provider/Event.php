@@ -5,7 +5,7 @@
  */
 namespace OCA\DAV\CalDAV\Activity\Provider;
 
-use OCP\Activity\Exceptions\UnknownActivityException;
+use OC_App;
 use OCP\Activity\IEvent;
 use OCP\Activity\IEventMerger;
 use OCP\Activity\IManager;
@@ -24,8 +24,20 @@ class Event extends Base {
 	public const SUBJECT_OBJECT_RESTORE = 'object_restore';
 	public const SUBJECT_OBJECT_DELETE = 'object_delete';
 
+	/** @var IFactory */
+	protected $languageFactory;
+
 	/** @var IL10N */
 	protected $l;
+
+	/** @var IManager */
+	protected $activityManager;
+
+	/** @var IEventMerger */
+	protected $eventMerger;
+
+	/** @var IAppManager */
+	protected $appManager;
 
 	/**
 	 * @param IFactory $languageFactory
@@ -36,16 +48,12 @@ class Event extends Base {
 	 * @param IEventMerger $eventMerger
 	 * @param IAppManager $appManager
 	 */
-	public function __construct(
-		protected IFactory $languageFactory,
-		IURLGenerator $url,
-		protected IManager $activityManager,
-		IUserManager $userManager,
-		IGroupManager $groupManager,
-		protected IEventMerger $eventMerger,
-		protected IAppManager $appManager,
-	) {
+	public function __construct(IFactory $languageFactory, IURLGenerator $url, IManager $activityManager, IUserManager $userManager, IGroupManager $groupManager, IEventMerger $eventMerger, IAppManager $appManager) {
 		parent::__construct($userManager, $groupManager, $url);
+		$this->languageFactory = $languageFactory;
+		$this->activityManager = $activityManager;
+		$this->eventMerger = $eventMerger;
+		$this->appManager = $appManager;
 	}
 
 	/**
@@ -66,7 +74,7 @@ class Event extends Base {
 		if (isset($eventData['link']) && is_array($eventData['link']) && $this->appManager->isEnabledForUser('calendar')) {
 			try {
 				// The calendar app needs to be manually loaded for the routes to be loaded
-				$this->appManager->loadApp('calendar');
+				OC_App::loadApp('calendar');
 				$linkData = $eventData['link'];
 				$calendarUri = $this->urlencodeLowerHex($linkData['calendar_uri']);
 				if ($affectedUser === $linkData['owner']) {
@@ -98,12 +106,12 @@ class Event extends Base {
 	 * @param IEvent $event
 	 * @param IEvent|null $previousEvent
 	 * @return IEvent
-	 * @throws UnknownActivityException
+	 * @throws \InvalidArgumentException
 	 * @since 11.0.0
 	 */
 	public function parse($language, IEvent $event, ?IEvent $previousEvent = null) {
 		if ($event->getApp() !== 'dav' || $event->getType() !== 'calendar_event') {
-			throw new UnknownActivityException();
+			throw new \InvalidArgumentException();
 		}
 
 		$this->l = $this->languageFactory->get('dav', $language);
@@ -139,7 +147,7 @@ class Event extends Base {
 		} elseif ($event->getSubject() === self::SUBJECT_OBJECT_RESTORE . '_event_self') {
 			$subject = $this->l->t('You restored event {event} of calendar {calendar}');
 		} else {
-			throw new UnknownActivityException();
+			throw new \InvalidArgumentException();
 		}
 
 		$parsedParameters = $this->getParameters($event);

@@ -13,12 +13,13 @@ use OCP\BackgroundJob\TimedJob;
 use OCP\DirectEditing\IManager;
 
 class CleanupDirectEditingTokens extends TimedJob {
-	public function __construct(
-		ITimeFactory $time,
-		private IManager $manager,
-	) {
+	private IManager $manager;
+
+	public function __construct(ITimeFactory $time,
+		IManager $manager) {
 		parent::__construct($time);
 		$this->setInterval(15 * 60);
+		$this->manager = $manager;
 	}
 
 	/**

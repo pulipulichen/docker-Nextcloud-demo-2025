@@ -15,23 +15,36 @@ use Psr\Log\LoggerInterface;
 
 class CalendarProvider implements ICalendarProvider {
 
-	public function __construct(
-		private CalDavBackend $calDavBackend,
-		private IL10N $l10n,
-		private IConfig $config,
-		private LoggerInterface $logger,
-	) {
+	/** @var CalDavBackend */
+	private $calDavBackend;
+
+	/** @var IL10N */
+	private $l10n;
+
+	/** @var IConfig */
+	private $config;
+
+	/** @var LoggerInterface */
+	private $logger;
+
+	public function __construct(CalDavBackend $calDavBackend, IL10N $l10n, IConfig $config, LoggerInterface $logger) {
+		$this->calDavBackend = $calDavBackend;
+		$this->l10n = $l10n;
+		$this->config = $config;
+		$this->logger = $logger;
 	}
 
 	public function getCalendars(string $principalUri, array $calendarUris = []): array {
-
-		$calendarInfos = $this->calDavBackend->getCalendarsForUser($principalUri) ?? [];
-
-		if (!empty($calendarUris)) {
-			$calendarInfos = array_filter($calendarInfos, function ($calendar) use ($calendarUris) {
-				return in_array($calendar['uri'], $calendarUris);
-			});
+		$calendarInfos = [];
+		if (empty($calendarUris)) {
+			$calendarInfos = $this->calDavBackend->getCalendarsForUser($principalUri);
+		} else {
+			foreach ($calendarUris as $calendarUri) {
+				$calendarInfos[] = $this->calDavBackend->getCalendarByUri($principalUri, $calendarUri);
+			}
 		}
+
+		$calendarInfos = array_filter($calendarInfos);
 
 		$iCalendars = [];
 		foreach ($calendarInfos as $calendarInfo) {

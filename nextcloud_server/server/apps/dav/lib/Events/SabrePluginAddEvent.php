@@ -19,13 +19,15 @@ use Sabre\DAV\Server;
  */
 class SabrePluginAddEvent extends Event {
 
+	/** @var Server */
+	private $server;
+
 	/**
 	 * @since 28.0.0
 	 */
-	public function __construct(
-		private Server $server,
-	) {
+	public function __construct(Server $server) {
 		parent::__construct();
+		$this->server = $server;
 	}
 
 	/**

@@ -5,7 +5,6 @@
  */
 namespace OCA\Files\Activity;
 
-use OCP\Activity\Exceptions\UnknownActivityException;
 use OCP\Activity\IEvent;
 use OCP\Activity\IEventMerger;
 use OCP\Activity\IManager;
@@ -23,24 +22,56 @@ use OCP\IUserManager;
 use OCP\L10N\IFactory;
 
 class Provider implements IProvider {
+	/** @var IFactory */
+	protected $languageFactory;
+
 	/** @var IL10N */
 	protected $l;
+	/** @var IL10N */
+	protected $activityLang;
+
+	/** @var IURLGenerator */
+	protected $url;
+
+	/** @var IManager */
+	protected $activityManager;
+
+	/** @var IUserManager */
+	protected $userManager;
+
+	/** @var IRootFolder */
+	protected $rootFolder;
+
+	/** @var IEventMerger */
+	protected $eventMerger;
+
+	/** @var ICloudIdManager */
+	protected $cloudIdManager;
+
+	/** @var IContactsManager */
+	protected $contactsManager;
 
 	/** @var string[] cached displayNames - key is the cloud id and value the displayname */
 	protected $displayNames = [];
 
 	protected $fileIsEncrypted = false;
 
-	public function __construct(
-		protected IFactory $languageFactory,
-		protected IURLGenerator $url,
-		protected IManager $activityManager,
-		protected IUserManager $userManager,
-		protected IRootFolder $rootFolder,
-		protected ICloudIdManager $cloudIdManager,
-		protected IContactsManager $contactsManager,
-		protected IEventMerger $eventMerger,
-	) {
+	public function __construct(IFactory $languageFactory,
+		IURLGenerator $url,
+		IManager $activityManager,
+		IUserManager $userManager,
+		IRootFolder $rootFolder,
+		ICloudIdManager $cloudIdManager,
+		IContactsManager $contactsManager,
+		IEventMerger $eventMerger) {
+		$this->languageFactory = $languageFactory;
+		$this->url = $url;
+		$this->activityManager = $activityManager;
+		$this->userManager = $userManager;
+		$this->rootFolder = $rootFolder;
+		$this->cloudIdManager = $cloudIdManager;
+		$this->contactsManager = $contactsManager;
+		$this->eventMerger = $eventMerger;
 	}
 
 	/**
@@ -48,20 +79,21 @@ class Provider implements IProvider {
 	 * @param IEvent $event
 	 * @param IEvent|null $previousEvent
 	 * @return IEvent
-	 * @throws UnknownActivityException
+	 * @throws \InvalidArgumentException
 	 * @since 11.0.0
 	 */
 	public function parse($language, IEvent $event, ?IEvent $previousEvent = null) {
 		if ($event->getApp() !== 'files') {
-			throw new UnknownActivityException();
+			throw new \InvalidArgumentException();
 		}
 
 		$this->l = $this->languageFactory->get('files', $language);
+		$this->activityLang = $this->languageFactory->get('activity', $language);
 
 		if ($this->activityManager->isFormattingFilteredObject()) {
 			try {
 				return $this->parseShortVersion($event, $previousEvent);
-			} catch (UnknownActivityException) {
+			} catch (\InvalidArgumentException $e) {
 				// Ignore and simply use the long version...
 			}
 		}
@@ -81,10 +113,10 @@ class Provider implements IProvider {
 	 * @param IEvent $event
 	 * @param IEvent|null $previousEvent
 	 * @return IEvent
-	 * @throws UnknownActivityException
+	 * @throws \InvalidArgumentException
 	 * @since 11.0.0
 	 */
-	public function parseShortVersion(IEvent $event, ?IEvent $previousEvent = null): IEvent {
+	public function parseShortVersion(IEvent $event, ?IEvent $previousEvent = null) {
 		$parsedParameters = $this->getParameters($event);
 
 		if ($event->getSubject() === 'created_by') {
@@ -106,12 +138,12 @@ class Provider implements IProvider {
 			$subject = $this->l->t('Moved by {user}');
 			$this->setIcon($event, 'change');
 		} else {
-			throw new UnknownActivityException();
+			throw new \InvalidArgumentException();
 		}
 
 		if (!isset($parsedParameters['user'])) {
 			// External user via public link share
-			$subject = str_replace('{user}', $this->l->t('"remote account"'), $subject);
+			$subject = str_replace('{user}', $this->activityLang->t('"remote account"'), $subject);
 		}
 
 		$this->setSubjects($event, $subject, $parsedParameters);
@@ -123,10 +155,10 @@ class Provider implements IProvider {
 	 * @param IEvent $event
 	 * @param IEvent|null $previousEvent
 	 * @return IEvent
-	 * @throws UnknownActivityException
+	 * @throws \InvalidArgumentException
 	 * @since 11.0.0
 	 */
-	public function parseLongVersion(IEvent $event, ?IEvent $previousEvent = null): IEvent {
+	public function parseLongVersion(IEvent $event, ?IEvent $previousEvent = null) {
 		$this->fileIsEncrypted = false;
 		$parsedParameters = $this->getParameters($event);
 
@@ -220,7 +252,7 @@ class Provider implements IProvider {
 			$subject = $this->l->t('{user} moved {oldfile} to {newfile}');
 			$this->setIcon($event, 'change');
 		} else {
-			throw new UnknownActivityException();
+			throw new \InvalidArgumentException();
 		}
 
 		if ($this->fileIsEncrypted) {
@@ -229,7 +261,7 @@ class Provider implements IProvider {
 
 		if (!isset($parsedParameters['user'])) {
 			// External user via public link share
-			$subject = str_replace('{user}', $this->l->t('"remote account"'), $subject);
+			$subject = str_replace('{user}', $this->activityLang->t('"remote account"'), $subject);
 		}
 
 		$this->setSubjects($event, $subject, $parsedParameters);
@@ -259,9 +291,9 @@ class Provider implements IProvider {
 	/**
 	 * @param IEvent $event
 	 * @return array
-	 * @throws UnknownActivityException
+	 * @throws \InvalidArgumentException
 	 */
-	protected function getParameters(IEvent $event): array {
+	protected function getParameters(IEvent $event) {
 		$parameters = $event->getSubjectParameters();
 		switch ($event->getSubject()) {
 			case 'created_self':
@@ -314,18 +346,18 @@ class Provider implements IProvider {
 	 * @param array|string $parameter
 	 * @param IEvent|null $event
 	 * @return array
-	 * @throws UnknownActivityException
+	 * @throws \InvalidArgumentException
 	 */
-	protected function getFile($parameter, ?IEvent $event = null): array {
+	protected function getFile($parameter, ?IEvent $event = null) {
 		if (is_array($parameter)) {
 			$path = reset($parameter);
-			$id = (string)key($parameter);
+			$id = (string) key($parameter);
 		} elseif ($event !== null) {
 			// Legacy from before ownCloud 8.2
 			$path = $parameter;
 			$id = $event->getObjectId();
 		} else {
-			throw new UnknownActivityException('Could not generate file parameter');
+			throw new \InvalidArgumentException('Could not generate file parameter');
 		}
 
 		$encryptionContainer = $this->getEndToEndEncryptionContainer($id, $path);

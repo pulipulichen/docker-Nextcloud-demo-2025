@@ -6,4 +6,5 @@
 /nextcloud/server/dist/data_image*
 /nextcloud/server/dist/core_src*
 
-/data
+# /files
+!/files/.gitkeep

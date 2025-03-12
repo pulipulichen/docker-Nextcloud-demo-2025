@@ -18,13 +18,26 @@ use Sabre\DAVACL\IACL;
 class DeletedCalendarObject implements IACL, ICalendarObject, IRestorable {
 	use ACLTrait;
 
-	public function __construct(
-		private string $name,
-		/** @var mixed[] */
-		private array $objectData,
-		private string $principalUri,
-		private CalDavBackend $calDavBackend,
-	) {
+	/** @var string */
+	private $name;
+
+	/** @var mixed[] */
+	private $objectData;
+
+	/** @var string */
+	private $principalUri;
+
+	/** @var CalDavBackend */
+	private $calDavBackend;
+
+	public function __construct(string $name,
+		array $objectData,
+		string $principalUri,
+		CalDavBackend $calDavBackend) {
+		$this->name = $name;
+		$this->objectData = $objectData;
+		$this->calDavBackend = $calDavBackend;
+		$this->principalUri = $principalUri;
 	}
 
 	public function delete() {
@@ -59,7 +72,7 @@ class DeletedCalendarObject implements IACL, ICalendarObject, IRestorable {
 	public function getContentType() {
 		$mime = 'text/calendar; charset=utf-8';
 		if (isset($this->objectData['component']) && $this->objectData['component']) {
-			$mime .= '; component=' . $this->objectData['component'];
+			$mime .= '; component='.$this->objectData['component'];
 		}
 
 		return $mime;
@@ -70,7 +83,7 @@ class DeletedCalendarObject implements IACL, ICalendarObject, IRestorable {
 	}
 
 	public function getSize() {
-		return (int)$this->objectData['size'];
+		return (int) $this->objectData['size'];
 	}
 
 	public function restore(): void {
@@ -78,7 +91,7 @@ class DeletedCalendarObject implements IACL, ICalendarObject, IRestorable {
 	}
 
 	public function getDeletedAt(): ?int {
-		return $this->objectData['deleted_at'] ? (int)$this->objectData['deleted_at'] : null;
+		return $this->objectData['deleted_at'] ? (int) $this->objectData['deleted_at'] : null;
 	}
 
 	public function getCalendarUri(): string {

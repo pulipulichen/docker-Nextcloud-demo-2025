@@ -12,9 +12,11 @@ use OCA\DAV\Connector\Sabre\File;
 use Sabre\DAV\IFile;
 
 class UploadFile implements IFile {
-	public function __construct(
-		private File $file,
-	) {
+	/**  @var File */
+	private $file;
+
+	public function __construct(File $file) {
+		$this->file = $file;
 	}
 
 	public function put($data) {

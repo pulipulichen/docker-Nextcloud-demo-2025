@@ -7,22 +7,20 @@
 namespace OCA\Files_Sharing;
 
 use OC\Files\Filesystem;
-use OC\Files\View;
-use OCP\Server;
 
 class Hooks {
 	public static function deleteUser($params) {
-		$manager = Server::get(External\Manager::class);
+		$manager = \OC::$server->get(External\Manager::class);
 
 		$manager->removeUserShares($params['uid']);
 	}
 
 	public static function unshareChildren($params) {
 		$path = Filesystem::getView()->getAbsolutePath($params['path']);
-		$view = new View('/');
+		$view = new \OC\Files\View('/');
 
 		// find share mount points within $path and unmount them
-		$mountManager = Filesystem::getMountManager();
+		$mountManager = \OC\Files\Filesystem::getMountManager();
 		$mountedShares = $mountManager->findIn($path);
 		foreach ($mountedShares as $mount) {
 			if ($mount->getStorage()->instanceOfStorage(ISharedStorage::class)) {

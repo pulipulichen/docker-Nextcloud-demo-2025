@@ -274,10 +274,11 @@ var render = function render() {
         return _vm.update("incoming_server2server_group_share_enabled", _vm.incomingServer2serverGroupShareEnabled);
       }]
     }
-  }, [_vm._v("\n\t\t" + _vm._s(_vm.t("federatedfilesharing", "Allow people on this server to receive group shares from other servers")) + "\n\t")]) : _vm._e(), _vm._v(" "), _c("NcCheckboxRadioSwitch", {
+  }, [_vm._v("\n\t\t" + _vm._s(_vm.t("federatedfilesharing", "Allow people on this server to receive group shares from other servers")) + "\n\t")]) : _vm._e(), _vm._v(" "), _c("fieldset", [_c("legend", [_vm._v(_vm._s(_vm.t("federatedfilesharing", "The lookup server is only available for global scale.")))]), _vm._v(" "), _c("NcCheckboxRadioSwitch", {
     attrs: {
       type: "switch",
-      checked: _vm.lookupServerEnabled
+      checked: _vm.lookupServerEnabled,
+      disabled: ""
     },
     on: {
       "update:checked": [function ($event) {
@@ -286,10 +287,11 @@ var render = function render() {
         return _vm.update("lookupServerEnabled", _vm.lookupServerEnabled);
       }]
     }
-  }, [_vm._v("\n\t\t" + _vm._s(_vm.t("federatedfilesharing", "Search global and public address book for people")) + "\n\t")]), _vm._v(" "), _c("NcCheckboxRadioSwitch", {
+  }, [_vm._v("\n\t\t\t" + _vm._s(_vm.t("federatedfilesharing", "Search global and public address book for people")) + "\n\t\t")]), _vm._v(" "), _c("NcCheckboxRadioSwitch", {
     attrs: {
       type: "switch",
-      checked: _vm.lookupServerUploadEnabled
+      checked: _vm.lookupServerUploadEnabled,
+      disabled: ""
     },
     on: {
       "update:checked": [function ($event) {
@@ -298,7 +300,7 @@ var render = function render() {
         return _vm.update("lookupServerUploadEnabled", _vm.lookupServerUploadEnabled);
       }]
     }
-  }, [_vm._v("\n\t\t" + _vm._s(_vm.t("federatedfilesharing", "Allow people to publish their data to a global and public address book")) + "\n\t")]), _vm._v(" "), _c("div", {
+  }, [_vm._v("\n\t\t\t" + _vm._s(_vm.t("federatedfilesharing", "Allow people to publish their data to a global and public address book")) + "\n\t\t")])], 1), _vm._v(" "), _c("div", {
     staticClass: "settings-subsection"
   }, [_c("h3", {
     staticClass: "settings-subsection__name"
@@ -739,4 +741,4 @@ var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=federatedfilesharing-vue-settings-admin.js.map?v=f4e07c320b43b88cc082
+//# sourceMappingURL=federatedfilesharing-vue-settings-admin.js.map?v=cae4db15fa8c85a16ed9

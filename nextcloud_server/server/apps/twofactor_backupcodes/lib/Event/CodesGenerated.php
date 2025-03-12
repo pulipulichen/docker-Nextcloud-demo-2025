@@ -13,10 +13,12 @@ use OCP\IUser;
 
 class CodesGenerated extends Event {
 
-	public function __construct(
-		private IUser $user,
-	) {
+	/** @var IUser */
+	private $user;
+
+	public function __construct(IUser $user) {
 		parent::__construct();
+		$this->user = $user;
 	}
 
 	/**

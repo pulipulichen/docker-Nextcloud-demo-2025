@@ -359,11 +359,7 @@ class FileEventsListener implements IEventListener {
 			}
 		}
 
-		try {
-			$owner = $node->getOwner()?->getUid();
-		} catch (\OCP\Files\NotFoundException) {
-			$owner = null;
-		}
+		$owner = $node->getOwner()?->getUid();
 
 		// If no owner, extract it from the path.
 		// e.g. /user/files/foobar.txt

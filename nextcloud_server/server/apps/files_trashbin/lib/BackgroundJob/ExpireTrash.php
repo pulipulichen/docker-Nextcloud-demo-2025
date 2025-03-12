@@ -6,7 +6,6 @@
  */
 namespace OCA\Files_Trashbin\BackgroundJob;
 
-use OC\Files\View;
 use OCA\Files_Trashbin\Expiration;
 use OCA\Files_Trashbin\Helper;
 use OCA\Files_Trashbin\Trashbin;
@@ -17,15 +16,23 @@ use OCP\IUser;
 use OCP\IUserManager;
 
 class ExpireTrash extends TimedJob {
+	private IConfig $config;
+	private Expiration $expiration;
+	private IUserManager $userManager;
+
 	public function __construct(
-		private IConfig $config,
-		private IUserManager $userManager,
-		private Expiration $expiration,
-		ITimeFactory $time,
+		IConfig $config,
+		IUserManager $userManager,
+		Expiration $expiration,
+		ITimeFactory $time
 	) {
 		parent::__construct($time);
 		// Run once per 30 minutes
 		$this->setInterval(60 * 30);
+
+		$this->config = $config;
+		$this->userManager = $userManager;
+		$this->expiration = $expiration;
 	}
 
 	/**
@@ -43,7 +50,7 @@ class ExpireTrash extends TimedJob {
 			return;
 		}
 
-		$this->userManager->callForSeenUsers(function (IUser $user): void {
+		$this->userManager->callForSeenUsers(function (IUser $user) {
 			$uid = $user->getUID();
 			if (!$this->setupFS($uid)) {
 				return;
@@ -63,7 +70,7 @@ class ExpireTrash extends TimedJob {
 		\OC_Util::setupFS($user);
 
 		// Check if this user has a trashbin directory
-		$view = new View('/' . $user);
+		$view = new \OC\Files\View('/' . $user);
 		if (!$view->is_dir('/files_trashbin/files')) {
 			return false;
 		}

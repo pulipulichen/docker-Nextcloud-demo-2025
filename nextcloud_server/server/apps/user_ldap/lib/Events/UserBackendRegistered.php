@@ -19,10 +19,14 @@ use OCP\EventDispatcher\Event;
  */
 class UserBackendRegistered extends Event {
 
-	public function __construct(
-		private IUserLDAP $backend,
-		private UserPluginManager $pluginManager,
-	) {
+	/** @var IUserLDAP */
+	private $backend;
+	/** @var UserPluginManager */
+	private $pluginManager;
+
+	public function __construct(IUserLDAP $backend, UserPluginManager $pluginManager) {
+		$this->backend = $backend;
+		$this->pluginManager = $pluginManager;
 	}
 
 	public function getBackend(): IUserLDAP {

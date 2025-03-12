@@ -1,8 +1,5 @@
 <?php
 
-use OCA\DAV\Server;
-use OCP\IRequest;
-
 /**
  * SPDX-FileCopyrightText: 2016-2024 Nextcloud GmbH and Nextcloud contributors
  * SPDX-FileCopyrightText: 2016 ownCloud, Inc.
@@ -17,6 +14,6 @@ ignore_user_abort(true);
 // Turn off output buffering to prevent memory problems
 \OC_Util::obEnd();
 
-$request = \OCP\Server::get(IRequest::class);
-$server = new Server($request, $baseuri);
+$request = \OC::$server->getRequest();
+$server = new \OCA\DAV\Server($request, $baseuri);
 $server->exec();

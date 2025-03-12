@@ -20,24 +20,32 @@ use OCP\IUser;
 class ResourceProvider implements IProvider {
 	public const RESOURCE_TYPE = 'file';
 
+	/** @var IRootFolder */
+	protected $rootFolder;
+	/** @var IPreview */
+	private $preview;
+	/** @var IURLGenerator */
+	private $urlGenerator;
+
 	/** @var array */
 	protected $nodes = [];
 
-	public function __construct(
-		protected IRootFolder $rootFolder,
-		private IPreview $preview,
-		private IURLGenerator $urlGenerator,
-	) {
+	public function __construct(IRootFolder $rootFolder,
+		IPreview $preview,
+		IURLGenerator $urlGenerator) {
+		$this->rootFolder = $rootFolder;
+		$this->preview = $preview;
+		$this->urlGenerator = $urlGenerator;
 	}
 
 	private function getNode(IResource $resource): ?Node {
-		if (isset($this->nodes[(int)$resource->getId()])) {
-			return $this->nodes[(int)$resource->getId()];
+		if (isset($this->nodes[(int) $resource->getId()])) {
+			return $this->nodes[(int) $resource->getId()];
 		}
-		$node = $this->rootFolder->getFirstNodeById((int)$resource->getId());
+		$node = $this->rootFolder->getFirstNodeById((int) $resource->getId());
 		if ($node) {
-			$this->nodes[(int)$resource->getId()] = $node;
-			return $this->nodes[(int)$resource->getId()];
+			$this->nodes[(int) $resource->getId()] = $node;
+			return $this->nodes[(int) $resource->getId()];
 		}
 		return null;
 	}
@@ -48,8 +56,8 @@ class ResourceProvider implements IProvider {
 	 * @since 16.0.0
 	 */
 	public function getResourceRichObject(IResource $resource): array {
-		if (isset($this->nodes[(int)$resource->getId()])) {
-			$node = $this->nodes[(int)$resource->getId()]->getPath();
+		if (isset($this->nodes[(int) $resource->getId()])) {
+			$node = $this->nodes[(int) $resource->getId()]->getPath();
 		} else {
 			$node = $this->getNode($resource);
 		}
@@ -87,10 +95,10 @@ class ResourceProvider implements IProvider {
 		}
 
 		$userFolder = $this->rootFolder->getUserFolder($user->getUID());
-		$node = $userFolder->getById((int)$resource->getId());
+		$node = $userFolder->getById((int) $resource->getId());
 
 		if ($node) {
-			$this->nodes[(int)$resource->getId()] = $node;
+			$this->nodes[(int) $resource->getId()] = $node;
 			return true;
 		}
 

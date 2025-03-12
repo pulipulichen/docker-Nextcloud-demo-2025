@@ -6,7 +6,6 @@
  */
 namespace OCA\Files_Versions\Command;
 
-use OC\Files\View;
 use OCA\Files_Versions\Expiration;
 use OCA\Files_Versions\Storage;
 use OCP\IUser;
@@ -39,7 +38,7 @@ class ExpireVersions extends Command {
 	protected function execute(InputInterface $input, OutputInterface $output): int {
 		$maxAge = $this->expiration->getMaxAgeAsTimestamp();
 		if (!$maxAge) {
-			$output->writeln('Auto expiration is configured - expiration will be handled automatically according to the expiration patterns detailed at the following link https://docs.nextcloud.com/server/latest/admin_manual/configuration_files/file_versioning.html.');
+			$output->writeln("Auto expiration is configured - expiration will be handled automatically according to the expiration patterns detailed at the following link https://docs.nextcloud.com/server/latest/admin_manual/configuration_files/file_versioning.html.");
 			return self::FAILURE;
 		}
 
@@ -60,7 +59,7 @@ class ExpireVersions extends Command {
 
 		$p = new ProgressBar($output);
 		$p->start();
-		$this->userManager->callForSeenUsers(function (IUser $user) use ($p): void {
+		$this->userManager->callForSeenUsers(function (IUser $user) use ($p) {
 			$p->advance();
 			$this->expireVersionsForUser($user);
 		});
@@ -85,7 +84,7 @@ class ExpireVersions extends Command {
 		\OC_Util::setupFS($user);
 
 		// Check if this user has a version directory
-		$view = new View('/' . $user);
+		$view = new \OC\Files\View('/' . $user);
 		if (!$view->is_dir('/files_versions')) {
 			return false;
 		}

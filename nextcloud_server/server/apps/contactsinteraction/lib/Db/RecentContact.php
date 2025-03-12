@@ -9,7 +9,6 @@ declare(strict_types=1);
 namespace OCA\ContactsInteraction\Db;
 
 use OCP\AppFramework\Db\Entity;
-use OCP\DB\Types;
 
 /**
  * @method void setActorUid(string $uid)
@@ -34,11 +33,11 @@ class RecentContact extends Entity {
 	protected int $lastContact = -1;
 
 	public function __construct() {
-		$this->addType('actorUid', Types::STRING);
-		$this->addType('uid', Types::STRING);
-		$this->addType('email', Types::STRING);
-		$this->addType('federatedCloudId', Types::STRING);
-		$this->addType('card', Types::BLOB);
-		$this->addType('lastContact', Types::INTEGER);
+		$this->addType('actorUid', 'string');
+		$this->addType('uid', 'string');
+		$this->addType('email', 'string');
+		$this->addType('federatedCloudId', 'string');
+		$this->addType('card', 'blob');
+		$this->addType('lastContact', 'int');
 	}
 }

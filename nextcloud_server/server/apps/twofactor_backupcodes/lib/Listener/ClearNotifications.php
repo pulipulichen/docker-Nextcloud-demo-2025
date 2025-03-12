@@ -16,9 +16,11 @@ use OCP\Notification\IManager;
 /** @template-implements IEventListener<CodesGenerated> */
 class ClearNotifications implements IEventListener {
 
-	public function __construct(
-		private IManager $manager,
-	) {
+	/** @var IManager */
+	private $manager;
+
+	public function __construct(IManager $manager) {
+		$this->manager = $manager;
 	}
 
 	public function handle(Event $event): void {

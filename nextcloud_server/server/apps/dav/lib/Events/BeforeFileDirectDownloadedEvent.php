@@ -15,10 +15,11 @@ use OCP\Files\File;
  * @since 22.0.0
  */
 class BeforeFileDirectDownloadedEvent extends Event {
-	public function __construct(
-		private File $file,
-	) {
+	private $file;
+
+	public function __construct(File $file) {
 		parent::__construct();
+		$this->file = $file;
 	}
 
 	/**

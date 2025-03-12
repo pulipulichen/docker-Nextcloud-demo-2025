@@ -67,13 +67,15 @@ class ExceptionLoggerPlugin extends \Sabre\DAV\ServerPlugin {
 		ServerMaintenanceMode::class => true,
 	];
 
+	private string $appName;
+	private LoggerInterface $logger;
+
 	/**
-	 * @param string $appName app name to use when logging
+	 * @param string $loggerAppName app name to use when logging
 	 */
-	public function __construct(
-		private string $appName,
-		private LoggerInterface $logger,
-	) {
+	public function __construct(string $loggerAppName, LoggerInterface $logger) {
+		$this->appName = $loggerAppName;
+		$this->logger = $logger;
 	}
 
 	/**

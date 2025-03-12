@@ -20,10 +20,13 @@ use OCP\Migration\SimpleMigrationStep;
 
 class Version1025Date20240308063933 extends SimpleMigrationStep {
 
-	public function __construct(
-		private IAppConfig $appConfig,
-		private IDBConnection $db,
-	) {
+	private IAppConfig $appConfig;
+	private IDBConnection $db;
+
+	public function __construct(IAppConfig $appConfig,
+		IDBConnection $db) {
+		$this->db = $db;
+		$this->appConfig = $appConfig;
 	}
 
 	/**
@@ -54,7 +57,7 @@ class Version1025Date20240308063933 extends SimpleMigrationStep {
 		// The threshold is higher than the default of \OCA\DAV\BackgroundJob\PruneOutdatedSyncTokensJob
 		// but small enough to fit into a cluster transaction size.
 		// For a 50k users instance that would still keep 10 changes on average.
-		$limit = max(1, (int)$this->appConfig->getAppValue('totalNumberOfSyncTokensToKeep', '500000'));
+		$limit = max(1, (int) $this->appConfig->getAppValue('totalNumberOfSyncTokensToKeep', '500000'));
 
 		foreach (['addressbookchanges', 'calendarchanges'] as $tableName) {
 			$thresholdSelect = $this->db->getQueryBuilder();

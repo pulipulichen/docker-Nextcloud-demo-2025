@@ -12,25 +12,27 @@ use OC\Files\Storage\Wrapper\Wrapper;
 
 class PublicOwnerWrapper extends Wrapper {
 
-	private string $owner;
+	/** @var string */
+	private $owner;
 
 	/**
-	 * @param array $parameters ['storage' => $storage, 'owner' => $owner]
+	 * @param array $arguments ['storage' => $storage, 'owner' => $owner]
 	 *
 	 * $storage: The storage the permissions mask should be applied on
 	 * $owner: The owner to use in case no owner is found
 	 */
-	public function __construct(array $parameters) {
-		parent::__construct($parameters);
-		$this->owner = $parameters['owner'];
+	public function __construct($arguments) {
+		parent::__construct($arguments);
+		$this->owner = $arguments['owner'];
 	}
 
-	public function getOwner(string $path): string|false {
+	public function getOwner($path) {
 		$owner = parent::getOwner($path);
-		if ($owner !== false) {
-			return $owner;
+
+		if ($owner === null || $owner === false) {
+			return $this->owner;
 		}
 
-		return $this->owner;
+		return $owner;
 	}
 }

@@ -15,6 +15,9 @@ use Sabre\CalDAV\Plugin as CalDAVPlugin;
  */
 class Outbox extends \Sabre\CalDAV\Schedule\Outbox {
 
+	/** @var IConfig */
+	private $config;
+
 	/** @var null|bool */
 	private $disableFreeBusy = null;
 
@@ -24,11 +27,9 @@ class Outbox extends \Sabre\CalDAV\Schedule\Outbox {
 	 * @param IConfig $config
 	 * @param string $principalUri
 	 */
-	public function __construct(
-		private IConfig $config,
-		string $principalUri,
-	) {
+	public function __construct(IConfig $config, string $principalUri) {
 		parent::__construct($principalUri);
+		$this->config = $config;
 	}
 
 	/**

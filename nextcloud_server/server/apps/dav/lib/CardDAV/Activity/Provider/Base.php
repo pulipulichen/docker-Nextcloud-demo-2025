@@ -18,17 +18,27 @@ use OCP\IURLGenerator;
 use OCP\IUserManager;
 
 abstract class Base implements IProvider {
-	/** @var string[] */
+	/** @var IUserManager */
+	protected $userManager;
+
+	/** @var string[]  */
 	protected $userDisplayNames = [];
+
+	/** @var IGroupManager */
+	protected $groupManager;
 
 	/** @var string[] */
 	protected $groupDisplayNames = [];
 
-	public function __construct(
-		protected IUserManager $userManager,
-		protected IGroupManager $groupManager,
-		protected IURLGenerator $url,
-	) {
+	/** @var IURLGenerator */
+	protected $url;
+
+	public function __construct(IUserManager $userManager,
+		IGroupManager $groupManager,
+		IURLGenerator $urlGenerator) {
+		$this->userManager = $userManager;
+		$this->groupManager = $groupManager;
+		$this->url = $urlGenerator;
 	}
 
 	protected function setSubjects(IEvent $event, string $subject, array $parameters): void {
@@ -45,14 +55,14 @@ abstract class Base implements IProvider {
 			$data['name'] === CardDavBackend::PERSONAL_ADDRESSBOOK_NAME) {
 			return [
 				'type' => 'addressbook',
-				'id' => (string)$data['id'],
+				'id' => $data['id'],
 				'name' => $l->t('Personal'),
 			];
 		}
 
 		return [
 			'type' => 'addressbook',
-			'id' => (string)$data['id'],
+			'id' => $data['id'],
 			'name' => $data['name'],
 		];
 	}

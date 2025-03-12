@@ -13,12 +13,14 @@ use Sabre\Xml\XmlSerializable;
 class Groups implements XmlSerializable {
 	public const NS_OWNCLOUD = 'http://owncloud.org/ns';
 
+	/** @var string[] of TYPE:CHECKSUM */
+	private $groups;
+
 	/**
-	 * @param list<string> $groups
+	 * @param string $groups
 	 */
-	public function __construct(
-		private array $groups,
-	) {
+	public function __construct($groups) {
+		$this->groups = $groups;
 	}
 
 	public function xmlSerialize(Writer $writer) {

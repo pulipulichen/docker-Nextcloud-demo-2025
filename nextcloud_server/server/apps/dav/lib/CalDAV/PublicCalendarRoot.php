@@ -14,6 +14,18 @@ use Sabre\DAV\Collection;
 
 class PublicCalendarRoot extends Collection {
 
+	/** @var CalDavBackend */
+	protected $caldavBackend;
+
+	/** @var \OCP\IL10N */
+	protected $l10n;
+
+	/** @var \OCP\IConfig */
+	protected $config;
+
+	/** @var LoggerInterface */
+	private $logger;
+
 	/**
 	 * PublicCalendarRoot constructor.
 	 *
@@ -21,12 +33,12 @@ class PublicCalendarRoot extends Collection {
 	 * @param IL10N $l10n
 	 * @param IConfig $config
 	 */
-	public function __construct(
-		protected CalDavBackend $caldavBackend,
-		protected IL10N $l10n,
-		protected IConfig $config,
-		private LoggerInterface $logger,
-	) {
+	public function __construct(CalDavBackend $caldavBackend, IL10N $l10n,
+		IConfig $config, LoggerInterface $logger) {
+		$this->caldavBackend = $caldavBackend;
+		$this->l10n = $l10n;
+		$this->config = $config;
+		$this->logger = $logger;
 	}
 
 	/**

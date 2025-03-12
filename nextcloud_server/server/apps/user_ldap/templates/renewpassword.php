@@ -6,11 +6,11 @@
  */
 /** @var \OCP\IL10N $l */
 
-\OCP\Util::addScript('user_ldap', 'renewPassword', 'core');
+script('user_ldap', 'renewPassword');
 style('user_ldap', 'renewPassword');
 ?>
 
-<form method="post" name="renewpassword" id="renewpassword" action="<?php p(\OCP\Server::get(\OCP\IURLGenerator::class)->linkToRoute('user_ldap.renewPassword.tryRenewPassword')); ?>">
+<form method="post" name="renewpassword" id="renewpassword" action="<?php p(\OC::$server->getURLGenerator()->linkToRoute('user_ldap.renewPassword.tryRenewPassword')); ?>">
 	<fieldset>
 		<div class="warning title">
 			<?php p($l->t('Please renew your password.')); ?><br>

@@ -18,6 +18,18 @@ use OCP\EventDispatcher\Event;
  */
 class CachedCalendarObjectUpdatedEvent extends Event {
 
+	/** @var int */
+	private $subscriptionId;
+
+	/** @var array */
+	private $subscriptionData;
+
+	/** @var array */
+	private $shares;
+
+	/** @var array */
+	private $objectData;
+
 	/**
 	 * CachedCalendarObjectUpdatedEvent constructor.
 	 *
@@ -27,13 +39,15 @@ class CachedCalendarObjectUpdatedEvent extends Event {
 	 * @param array $objectData
 	 * @since 20.0.0
 	 */
-	public function __construct(
-		private int $subscriptionId,
-		private array $subscriptionData,
-		private array $shares,
-		private array $objectData,
-	) {
+	public function __construct(int $subscriptionId,
+		array $subscriptionData,
+		array $shares,
+		array $objectData) {
 		parent::__construct();
+		$this->subscriptionId = $subscriptionId;
+		$this->subscriptionData = $subscriptionData;
+		$this->shares = $shares;
+		$this->objectData = $objectData;
 	}
 
 	/**

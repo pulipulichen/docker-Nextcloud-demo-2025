@@ -23,10 +23,12 @@ use OCP\Security\ICredentialsManager;
 class UserGlobalAuth extends AuthMechanism {
 	private const CREDENTIALS_IDENTIFIER = 'password::global';
 
-	public function __construct(
-		IL10N $l,
-		protected ICredentialsManager $credentialsManager,
-	) {
+	/** @var ICredentialsManager */
+	protected $credentialsManager;
+
+	public function __construct(IL10N $l, ICredentialsManager $credentialsManager) {
+		$this->credentialsManager = $credentialsManager;
+
 		$this
 			->setIdentifier('password::global::user')
 			->setVisibility(BackendService::VISIBILITY_DEFAULT)

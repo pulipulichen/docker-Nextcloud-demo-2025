@@ -20,11 +20,17 @@ use OCP\Share\IShare;
 /** @template-implements IEventListener<ShareCreatedEvent> */
 class UserShareAcceptanceListener implements IEventListener {
 
-	public function __construct(
-		private IConfig $config,
-		private IManager $shareManager,
-		private IGroupManager $groupManager,
-	) {
+	/** @var IConfig */
+	private $config;
+	/** @var IManager */
+	private $shareManager;
+	/** @var IGroupManager */
+	private $groupManager;
+
+	public function __construct(IConfig $config, IManager $shareManager, IGroupManager $groupManager) {
+		$this->config = $config;
+		$this->shareManager = $shareManager;
+		$this->groupManager = $groupManager;
 	}
 
 	public function handle(Event $event): void {

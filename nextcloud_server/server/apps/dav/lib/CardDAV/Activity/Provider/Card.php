@@ -8,7 +8,6 @@ declare(strict_types=1);
  */
 namespace OCA\DAV\CardDAV\Activity\Provider;
 
-use OCP\Activity\Exceptions\UnknownActivityException;
 use OCP\Activity\IEvent;
 use OCP\Activity\IEventMerger;
 use OCP\Activity\IManager;
@@ -24,16 +23,30 @@ class Card extends Base {
 	public const SUBJECT_UPDATE = 'card_update';
 	public const SUBJECT_DELETE = 'card_delete';
 
-	public function __construct(
-		protected IFactory $languageFactory,
+	/** @var IFactory */
+	protected $languageFactory;
+
+	/** @var IManager */
+	protected $activityManager;
+
+	/** @var IEventMerger */
+	protected $eventMerger;
+
+	/** @var IAppManager */
+	protected $appManager;
+
+	public function __construct(IFactory $languageFactory,
 		IURLGenerator $url,
-		protected IManager $activityManager,
+		IManager $activityManager,
 		IUserManager $userManager,
 		IGroupManager $groupManager,
-		protected IEventMerger $eventMerger,
-		protected IAppManager $appManager,
-	) {
+		IEventMerger $eventMerger,
+		IAppManager $appManager) {
 		parent::__construct($userManager, $groupManager, $url);
+		$this->languageFactory = $languageFactory;
+		$this->activityManager = $activityManager;
+		$this->eventMerger = $eventMerger;
+		$this->appManager = $appManager;
 	}
 
 	/**
@@ -41,11 +54,11 @@ class Card extends Base {
 	 * @param IEvent $event
 	 * @param IEvent|null $previousEvent
 	 * @return IEvent
-	 * @throws UnknownActivityException
+	 * @throws \InvalidArgumentException
 	 */
 	public function parse($language, IEvent $event, ?IEvent $previousEvent = null): IEvent {
 		if ($event->getApp() !== 'dav' || $event->getType() !== 'contacts') {
-			throw new UnknownActivityException();
+			throw new \InvalidArgumentException();
 		}
 
 		$l = $this->languageFactory->get('dav', $language);
@@ -69,7 +82,7 @@ class Card extends Base {
 		} elseif ($event->getSubject() === self::SUBJECT_UPDATE . '_self') {
 			$subject = $l->t('You updated contact {card} in address book {addressbook}');
 		} else {
-			throw new UnknownActivityException();
+			throw new \InvalidArgumentException();
 		}
 
 		$parsedParameters = $this->getParameters($event, $l);

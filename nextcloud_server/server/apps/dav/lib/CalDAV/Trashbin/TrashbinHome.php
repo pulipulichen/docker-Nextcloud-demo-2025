@@ -26,10 +26,16 @@ class TrashbinHome implements IACL, ICollection, IProperties {
 
 	public const NAME = 'trashbin';
 
-	public function __construct(
-		private CalDavBackend $caldavBackend,
-		private array $principalInfo,
-	) {
+	/** @var CalDavBackend */
+	private $caldavBackend;
+
+	/** @var array */
+	private $principalInfo;
+
+	public function __construct(CalDavBackend $caldavBackend,
+		array $principalInfo) {
+		$this->caldavBackend = $caldavBackend;
+		$this->principalInfo = $principalInfo;
 	}
 
 	public function getOwner(): string {

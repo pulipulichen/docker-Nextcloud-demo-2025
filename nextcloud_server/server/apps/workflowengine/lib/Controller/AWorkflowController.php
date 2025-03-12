@@ -22,13 +22,22 @@ use Psr\Log\LoggerInterface;
 
 abstract class AWorkflowController extends OCSController {
 
+	/** @var Manager */
+	protected $manager;
+
+	/** @var LoggerInterface */
+	private $logger;
+
 	public function __construct(
 		$appName,
 		IRequest $request,
-		protected Manager $manager,
-		private LoggerInterface $logger,
+		Manager $manager,
+		LoggerInterface $logger
 	) {
 		parent::__construct($appName, $request);
+
+		$this->manager = $manager;
+		$this->logger = $logger;
 	}
 
 	/**
@@ -83,7 +92,7 @@ abstract class AWorkflowController extends OCSController {
 		array $checks,
 		string $operation,
 		string $entity,
-		array $events,
+		array $events
 	): DataResponse {
 		$context = $this->getScopeContext();
 		try {
@@ -112,7 +121,7 @@ abstract class AWorkflowController extends OCSController {
 		array $checks,
 		string $operation,
 		string $entity,
-		array $events,
+		array $events
 	): DataResponse {
 		try {
 			$context = $this->getScopeContext();

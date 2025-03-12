@@ -21,12 +21,23 @@ use OCP\Migration\IRepairStep;
 
 class ChunkCleanup implements IRepairStep {
 
-	public function __construct(
-		private IConfig $config,
-		private IUserManager $userManager,
-		private IRootFolder $rootFolder,
-		private IJobList $jobList,
-	) {
+	/** @var IConfig */
+	private $config;
+	/** @var IUserManager */
+	private $userManager;
+	/** @var IRootFolder */
+	private $rootFolder;
+	/** @var IJobList */
+	private $jobList;
+
+	public function __construct(IConfig $config,
+		IUserManager $userManager,
+		IRootFolder $rootFolder,
+		IJobList $jobList) {
+		$this->config = $config;
+		$this->userManager = $userManager;
+		$this->rootFolder = $rootFolder;
+		$this->jobList = $jobList;
 	}
 
 	public function getName(): string {
@@ -41,7 +52,7 @@ class ChunkCleanup implements IRepairStep {
 
 		$output->startProgress();
 		// Loop over all seen users
-		$this->userManager->callForSeenUsers(function (IUser $user) use ($output): void {
+		$this->userManager->callForSeenUsers(function (IUser $user) use ($output) {
 			try {
 				$userFolder = $this->rootFolder->getUserFolder($user->getUID());
 				$userRoot = $userFolder->getParent();

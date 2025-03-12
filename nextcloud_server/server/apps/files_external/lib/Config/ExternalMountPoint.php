@@ -11,15 +11,11 @@ use OCA\Files_External\Lib\StorageConfig;
 
 class ExternalMountPoint extends MountPoint {
 
-	public function __construct(
-		protected StorageConfig $storageConfig,
-		$storage,
-		$mountpoint,
-		$arguments = null,
-		$loader = null,
-		$mountOptions = null,
-		$mountId = null,
-	) {
+	/** @var StorageConfig */
+	protected $storageConfig;
+
+	public function __construct(StorageConfig $storageConfig, $storage, $mountpoint, $arguments = null, $loader = null, $mountOptions = null, $mountId = null) {
+		$this->storageConfig = $storageConfig;
 		parent::__construct($storage, $mountpoint, $arguments, $loader, $mountOptions, $mountId, ConfigAdapter::class);
 	}
 

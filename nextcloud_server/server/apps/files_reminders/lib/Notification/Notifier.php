@@ -14,7 +14,6 @@ use OCP\Files\FileInfo;
 use OCP\Files\IRootFolder;
 use OCP\IURLGenerator;
 use OCP\L10N\IFactory;
-use OCP\Notification\AlreadyProcessedException;
 use OCP\Notification\IAction;
 use OCP\Notification\INotification;
 use OCP\Notification\INotifier;
@@ -52,8 +51,8 @@ class Notifier implements INotifier {
 				$fileId = $params['fileId'];
 
 				$node = $this->root->getUserFolder($notification->getUser())->getFirstNodeById($fileId);
-				if ($node === null) {
-					throw new AlreadyProcessedException();
+				if (!$node) {
+					throw new UnknownNotificationException();
 				}
 
 				$path = rtrim($node->getPath(), '/');

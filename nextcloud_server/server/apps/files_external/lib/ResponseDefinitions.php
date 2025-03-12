@@ -11,8 +11,8 @@ namespace OCA\Files_External;
 
 /**
  * @psalm-type Files_ExternalStorageConfig = array{
- *     applicableGroups?: list<string>,
- *     applicableUsers?: list<string>,
+ *     applicableGroups?: string[],
+ *     applicableUsers?: string[],
  *     authMechanism: string,
  *     backend: string,
  *     backendOptions: array<string, mixed>,

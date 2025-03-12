@@ -17,9 +17,10 @@ use OCP\EventDispatcher\IEventListener;
 
 /** @template-implements IEventListener<CardCreatedEvent|CardUpdatedEvent|CardDeletedEvent> */
 class BirthdayListener implements IEventListener {
-	public function __construct(
-		private BirthdayService $birthdayService,
-	) {
+	private BirthdayService $birthdayService;
+
+	public function __construct(BirthdayService $birthdayService) {
+		$this->birthdayService = $birthdayService;
 	}
 
 	public function handle(Event $event): void {

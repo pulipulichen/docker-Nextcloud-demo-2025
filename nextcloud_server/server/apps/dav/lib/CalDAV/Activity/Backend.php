@@ -25,13 +25,27 @@ use Sabre\VObject\Reader;
  */
 class Backend {
 
-	public function __construct(
-		protected IActivityManager $activityManager,
-		protected IGroupManager $groupManager,
-		protected IUserSession $userSession,
-		protected IAppManager $appManager,
-		protected IUserManager $userManager,
-	) {
+	/** @var IActivityManager */
+	protected $activityManager;
+
+	/** @var IGroupManager */
+	protected $groupManager;
+
+	/** @var IUserSession */
+	protected $userSession;
+
+	/** @var IAppManager */
+	protected $appManager;
+
+	/** @var IUserManager */
+	protected $userManager;
+
+	public function __construct(IActivityManager $activityManager, IGroupManager $groupManager, IUserSession $userSession, IAppManager $appManager, IUserManager $userManager) {
+		$this->activityManager = $activityManager;
+		$this->groupManager = $groupManager;
+		$this->userSession = $userSession;
+		$this->appManager = $appManager;
+		$this->userManager = $userManager;
 	}
 
 	/**
@@ -119,7 +133,7 @@ class Backend {
 
 		$event = $this->activityManager->generateEvent();
 		$event->setApp('dav')
-			->setObject('calendar', (int)$calendarData['id'])
+			->setObject('calendar', (int) $calendarData['id'])
 			->setType('calendar')
 			->setAuthor($currentUser);
 
@@ -147,7 +161,7 @@ class Backend {
 					[
 						'actor' => $currentUser,
 						'calendar' => [
-							'id' => (int)$calendarData['id'],
+							'id' => (int) $calendarData['id'],
 							'uri' => $calendarData['uri'],
 							'name' => $calendarData['{DAV:}displayname'],
 						],
@@ -178,7 +192,7 @@ class Backend {
 
 		$event = $this->activityManager->generateEvent();
 		$event->setApp('dav')
-			->setObject('calendar', (int)$calendarData['id'])
+			->setObject('calendar', (int) $calendarData['id'])
 			->setType('calendar')
 			->setAuthor($currentUser);
 
@@ -203,7 +217,7 @@ class Backend {
 					$parameters = [
 						'actor' => $event->getAuthor(),
 						'calendar' => [
-							'id' => (int)$calendarData['id'],
+							'id' => (int) $calendarData['id'],
 							'uri' => $calendarData['uri'],
 							'name' => $calendarData['{DAV:}displayname'],
 						],
@@ -232,7 +246,7 @@ class Backend {
 				$parameters = [
 					'actor' => $event->getAuthor(),
 					'calendar' => [
-						'id' => (int)$calendarData['id'],
+						'id' => (int) $calendarData['id'],
 						'uri' => $calendarData['uri'],
 						'name' => $calendarData['{DAV:}displayname'],
 					],
@@ -274,7 +288,7 @@ class Backend {
 					$parameters = [
 						'actor' => $event->getAuthor(),
 						'calendar' => [
-							'id' => (int)$calendarData['id'],
+							'id' => (int) $calendarData['id'],
 							'uri' => $calendarData['uri'],
 							'name' => $calendarData['{DAV:}displayname'],
 						],
@@ -301,7 +315,7 @@ class Backend {
 				$parameters = [
 					'actor' => $event->getAuthor(),
 					'calendar' => [
-						'id' => (int)$calendarData['id'],
+						'id' => (int) $calendarData['id'],
 						'uri' => $calendarData['uri'],
 						'name' => $calendarData['{DAV:}displayname'],
 					],
@@ -379,7 +393,7 @@ class Backend {
 				[
 					'actor' => $event->getAuthor(),
 					'calendar' => [
-						'id' => (int)$properties['id'],
+						'id' => (int) $properties['id'],
 						'uri' => $properties['uri'],
 						'name' => $properties['{DAV:}displayname'],
 					],
@@ -429,7 +443,7 @@ class Backend {
 
 		$event = $this->activityManager->generateEvent();
 		$event->setApp('dav')
-			->setObject('calendar', (int)$calendarData['id'])
+			->setObject('calendar', (int) $calendarData['id'])
 			->setType($object['type'] === 'event' ? 'calendar_event' : 'calendar_todo')
 			->setAuthor($currentUser);
 
@@ -446,7 +460,7 @@ class Backend {
 			$params = [
 				'actor' => $event->getAuthor(),
 				'calendar' => [
-					'id' => (int)$calendarData['id'],
+					'id' => (int) $calendarData['id'],
 					'uri' => $calendarData['uri'],
 					'name' => $calendarData['{DAV:}displayname'],
 				],
@@ -520,7 +534,7 @@ class Backend {
 
 		$event = $this->activityManager->generateEvent();
 		$event->setApp('dav')
-			->setObject('calendar', (int)$targetCalendarData['id'])
+			->setObject('calendar', (int) $targetCalendarData['id'])
 			->setType($object['type'] === 'event' ? 'calendar_event' : 'calendar_todo')
 			->setAuthor($currentUser);
 
@@ -537,12 +551,12 @@ class Backend {
 			$params = [
 				'actor' => $event->getAuthor(),
 				'sourceCalendar' => [
-					'id' => (int)$sourceCalendarData['id'],
+					'id' => (int) $sourceCalendarData['id'],
 					'uri' => $sourceCalendarData['uri'],
 					'name' => $sourceCalendarData['{DAV:}displayname'],
 				],
 				'targetCalendar' => [
-					'id' => (int)$targetCalendarData['id'],
+					'id' => (int) $targetCalendarData['id'],
 					'uri' => $targetCalendarData['uri'],
 					'name' => $targetCalendarData['{DAV:}displayname'],
 				],
@@ -589,9 +603,9 @@ class Backend {
 		}
 
 		if ($componentType === 'VEVENT') {
-			return ['id' => (string)$component->UID, 'name' => (string)$component->SUMMARY, 'type' => 'event'];
+			return ['id' => (string) $component->UID, 'name' => (string) $component->SUMMARY, 'type' => 'event'];
 		}
-		return ['id' => (string)$component->UID, 'name' => (string)$component->SUMMARY, 'type' => 'todo', 'status' => (string)$component->STATUS];
+		return ['id' => (string) $component->UID, 'name' => (string) $component->SUMMARY, 'type' => 'todo', 'status' => (string) $component->STATUS];
 	}
 
 	/**

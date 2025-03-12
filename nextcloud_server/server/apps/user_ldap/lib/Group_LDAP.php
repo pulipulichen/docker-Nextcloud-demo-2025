@@ -31,19 +31,24 @@ class Group_LDAP extends ABackend implements GroupInterface, IGroupLDAP, IGetDis
 	protected CappedMemoryCache $cachedGroupsByMember;
 	/** @var CappedMemoryCache<string[]> $cachedNestedGroups array of groups with gid (DN) as key */
 	protected CappedMemoryCache $cachedNestedGroups;
+	protected GroupPluginManager $groupPluginManager;
 	protected LoggerInterface $logger;
+	protected Access $access;
 
 	/**
 	 * @var string $ldapGroupMemberAssocAttr contains the LDAP setting (in lower case) with the same name
 	 */
 	protected string $ldapGroupMemberAssocAttr;
+	private IConfig $config;
+	private IUserManager $ncUserManager;
 
 	public function __construct(
-		protected Access $access,
-		protected GroupPluginManager $groupPluginManager,
-		private IConfig $config,
-		private IUserManager $ncUserManager,
+		Access $access,
+		GroupPluginManager $groupPluginManager,
+		IConfig $config,
+		IUserManager $ncUserManager
 	) {
+		$this->access = $access;
 		$filter = $this->access->connection->ldapGroupFilter;
 		$gAssoc = $this->access->connection->ldapGroupMemberAssocAttr;
 		if (!empty($filter) && !empty($gAssoc)) {
@@ -53,8 +58,11 @@ class Group_LDAP extends ABackend implements GroupInterface, IGroupLDAP, IGetDis
 		$this->cachedGroupMembers = new CappedMemoryCache();
 		$this->cachedGroupsByMember = new CappedMemoryCache();
 		$this->cachedNestedGroups = new CappedMemoryCache();
+		$this->groupPluginManager = $groupPluginManager;
 		$this->logger = Server::get(LoggerInterface::class);
 		$this->ldapGroupMemberAssocAttr = strtolower((string)$gAssoc);
+		$this->config = $config;
+		$this->ncUserManager = $ncUserManager;
 	}
 
 	/**
@@ -446,7 +454,7 @@ class Group_LDAP extends ABackend implements GroupInterface, IGroupLDAP, IGetDis
 		string $groupDN,
 		string $search = '',
 		?int $limit = -1,
-		?int $offset = 0,
+		?int $offset = 0
 	): array {
 		try {
 			$filter = $this->prepareFilterForUsersHasGidNumber($groupDN, $search);
@@ -570,7 +578,7 @@ class Group_LDAP extends ABackend implements GroupInterface, IGroupLDAP, IGetDis
 		string $groupDN,
 		string $search = '',
 		?int $limit = -1,
-		?int $offset = 0,
+		?int $offset = 0
 	): array {
 		try {
 			$filter = $this->prepareFilterForUsersInPrimaryGroup($groupDN, $search);
@@ -595,7 +603,7 @@ class Group_LDAP extends ABackend implements GroupInterface, IGroupLDAP, IGetDis
 		string $groupDN,
 		string $search = '',
 		int $limit = -1,
-		int $offset = 0,
+		int $offset = 0
 	): int {
 		try {
 			$filter = $this->prepareFilterForUsersInPrimaryGroup($groupDN, $search);
@@ -638,10 +646,6 @@ class Group_LDAP extends ABackend implements GroupInterface, IGroupLDAP, IGetDis
 		return false;
 	}
 
-	/**
-	 * @param string $uid
-	 * @return list<string>
-	 */
 	protected function getCachedGroupsForUserId(string $uid): array {
 		$groupStr = $this->config->getUserValue($uid, 'user_ldap', 'cached-group-memberships-' . $this->access->connection->getConfigPrefix(), '[]');
 		return json_decode($groupStr, true) ?? [];
@@ -654,7 +658,7 @@ class Group_LDAP extends ABackend implements GroupInterface, IGroupLDAP, IGetDis
 	 * This function includes groups based on dynamic group membership.
 	 *
 	 * @param string $uid Name of the user
-	 * @return list<string> Group names
+	 * @return string[] Group names
 	 * @throws Exception
 	 * @throws ServerNotAvailableException
 	 */
@@ -1178,7 +1182,7 @@ class Group_LDAP extends ABackend implements GroupInterface, IGroupLDAP, IGetDis
 				continue;
 			}
 			$name = $item[$this->access->connection->ldapGroupDisplayName][0] ?? null;
-			$gid = $this->access->dn2groupname($dn, $name, false);
+			$gid = $this->access->dn2groupname($dn, $name);
 			if (!$gid) {
 				continue;
 			}
@@ -1254,7 +1258,7 @@ class Group_LDAP extends ABackend implements GroupInterface, IGroupLDAP, IGetDis
 			if ($ret = $this->groupPluginManager->deleteGroup($gid)) {
 				// Delete group in nextcloud internal db
 				$this->access->getGroupMapper()->unmap($gid);
-				$this->access->connection->writeToCache('groupExists' . $gid, false);
+				$this->access->connection->writeToCache("groupExists" . $gid, false);
 			}
 			return $ret;
 		}
@@ -1262,17 +1266,17 @@ class Group_LDAP extends ABackend implements GroupInterface, IGroupLDAP, IGetDis
 		// Getting dn, if false the group is not mapped
 		$dn = $this->access->groupname2dn($gid);
 		if (!$dn) {
-			throw new Exception('Could not delete unknown group ' . $gid . ' in LDAP backend.');
+			throw new Exception('Could not delete unknown group '.$gid.' in LDAP backend.');
 		}
 
 		if (!$this->groupExists($gid)) {
 			// The group does not exist in the LDAP, remove the mapping
 			$this->access->getGroupMapper()->unmap($gid);
-			$this->access->connection->writeToCache('groupExists' . $gid, false);
+			$this->access->connection->writeToCache("groupExists" . $gid, false);
 			return true;
 		}
 
-		throw new Exception('Could not delete existing group ' . $gid . ' in LDAP backend.');
+		throw new Exception('Could not delete existing group '.$gid.' in LDAP backend.');
 	}
 
 	/**

@@ -10,10 +10,12 @@ use OCP\IConfig;
 use OCP\User\IAvailabilityCoordinator;
 
 class Capabilities implements ICapability {
-	public function __construct(
-		private IConfig $config,
-		private IAvailabilityCoordinator $coordinator,
-	) {
+	private IConfig $config;
+	private IAvailabilityCoordinator $coordinator;
+
+	public function __construct(IConfig $config, IAvailabilityCoordinator $coordinator) {
+		$this->config = $config;
+		$this->coordinator = $coordinator;
 	}
 
 	/**

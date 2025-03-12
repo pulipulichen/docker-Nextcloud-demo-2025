@@ -7,7 +7,6 @@
 namespace OCA\Files_External\Lib\Auth\Password;
 
 use OCA\Files_External\Lib\Auth\AuthMechanism;
-use OCA\Files_External\Lib\DefinitionParameter;
 use OCA\Files_External\Lib\InsufficientDataForMeaningfulAnswerException;
 use OCA\Files_External\Lib\StorageConfig;
 use OCA\Files_External\Listener\StorePasswordListener;
@@ -29,21 +28,36 @@ use OCP\User\Events\UserLoggedInEvent;
 class LoginCredentials extends AuthMechanism {
 	public const CREDENTIALS_IDENTIFIER = 'password::logincredentials/credentials';
 
+	/** @var ISession */
+	protected $session;
+
+	/** @var ICredentialsManager */
+	protected $credentialsManager;
+
+	/** @var CredentialsStore */
+	private $credentialsStore;
+
+	/** @var ILDAPProviderFactory */
+	private $ldapFactory;
+
 	public function __construct(
 		IL10N $l,
-		protected ISession $session,
-		protected ICredentialsManager $credentialsManager,
-		private CredentialsStore $credentialsStore,
+		ISession $session,
+		ICredentialsManager $credentialsManager,
+		CredentialsStore $credentialsStore,
 		IEventDispatcher $eventDispatcher,
-		private ILDAPProviderFactory $ldapFactory,
+		ILDAPProviderFactory $ldapFactory
 	) {
+		$this->session = $session;
+		$this->credentialsManager = $credentialsManager;
+		$this->credentialsStore = $credentialsStore;
+		$this->ldapFactory = $ldapFactory;
+
 		$this
 			->setIdentifier('password::logincredentials')
 			->setScheme(self::SCHEME_PASSWORD)
 			->setText($l->t('Log-in credentials, save in database'))
 			->addParameters([
-				(new DefinitionParameter('password', $l->t('Password')))
-					->setType(DefinitionParameter::VALUE_PASSWORD),
 			]);
 
 		$eventDispatcher->addServiceListener(UserLoggedInEvent::class, StorePasswordListener::class);
@@ -86,7 +100,7 @@ class LoginCredentials extends AuthMechanism {
 		}
 		$credentials = $this->getCredentials($user);
 
-		$loginKey = $storage->getBackendOption('login_ldap_attr');
+		$loginKey = $storage->getBackendOption("login_ldap_attr");
 		if ($loginKey) {
 			$backend = $user->getBackend();
 			if ($backend instanceof IUserBackend && $backend->getBackendName() === 'LDAP') {

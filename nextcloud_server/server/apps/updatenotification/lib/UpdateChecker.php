@@ -10,15 +10,19 @@ namespace OCA\UpdateNotification;
 
 use OC\Updater\ChangesCheck;
 use OC\Updater\VersionCheck;
-use OCP\AppFramework\Services\IInitialState;
 
 class UpdateChecker {
+	/** @var VersionCheck */
+	private $updater;
+	/** @var ChangesCheck */
+	private $changesCheck;
 
-	public function __construct(
-		private VersionCheck $updater,
-		private ChangesCheck $changesCheck,
-		private IInitialState $initialState,
-	) {
+	/**
+	 * @param VersionCheck $updater
+	 */
+	public function __construct(VersionCheck $updater, ChangesCheck $changesCheck) {
+		$this->updater = $updater;
+		$this->changesCheck = $changesCheck;
 	}
 
 	/**
@@ -55,17 +59,13 @@ class UpdateChecker {
 	}
 
 	/**
-	 * Provide update information as initial state
+	 * @param array $data
 	 */
-	public function setInitialState(): void {
-		$updateState = $this->getUpdateState();
-		if (empty($updateState)) {
-			return;
-		}
-
-		$this->initialState->provideInitialState('updateState', [
-			'updateVersion' => $updateState['updateVersionString'],
-			'updateLink' => $updateState['updateLink'] ?? '',
+	public function populateJavaScriptVariables(array $data) {
+		$data['array']['oc_updateState'] = json_encode([
+			'updateAvailable' => true,
+			'updateVersion' => $this->getUpdateState()['updateVersionString'],
+			'updateLink' => $this->getUpdateState()['updateLink'] ?? '',
 		]);
 	}
 }

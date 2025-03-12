@@ -44,9 +44,6 @@ script('settings', [
 		<div id="vue-displayname-section"></div>
 	</div>
 	<div class="personal-settings-setting-box">
-		<div id="vue-pronouns-section"></div>
-	</div>
-	<div class="personal-settings-setting-box">
 		<div id="vue-email-section"></div>
 	</div>
 	<div class="personal-settings-setting-box">

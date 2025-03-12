@@ -11,7 +11,6 @@ namespace OCA\Files\Listener;
 use OCA\Files\Event\LoadSearchPlugins;
 use OCP\EventDispatcher\Event;
 use OCP\EventDispatcher\IEventListener;
-use OCP\Util;
 
 /** @template-implements IEventListener<LoadSearchPlugins> */
 class LoadSearchPluginsListener implements IEventListener {
@@ -20,6 +19,6 @@ class LoadSearchPluginsListener implements IEventListener {
 			return;
 		}
 
-		Util::addScript('files', 'search');
+		\OCP\Util::addScript('files', 'search');
 	}
 }

@@ -41,12 +41,11 @@ class InternetConnectivity implements ISetupCheck {
 		}
 
 		$siteArray = $this->config->getSystemValue('connectivity_check_domains', [
-			'https://www.nextcloud.com', 'https://www.startpage.com', 'https://www.eff.org', 'https://www.edri.org'
+			'www.nextcloud.com', 'www.startpage.com', 'www.eff.org', 'www.edri.org'
 		]);
 
 		foreach ($siteArray as $site) {
 			if ($this->isSiteReachable($site)) {
-				// successful as soon as one connection succeeds
 				return SetupResult::success();
 			}
 		}
@@ -56,18 +55,19 @@ class InternetConnectivity implements ISetupCheck {
 	/**
 	 * Checks if the Nextcloud server can connect to a specific URL
 	 * @param string $site site domain or full URL with http/https protocol
-	 * @return bool success/failure
 	 */
 	private function isSiteReachable(string $site): bool {
-		// if there is no protocol specified, test http:// first then, if necessary, https://
-		if (preg_match('/^https?:\/\//', $site) !== 1) {
-			$httpSite = 'http://' . $site . '/';
-			$httpsSite = 'https://' . $site . '/';
-			return $this->isSiteReachable($httpSite) || $this->isSiteReachable($httpsSite);
-		}
 		try {
 			$client = $this->clientService->newClient();
-			$client->get($site);
+			// if there is no protocol, test http:// AND https://
+			if (preg_match('/^https?:\/\//', $site) !== 1) {
+				$httpSite = 'http://' . $site . '/';
+				$client->get($httpSite);
+				$httpsSite = 'https://' . $site . '/';
+				$client->get($httpsSite);
+			} else {
+				$client->get($site);
+			}
 		} catch (\Exception $e) {
 			$this->logger->error('Cannot connect to: ' . $site, [
 				'app' => 'internet_connection_check',

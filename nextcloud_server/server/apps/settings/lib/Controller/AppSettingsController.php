@@ -6,7 +6,6 @@
  */
 namespace OCA\Settings\Controller;
 
-use OC\App\AppManager;
 use OC\App\AppStore\Bundles\BundleFetcher;
 use OC\App\AppStore\Fetcher\AppDiscoverFetcher;
 use OC\App\AppStore\Fetcher\AppFetcher;
@@ -15,8 +14,9 @@ use OC\App\AppStore\Version\VersionParser;
 use OC\App\DependencyAnalyzer;
 use OC\App\Platform;
 use OC\Installer;
-use OCA\AppAPI\Service\ExAppsPageService;
+use OC_App;
 use OCP\App\AppPathNotFoundException;
+use OCP\App\IAppManager;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\Attribute\NoCSRFRequired;
@@ -38,15 +38,12 @@ use OCP\Files\SimpleFS\ISimpleFile;
 use OCP\Files\SimpleFS\ISimpleFolder;
 use OCP\Http\Client\IClientService;
 use OCP\IConfig;
-use OCP\IGroup;
-use OCP\IGroupManager;
 use OCP\IL10N;
 use OCP\INavigationManager;
 use OCP\IRequest;
 use OCP\IURLGenerator;
 use OCP\L10N\IFactory;
 use OCP\Server;
-use OCP\Util;
 use Psr\Log\LoggerInterface;
 
 #[OpenAPI(scope: OpenAPI::SCOPE_IGNORE)]
@@ -64,7 +61,7 @@ class AppSettingsController extends Controller {
 		private IL10N $l10n,
 		private IConfig $config,
 		private INavigationManager $navigationManager,
-		private AppManager $appManager,
+		private IAppManager $appManager,
 		private CategoryFetcher $categoryFetcher,
 		private AppFetcher $appFetcher,
 		private IFactory $l10nFactory,
@@ -94,9 +91,9 @@ class AppSettingsController extends Controller {
 		$this->initialState->provideInitialState('appstoreDeveloperDocs', $this->urlGenerator->linkToDocs('developer-manual'));
 		$this->initialState->provideInitialState('appstoreUpdateCount', count($this->getAppsWithUpdates()));
 
-		if ($this->appManager->isEnabledForAnyone('app_api')) {
+		if ($this->appManager->isInstalled('app_api')) {
 			try {
-				Server::get(ExAppsPageService::class)->provideAppApiState($this->initialState);
+				Server::get(\OCA\AppAPI\Service\ExAppsPageService::class)->provideAppApiState($this->initialState);
 			} catch (\Psr\Container\NotFoundExceptionInterface|\Psr\Container\ContainerExceptionInterface $e) {
 			}
 		}
@@ -107,8 +104,8 @@ class AppSettingsController extends Controller {
 		$templateResponse = new TemplateResponse('settings', 'settings/empty', ['pageTitle' => $this->l10n->t('Settings')]);
 		$templateResponse->setContentSecurityPolicy($policy);
 
-		Util::addStyle('settings', 'settings');
-		Util::addScript('settings', 'vue-settings-apps-users-management');
+		\OCP\Util::addStyle('settings', 'settings');
+		\OCP\Util::addScript('settings', 'vue-settings-apps-users-management');
 
 		return $templateResponse;
 	}
@@ -442,7 +439,7 @@ class AppSettingsController extends Controller {
 			}
 
 			$currentVersion = '';
-			if ($this->appManager->isEnabledForAnyone($app['id'])) {
+			if ($this->appManager->isInstalled($app['id'])) {
 				$currentVersion = $this->appManager->getAppVersion($app['id']);
 			} else {
 				$currentVersion = $app['releases'][0]['version'];
@@ -476,7 +473,7 @@ class AppSettingsController extends Controller {
 				'missingMaxOwnCloudVersion' => false,
 				'missingMinOwnCloudVersion' => false,
 				'canInstall' => true,
-				'screenshot' => isset($app['screenshots'][0]['url']) ? 'https://usercontent.apps.nextcloud.com/' . base64_encode($app['screenshots'][0]['url']) : '',
+				'screenshot' => isset($app['screenshots'][0]['url']) ? 'https://usercontent.apps.nextcloud.com/'.base64_encode($app['screenshots'][0]['url']) : '',
 				'score' => $app['ratingOverall'],
 				'ratingNumOverall' => $app['ratingNumOverall'],
 				'ratingNumThresholdReached' => $app['ratingNumOverall'] > 5,
@@ -517,11 +514,11 @@ class AppSettingsController extends Controller {
 			$updateRequired = false;
 
 			foreach ($appIds as $appId) {
-				$appId = $this->appManager->cleanAppId($appId);
+				$appId = OC_App::cleanAppId($appId);
 
 				// Check if app is already downloaded
 				/** @var Installer $installer */
-				$installer = Server::get(Installer::class);
+				$installer = \OC::$server->get(Installer::class);
 				$isDownloaded = $installer->isDownloaded($appId);
 
 				if (!$isDownloaded) {
@@ -547,11 +544,11 @@ class AppSettingsController extends Controller {
 	}
 
 	private function getGroupList(array $groups) {
-		$groupManager = Server::get(IGroupManager::class);
+		$groupManager = \OC::$server->getGroupManager();
 		$groupsList = [];
 		foreach ($groups as $group) {
 			$groupItem = $groupManager->get($group);
-			if ($groupItem instanceof IGroup) {
+			if ($groupItem instanceof \OCP\IGroup) {
 				$groupsList[] = $groupManager->get($group);
 			}
 		}
@@ -575,7 +572,7 @@ class AppSettingsController extends Controller {
 	public function disableApps(array $appIds): JSONResponse {
 		try {
 			foreach ($appIds as $appId) {
-				$appId = $this->appManager->cleanAppId($appId);
+				$appId = OC_App::cleanAppId($appId);
 				$this->appManager->disableApp($appId);
 			}
 			return new JSONResponse([]);
@@ -591,11 +588,9 @@ class AppSettingsController extends Controller {
 	 */
 	#[PasswordConfirmationRequired]
 	public function uninstallApp(string $appId): JSONResponse {
-		$appId = $this->appManager->cleanAppId($appId);
+		$appId = OC_App::cleanAppId($appId);
 		$result = $this->installer->removeApp($appId);
 		if ($result !== false) {
-			// If this app was force enabled, remove the force-enabled-state
-			$this->appManager->removeOverwriteNextcloudRequirement($appId);
 			$this->appManager->clearAppsCache();
 			return new JSONResponse(['data' => ['appid' => $appId]]);
 		}
@@ -607,7 +602,7 @@ class AppSettingsController extends Controller {
 	 * @return JSONResponse
 	 */
 	public function updateApp(string $appId): JSONResponse {
-		$appId = $this->appManager->cleanAppId($appId);
+		$appId = OC_App::cleanAppId($appId);
 
 		$this->config->setSystemValue('maintenance', true);
 		try {
@@ -634,8 +629,8 @@ class AppSettingsController extends Controller {
 	}
 
 	public function force(string $appId): JSONResponse {
-		$appId = $this->appManager->cleanAppId($appId);
-		$this->appManager->overwriteNextcloudRequirement($appId);
+		$appId = OC_App::cleanAppId($appId);
+		$this->appManager->ignoreNextcloudRequirementForApp($appId);
 		return new JSONResponse();
 	}
 }

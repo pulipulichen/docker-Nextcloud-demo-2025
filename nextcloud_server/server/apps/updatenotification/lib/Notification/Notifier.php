@@ -20,10 +20,27 @@ use OCP\Notification\IManager;
 use OCP\Notification\INotification;
 use OCP\Notification\INotifier;
 use OCP\Notification\UnknownNotificationException;
-use OCP\Server;
 use OCP\Util;
 
 class Notifier implements INotifier {
+	/** @var IURLGenerator */
+	protected $url;
+
+	/** @var IConfig */
+	protected $config;
+
+	/** @var IManager */
+	protected $notificationManager;
+
+	/** @var IFactory */
+	protected $l10NFactory;
+
+	/** @var IUserSession */
+	protected $userSession;
+
+	/** @var IGroupManager */
+	protected $groupManager;
+
 	/** @var string[] */
 	protected $appVersions;
 
@@ -37,14 +54,13 @@ class Notifier implements INotifier {
 	 * @param IUserSession $userSession
 	 * @param IGroupManager $groupManager
 	 */
-	public function __construct(
-		protected IURLGenerator $url,
-		protected IConfig $config,
-		protected IManager $notificationManager,
-		protected IFactory $l10NFactory,
-		protected IUserSession $userSession,
-		protected IGroupManager $groupManager,
-	) {
+	public function __construct(IURLGenerator $url, IConfig $config, IManager $notificationManager, IFactory $l10NFactory, IUserSession $userSession, IGroupManager $groupManager) {
+		$this->url = $url;
+		$this->notificationManager = $notificationManager;
+		$this->config = $config;
+		$this->l10NFactory = $l10NFactory;
+		$this->userSession = $userSession;
+		$this->groupManager = $groupManager;
 		$this->appVersions = $this->getAppVersions();
 	}
 
@@ -87,7 +103,7 @@ class Notifier implements INotifier {
 
 		$l = $this->l10NFactory->get('updatenotification', $languageCode);
 		if ($notification->getSubject() === 'connection_error') {
-			$errors = (int)$this->config->getAppValue('updatenotification', 'update_check_errors', '0');
+			$errors = (int) $this->config->getAppValue('updatenotification', 'update_check_errors', '0');
 			if ($errors === 0) {
 				throw new AlreadyProcessedException();
 			}
@@ -172,6 +188,6 @@ class Notifier implements INotifier {
 	}
 
 	protected function getAppInfo($appId, $languageCode) {
-		return Server::get(IAppManager::class)->getAppInfo($appId, false, $languageCode);
+		return \OCP\Server::get(IAppManager::class)->getAppInfo($appId, false, $languageCode);
 	}
 }

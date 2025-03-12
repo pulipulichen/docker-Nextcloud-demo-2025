@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>搜尋結果 - 資料庫專業網站</title>
+  <!-- 引入 Semantic UI CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
+  <style>
+    /* 全域 Reset 與基本樣式 */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      background: #f8f8f8;
+      color: #333;
+    }
+    /* 頁首區塊 */
+    .header-section {
+      /* background: #006093; */
+      background: url('coding-1841550_1280.jpg') no-repeat center center/cover;
+      padding: 40px 20px;
+      text-align: center;
+      color: #fff;
+    }
+    .header-section h1 {
+      font-size: 3rem;
+      margin-bottom: 20px;
+    }
+    .search-box {
+      max-width: 600px;
+      margin: 0 auto;
+      display: flex;
+    }
+    .search-box input[type="text"] {
+      flex: 1;
+      padding: 10px;
+      font-size: 1.2rem;
+      border: none;
+      border-radius: 5px 0 0 5px;
+    }
+    .search-box button {
+      padding: 10px 20px;
+      font-size: 1.2rem;
+      border: none;
+      background: #17a2b8;
+      color: #fff;
+      border-radius: 0 5px 5px 0;
+      cursor: pointer;
+    }
+    /* 搜尋結果區塊 */
+    .results-section {
+      max-width: 1000px;
+      margin: 20px auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .result-item {
+      border-bottom: 1px solid #ddd;
+      padding: 15px 0;
+    }
+    .result-item:last-child {
+      border-bottom: none;
+    }
+    .result-item h3 {
+      font-size: 1.8rem;
+      margin-bottom: 10px;
+      color: #007BFF;
+    }
+    .result-item p {
+      font-size: 1rem;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <!-- 頁首：包含標題與搜尋框 -->
+  <section class="header-section">
+    <h1>搜尋結果</h1>
+    <div class="search-box">
+      <input type="text" placeholder="搜尋資料庫相關資訊...">
+      <button>搜尋</button>
+    </div>
+  </section>
+
+  <!-- 搜尋結果列表 -->
+  <section class="results-section">
+    <div class="result-item">
+      <h3>搜尋結果標題 1</h3>
+      <p>這是一段關於搜尋結果 1 的描述文字，提供使用者一些基本的資訊。</p>
+    </div>
+    <div class="result-item">
+      <h3>搜尋結果標題 2</h3>
+      <p>這是一段關於搜尋結果 2 的描述文字，提供使用者一些基本的資訊。</p>
+    </div>
+    <div class="result-item">
+      <h3>搜尋結果標題 3</h3>
+      <p>這是一段關於搜尋結果 3 的描述文字，提供使用者一些基本的資訊。</p>
+    </div>
+  </section>
+</body>
+</html>

@@ -44,7 +44,8 @@ watch_apps() {
   inotifywait -m -r -e modify,create,delete,move "$DIR" --format '%w%f' | while read FILE
   do
       echo "檔案變更偵測到：$FILE，執行同步..."
-      rsync -a "$DIR" "$DEST$DIRNAME"
+      cp -f "$FILE" "/var/www$FILE"
+      # rsync -a "$DIR" "$DEST$DIRNAME"
     #   echo "同步完成！"
   done
 }

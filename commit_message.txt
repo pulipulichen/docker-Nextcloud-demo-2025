@@ -1,1 +1,1 @@
-處理APP MENU順序的問題：修正強制訪客登入的功能。
+處理APP MENU順序的問題：custom_theme連結錯誤。

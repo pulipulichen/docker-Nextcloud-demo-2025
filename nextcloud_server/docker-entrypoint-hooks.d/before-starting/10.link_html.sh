@@ -28,7 +28,7 @@ for DIR in "${TARGET_DIRS[@]}"; do
                 mv "/var/www/html/$DIR.bak" "/var/www/html/$DIR"
             fi
         else
-            # 如果 /var/www/html/$DIR 存在，則刪除
+            # 如果 /var/www/html/$DIR 存在，則改名
             if [ -e "/var/www/html/$DIR" ]; then
                 # rm -rf "/var/www/html/$DIR"
                 mv "/var/www/html/$DIR" "/var/www/html/$DIR.bak"

@@ -59,7 +59,7 @@ move_files_event() {
 
 watch_files() {
 
-  sleep 10
+  # sleep 10
 
   rm -rf $DEST/*
   
@@ -92,3 +92,4 @@ watch_files() {
 }
 
 watch_files &
+sleep 10

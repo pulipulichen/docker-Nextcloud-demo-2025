@@ -72,8 +72,9 @@ class NavigationManager implements INavigationManager {
 		}
 		$this->init();
 
-		$id = $entry['id'];
 
+		$id = $entry['id'];
+		
 		$entry['active'] = false;
 		$entry['unread'] = $this->unreadCounters[$id] ?? 0;
 		if (!isset($entry['icon'])) {
@@ -96,6 +97,13 @@ class NavigationManager implements INavigationManager {
 			$entry['default'] = ($entry['app'] ?? false) === $this->defaultApp;
 			// Set order from user defined app order
 			$entry['order'] = (int)($this->customAppOrder[$id]['order'] ?? $entry['order'] ?? 100);
+
+			// 20250313-0343 Pulipuli Chen
+			// 強制讓files排到最後
+			if ($id == "files") {
+				$entry['order'] = 99;
+			}
+
 		}
 
 		$this->entries[$id] = $entry;

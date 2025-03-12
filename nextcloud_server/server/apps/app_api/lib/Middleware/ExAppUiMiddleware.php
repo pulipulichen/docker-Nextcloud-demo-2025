@@ -43,6 +43,7 @@ class ExAppUiMiddleware extends Middleware {
 			$exAppId = $this->request->getParam('appId');
 			$menuEntryName = $this->request->getParam('name');
 			// Setting Navigation active entry manually because they have been added dynamically with custom id
+			// echo Application::APP_ID;
 			$this->navigationManager->setActiveEntry(Application::APP_ID . '_' . $exAppId . '_' . $menuEntryName);
 		}
 		return $response;

@@ -20,17 +20,26 @@ if [ ! -d "$DEST" ]; then
     exit 1
 fi
 
-watch_apps() {
+watch_apps_prepare() {
   local DIR=$1
   local DIRNAME=$(basename $DIR)
 
   echo "開始監控 $DIR"
   echo "目標是   $DEST$DIRNAME"
 
-  sleep 10
+#   sleep 10
 
+  if [ ! -d "$DEST$DIRNAME.bak" ]; then
+    cp -rf "$DEST$DIRNAME" "$DEST$DIRNAME.bak"
+  fi
 
   rsync -a "$DIR" "$DEST$DIRNAME"
+}
+
+watch_apps() {
+  local DIR=$1
+  local DIRNAME=$(basename $DIR)
+
   # 監控目錄變更
   inotifywait -m -r -e modify,create,delete,move "$DIR" --format '%w%f' | while read FILE
   do
@@ -46,8 +55,12 @@ watch_apps() {
 for dir in "$SRC"*/; do
     # 確保變數 dir 是目錄
     if [ -d "$dir" ]; then
+
         # echo "發現子目錄：$dir"
         # 這裡可以執行你的同步指令，例如 rsync
+        watch_apps_prepare "$dir"
         watch_apps "$dir" &
     fi
 done
+
+sleep 10

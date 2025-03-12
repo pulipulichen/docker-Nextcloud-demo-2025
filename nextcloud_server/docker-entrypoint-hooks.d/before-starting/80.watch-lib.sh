@@ -20,26 +20,40 @@ if [ ! -d "$DEST" ]; then
     exit 1
 fi
 
-watch_lib() {
+watch_lib_prepare() {
   local DIR=$1
 
-  sleep 10
+  # sleep 10
 
   echo "開始監控 $SRC$DIR"
   echo "目標是   $DEST$DIR"
 
+  if [ ! -d "$DEST$DIR.bak" ]; then
+    cp -rf "$DEST$DIR" "$DEST$DIR.bak"
+  fi
+
   rsync -a "$SRC$DIR" "$DEST$DIR"
-  # 監控目錄變更
-  inotifywait -m -r -e modify,create,delete,move "$SRC$DIR" --format '%w%f' | while read FILE
-  do
-      echo "[watch-lib] 檔案變更偵測到：$FILE，執行同步... ( $USER )"
-      rsync -a "$SRC$DIR" "$DEST$DIR"
-    #   echo "同步完成！"
-  done
 }
 
+watch_lib() {
+  local DIR=$1
+
+  # sleep 10
+
+  echo "開始監控 $SRC$DIR"
+  echo "目標是   $DEST$DIR"
+
+  if [ ! -d "$DEST$DIR.bak" ]; then
+    cp -rf "$DEST$DIR" "$DEST$DIR.bak"
+  fi
+
+  rsync -a "$SRC$DIR" "$DEST$DIR"
+}
 
 TARGET_DIRS=("l10n" "private" "public")
 for DIR in "${TARGET_DIRS[@]}"; do
+  watch_lib_prepare $DIR &
   watch_lib $DIR &
 done
+
+sleep 10

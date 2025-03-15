@@ -23,7 +23,7 @@ watch_apps_prepare() {
     cp -rf "$DEST$DIRNAME" "$DEST$DIRNAME.bak"
   fi
 
-  rsync -avh -I --progress "$DIR/" "$DEST$DIRNAME/"
+  rsync -a -I --progress "$DIR/" "$DEST$DIRNAME/"
   # cp -rf "$DIR/*" "$DEST$DIRNAME"
 }
 

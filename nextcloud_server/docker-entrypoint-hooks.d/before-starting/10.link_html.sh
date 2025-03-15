@@ -29,12 +29,12 @@ for DIR in "${TARGET_DIRS[@]}"; do
             fi
         else
             # 如果 /var/www/html/$DIR 存在，則改名
-            if [ -e "/var/www/html/$DIR" ]; then
+            if [ -e "/var/www/html/$DIR" ] && [ ! -L "/var/www/html/$DIR" ]; then
                 # rm -rf "/var/www/html/$DIR"
                 mv "/var/www/html/$DIR" "/var/www/html/$DIR.bak"
             fi
-            # 建立符號連結
-            ln -s "/html/$DIR" "/var/www/html/$DIR"
+            # 複製檔案
+            ln -s "/html/$DIR" "/var/www/html/"
             # chown www-data:www-data -R /html/$DIR
             echo "Linking is successful: /html/$DIR -> /var/www/html/$DIR"
         fi

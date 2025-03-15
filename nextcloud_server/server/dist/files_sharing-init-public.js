@@ -914,4 +914,4 @@ module.exports = "<svg xmlns=\"http://www.w3.org/2000/svg\" id=\"mdi-link\" view
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=files_sharing-init-public.js.map?v=55ecf50d7cfab285a8a5
+//# sourceMappingURL=files_sharing-init-public.js.map?v=19ca10b96ee4a9313f20

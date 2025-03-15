@@ -1,1 +1,1 @@
-如何預覽Doc：嘗試過onlyoffice跟collabra都失敗了。PDF換頁功能也失敗了，先這樣吧。
+來看看能不能執行PHP：無法讀取到檔案。

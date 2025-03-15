@@ -36,7 +36,7 @@ export const action = new FileAction({
 				// If this node is a folder open the folder in files
 				dir: isFolder ? node.path : node.dirname,
 				// otherwise if this is a file, we should open it
-				openfile: isFolder ? undefined : 'true',
+				openfile: isFolder ? undefined : 'true'
 			},
 		)
 		return null

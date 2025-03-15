@@ -4458,7 +4458,7 @@ var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js
 /******/ 		// This function allow to reference async chunks
 /******/ 		__webpack_require__.u = (chunkId) => {
 /******/ 			// return url for filenames based on template
-/******/ 			return "" + chunkId + "-" + chunkId + ".js?v=" + {"node_modules_nextcloud_dialogs_dist_chunks_index-Ly0obkwS_mjs":"859391c9af31fafd5b72","node_modules_nextcloud_upload_dist_chunks_InvalidFilenameDialog-C5Nkvs4v_mjs":"6e2e98825dd0cd9dce5a","node_modules_nextcloud_upload_dist_chunks_ConflictPicker-Cqb09im7_mjs":"0cb7af51536d64b7f8ae","apps_files_src_views_TemplatePicker_vue":"0d14193f776768d465eb","data_image_svg_xml_3c_21--_20-_20SPDX-FileCopyrightText_202020_20Google_20Inc_20-_20SPDX-Lice-4c340f":"2eddb4f5722e194258dc","node_modules_nextcloud_dialogs_dist_chunks_FilePicker-CSmrMOEO_mjs":"8050380b932c3e7fe5c6","node_modules_rehype-highlight_index_js":"3c5c32c691780bf457a0"}[chunkId] + "";
+/******/ 			return "" + chunkId + "-" + chunkId + ".js?v=" + {"node_modules_nextcloud_dialogs_dist_chunks_index-Ly0obkwS_mjs":"859391c9af31fafd5b72","node_modules_nextcloud_upload_dist_chunks_InvalidFilenameDialog-C5Nkvs4v_mjs":"6e2e98825dd0cd9dce5a","node_modules_nextcloud_upload_dist_chunks_ConflictPicker-Cqb09im7_mjs":"0cb7af51536d64b7f8ae","apps_files_src_views_TemplatePicker_vue":"c393f370f9cabda6a950","data_image_svg_xml_3c_21--_20-_20SPDX-FileCopyrightText_202020_20Google_20Inc_20-_20SPDX-Lice-4c340f":"2eddb4f5722e194258dc","node_modules_nextcloud_dialogs_dist_chunks_FilePicker-CSmrMOEO_mjs":"8050380b932c3e7fe5c6","node_modules_rehype-highlight_index_js":"3c5c32c691780bf457a0"}[chunkId] + "";
 /******/ 		};
 /******/ 	})();
 /******/ 	
@@ -4675,4 +4675,4 @@ var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=files-init.js.map?v=4e67e380c7bcbaa13aab
+//# sourceMappingURL=files-init.js.map?v=5e94460147598fcaa464

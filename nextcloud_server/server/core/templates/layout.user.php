@@ -30,6 +30,7 @@ p($theme->getTitle());
 ?>
 		</title>
 		<meta name="csp-nonce" nonce="<?php p($_['cspNonce']); /* Do not pass into "content" to prevent exfiltration */ ?>">
+		<script nonce="<?php p($_['cspNonce']); ?>" src="/custom_theme/js/global-script.js"></script>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0<?php if (isset($_['viewport_maximum_scale'])) {
 			p(', maximum-scale=' . $_['viewport_maximum_scale']);
 		} ?>">
@@ -92,7 +93,7 @@ p($theme->getTitle());
 		</main>
 		<div id="profiler-toolbar"></div>
 
-		<script nonce="<?php p($_['cspNonce']); ?>" src="/custom_theme/js/global-script.js"></script>
+		
 
 	</body>
 </html>

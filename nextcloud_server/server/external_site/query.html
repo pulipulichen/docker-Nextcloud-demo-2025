@@ -60,6 +60,40 @@
       border-radius: 5px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
+    .summary-box {
+      background: #f9f9f9;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-left: 4px solid #17a2b8;
+    }
+    .summary-box h2 {
+      margin-bottom: 10px;
+      color: #333;
+    }
+    .table-of-contents {
+      background: #f5f5f5;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+    }
+    .table-of-contents h3 {
+      margin-bottom: 10px;
+      font-size: 1.3rem;
+    }
+    .table-of-contents ul {
+      list-style-type: none;
+      padding-left: 10px;
+    }
+    .table-of-contents li {
+      margin-bottom: 8px;
+    }
+    .table-of-contents a {
+      color: #007BFF;
+      text-decoration: none;
+    }
+    .table-of-contents a:hover {
+      text-decoration: underline;
+    }
     .result-item {
       border-bottom: 1px solid #ddd;
       padding: 15px 0;
@@ -75,6 +109,20 @@
     .result-item p {
       font-size: 1rem;
       color: #555;
+      margin-bottom: 10px;
+    }
+    .result-item .file-link {
+      display: inline-block;
+      padding: 5px 15px;
+      background: #17a2b8;
+      color: #fff;
+      border-radius: 3px;
+      text-decoration: none;
+      font-size: 0.9rem;
+      margin-top: 5px;
+    }
+    .result-item .file-link:hover {
+      background: #138496;
     }
   </style>
 </head>
@@ -90,38 +138,82 @@
 
   <!-- 搜尋結果列表 -->
   <section class="results-section">
-    <div class="result-item">
+    <!-- 摘要部分 -->
+    <div class="summary-box">
+      <h2>搜尋摘要</h2>
+      <p>找到 3 筆與「<span id="search-term">關鍵字</span>」相關的結果。這些結果包含資料庫結構、查詢優化及資料安全等主題，可能對您的研究或專案有所幫助。</p>
+    </div>
+    
+    <!-- 目錄部分 -->
+    <div class="table-of-contents">
+      <h3>搜尋結果目錄</h3>
+      <ul>
+        <li><a href="#result1">搜尋結果標題 1</a></li>
+        <li><a href="#result2">搜尋結果標題 2</a></li>
+        <li><a href="#result3">搜尋結果標題 3</a></li>
+      </ul>
+    </div>
+
+    <!-- 個別搜尋結果 -->
+    <div id="result1" class="result-item">
       <h3>搜尋結果標題 1</h3>
-      <p>這是一段關於搜尋結果 1 的描述文字，提供使用者一些基本的資訊。</p>
+      <p>這是一段關於搜尋結果 1 的描述文字，提供使用者一些基本的資訊。此文件詳細說明了資料庫結構設計的基本原則與最佳實踐。</p>
+      <a href="/apps/files/files/0?path=/database/README.md" class="file-link" target="_blank">開啟檔案</a>
     </div>
-    <div class="result-item">
+    
+    <div id="result2" class="result-item">
       <h3>搜尋結果標題 2</h3>
-      <p>這是一段關於搜尋結果 2 的描述文字，提供使用者一些基本的資訊。</p>
+      <p>這是一段關於搜尋結果 2 的描述文字，提供使用者一些基本的資訊。本文件包含SQL查詢優化技巧與效能調校的詳細指南。</p>
+      <a href="/apps/files/files/0?path=/database/README.md" class="file-link" target="_blank">開啟檔案</a>
     </div>
-    <div class="result-item">
+    
+    <div id="result3" class="result-item">
       <h3>搜尋結果標題 3</h3>
-      <p>這是一段關於搜尋結果 3 的描述文字，提供使用者一些基本的資訊。</p>
+      <p>這是一段關於搜尋結果 3 的描述文字，提供使用者一些基本的資訊。此資源涵蓋資料庫安全與權限管理的關鍵概念。</p>
+      <a href="/apps/files/files/0?path=/database/README.md" class="file-link" target="_blank">開啟檔案</a>
     </div>
   </section>
 
   <script>
     // 取得 URL 的查詢參數
-const urlParams = new URLSearchParams(window.location.search);
+    const urlParams = new URLSearchParams(window.location.search);
 
-// 檢查是否有 'query' 參數
-if (urlParams.has('query')) {
-    // 取得 'query' 的值
-    const queryValue = urlParams.get('query');
+    // 檢查是否有 'query' 參數
+    if (urlParams.has('query')) {
+      // 取得 'query' 的值
+      const queryValue = urlParams.get('query');
 
-    // 將值填入 #search_query 欄位
-    document.addEventListener("DOMContentLoaded", function () {
+      // 將值填入 #search_query 欄位
+      document.addEventListener("DOMContentLoaded", function () {
         const searchInput = document.querySelector("#search_query");
         if (searchInput) {
-            searchInput.value = queryValue;
+          searchInput.value = queryValue;
         }
-    });
-}
+        
+        // 更新摘要中的搜尋關鍵字
+        const searchTermSpan = document.getElementById("search-term");
+        if (searchTermSpan) {
+          searchTermSpan.textContent = queryValue;
+        }
+      });
+    }
 
+    // 為目錄添加平滑滾動效果
+    document.querySelectorAll('.table-of-contents a').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        
+        const targetId = this.getAttribute('href');
+        const targetElement = document.querySelector(targetId);
+        
+        if (targetElement) {
+          window.scrollTo({
+            top: targetElement.offsetTop - 20,
+            behavior: 'smooth'
+          });
+        }
+      });
+    });
   </script>
 </body>
 </html>

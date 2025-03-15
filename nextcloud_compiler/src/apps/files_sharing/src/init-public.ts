@@ -33,7 +33,7 @@ if (fileId !== null) {
 	window.OCP.Files.Router.goToRoute(
 		'filelist',
 		{ ...window.OCP.Files.Router.params, token, fileid: String(fileId) },
-		{ ...window.OCP.Files.Router.query, openfile: 'true' },
+		{ ...window.OCP.Files.Router.query, openfile: 'true'},
 	)
 }
 

@@ -313,8 +313,8 @@ class ViewController extends Controller {
 				else {
 					$params['openfile'] = 'true';
 				}
-				
 			}
+
 			return new RedirectResponse($this->urlGenerator->linkToRoute('files.view.indexViewFileid', $params));
 		}
 

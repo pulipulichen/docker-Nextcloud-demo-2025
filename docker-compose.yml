@@ -85,7 +85,29 @@ services:
     env_file:
       - .env
 
+  # onlyoffice:
+  #   # container_name: onlyoffice-document-server
+  #   image: onlyoffice/documentserver:8.3
+  #   # restart: always
+  #   environment:
+  #     - JWT_SECRET=secret
+  #     - ONLYOFFICE_HTTPS_HSTS_ENABLED=false
+  #   expose:
+  #     - 8081:8000
+  #     - 8082:80
+  #     - 8083:443
+  #   #   - '443'
+  #   volumes:
+  #     - onlyoffice_data:/var/www/onlyoffice/Data
+  #     - onlyoffice_log:/var/log/onlyoffice
+  #     - onlyoffice_lib:/var/lib/onlyoffice
+  #     - onlyoffice_db:/var/lib/postgresql
+
 volumes:
   nextcloud:
   db:
   esdata:
+  # onlyoffice_data:
+  # onlyoffice_log:
+  # onlyoffice_lib:
+  # onlyoffice_db:

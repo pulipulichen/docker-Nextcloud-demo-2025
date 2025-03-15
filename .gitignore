@@ -6,9 +6,15 @@
 /nextcloud_server/server/dist/data_image*
 /nextcloud_server/server/dist/core_src*
 
-/files
-!/files/.gitkeep
+# /files
+# !/files/.gitkeep
+# !/files/README.md
+# !/files/database/.gitkeep
+# !/files/database/README.md
+# !/files/database/demo/**/*.pdf
+/files/*
+!/files/database
 !/files/README.md
-!/files/database/.gitkeep
+/files/database/*
 !/files/database/README.md
-
+!/files/database/demo

@@ -13,13 +13,14 @@ fi
 DEST="/var/www/html/data/${NEXTCLOUD_ADMIN_USER}/files/"
 
 if [ ! -f "$DEST/.file_sync_init" ]; then
-  rsync -a --delete "$SRC" "$DEST" > /dev/null # 20250316-155500 隱藏 rsync 訊息
-  /var/www/html/occ files:scan -- $NEXTCLOUD_ADMIN_USER > /dev/null # 20250316-155500 隱藏 files:scan 訊息
+  cd $(dirname "$0")
+  ./sync_src_to_dist.sh
 else
   /var/www/html/occ files:scan -- $NEXTCLOUD_ADMIN_USER > /dev/null # 20250316-155500 隱藏 files:scan 訊息
-  rsync -au "$SRC" "$DEST" > /dev/null # 20250316-155500 隱藏 rsync 訊息
-  rsync -au "$DEST" "$SRC" > /dev/null # 20250316-155500 隱藏 rsync 訊息
-  /var/www/html/occ files:scan -- $NEXTCLOUD_ADMIN_USER > /dev/null # 20250316-155500 隱藏 files:scan 訊息
+  # rsync -au --exclude='/files' "$SRC" "$DEST" --no-perms > /dev/null # 20250316-155500 隱藏 rsync 訊息
+  rsync -au --delete --exclude='/files/.*' "$DEST" "$SRC" --no-perms > /dev/null # 20250316-155500 隱藏 rsync 訊息
+  # chmod 777 -R /files/*
+  # /var/www/html/occ files:scan -- $NEXTCLOUD_ADMIN_USER > /dev/null # 20250316-155500 隱藏 files:scan 訊息
 fi
 
   )

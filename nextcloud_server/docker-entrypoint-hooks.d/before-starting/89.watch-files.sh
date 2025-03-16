@@ -72,11 +72,34 @@ watch_files_dest() {
 #   rm -rf $DEST/*
   
 #   ./watch-files/sync_to_nextcloud_files.sh
+  echo "================================================================"
+  echo "開始監控 ${DEST}"
+  echo "================================================================"
 
   # 使用 inotifywait 持續監控目錄，並等待 30 秒，如果期間有任何變動，則在 while 迴圈中處理，20250316-195000
-  inotifywait -m -t 30 -r -e modify -e create -e delete -e move --format '%e %w%f %T' --timefmt '%Y-%m-%d %H:%M:%S' "$DEST" |
-  while read event file timestamp; do # 讀取 inotifywait 的輸出，每次讀取一個事件，20250316-195000
+  inotifywait -m -r -e modify -e create -e delete -e move "$DEST" --format '%e %w%f %T' --timefmt '%Y-%m-%d %H:%M:%S' |  while read event file timestamp; 
+  do # 讀取 inotifywait 的輸出，每次讀取一個事件，20250316-195000
+      # 如果file是以.part結尾，則continue
+      if [[ $file == *.part ]]; then
+          continue
+      fi
+
+      echo "================================================================"
       echo "偵測到變動 ${event}: ${file}" # 顯示偵測到的事件，20250316-195000
+      echo "================================================================"
+
+      # sleep 5
+
+      # 偵測file是否存在，如果不在，則continue迴圈
+      # if [ ! -f "$DEST/$file" ]; then
+      #     continue
+      # fi
+      # echo "存在，繼續執行"
+
+      ./watch-files/sync_dist_to_src.sh # 同步檔案到 Nextcloud，20250316-195000
+
+      # 依據事件類型處理檔案，20250316-195000
+   
       
     #   case "$event" in # 判斷事件類型，20250316-195000
     #       MODIFY) # 如果是修改，20250316-195000
@@ -107,10 +130,12 @@ watch_files_dest() {
     #           ;;
     #   esac # 結束判斷，20250316-195000
   done # 結束迴圈，20250316-195000
+
+  echo "結束了"
 }
 
 cd $(dirname $0)
-./watch-files/sync_to_nextcloud_files.sh
-watch_files_src &
+./watch-files/sync_src_to_dist.sh
+# watch_files_src &
 watch_files_dest
 sleep 10

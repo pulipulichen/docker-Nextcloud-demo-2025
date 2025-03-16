@@ -4,13 +4,13 @@ if [ "$NEXTCLOUD_ORIGINAL_MODE" = "true" ]; then
     exit 0
 fi
 
-# 定義來源與目標目錄
+# Define source and target directories
 SRC="/html/apps/"
 DEST="/var/www/html/apps/"
 
 # 檢查目標目錄是否存在
 if [ ! -d "$DEST" ]; then
-    echo "目標目錄 $DEST 不存在，取消執行！"
+    echo "Target directory $DEST does not exist, canceling execution!"
     exit 1
 fi
 
@@ -29,13 +29,13 @@ watch_apps_prepare() {
 
 # watch_apps &
 
-# 取得 $SRC 目錄下的第一層子目錄並迴圈處理
+# Get the first-level subdirectories under the $SRC directory and loop through them.
 for dir in "$SRC"*/; do
-    # 確保變數 dir 是目錄
+    # Ensure that the variable dir is a directory.
     if [ -d "$dir" ]; then
 
-        # echo "發現子目錄：$dir"
-        # 這裡可以執行你的同步指令，例如 rsync
+        echo "Processing subdirectory: $dir"
+        # Here you can execute your synchronization commands, such as rsync.
         watch_apps_prepare "$dir"
     fi
 done

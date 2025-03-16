@@ -126,7 +126,7 @@ ErrorDocument 404 /index.php/error/404
   RewriteRule ^core/preview.png$ index.php [PT,E=PATH_INFO:$1]
   RewriteCond %{REQUEST_FILENAME} !\.(css|js|mjs|svg|gif|ico|jpg|jpeg|png|webp|html|otf|ttf|woff2?|map|webm|mp4|mp3|ogg|wav|flac|wasm|tflite)$
   RewriteCond %{REQUEST_FILENAME} !/core/ajax/update\.php
-  RewriteCond %{REQUEST_FILENAME} !/apps/external_site/query\.php
+  RewriteCond %{REQUEST_FILENAME} !/external_site/query\.php
   RewriteCond %{REQUEST_FILENAME} !/core/img/(favicon\.ico|manifest\.json)$
   RewriteCond %{REQUEST_FILENAME} !/(cron|public|remote|status)\.php
   RewriteCond %{REQUEST_FILENAME} !/ocs/v(1|2)\.php

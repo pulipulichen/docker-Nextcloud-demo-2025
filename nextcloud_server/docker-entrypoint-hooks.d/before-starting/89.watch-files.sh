@@ -56,9 +56,7 @@ move_files_event() {
   sync_to_nextcloud_files
 }
 
-
 watch_files() {
-
   # sleep 10
 
   rm -rf $DEST/*

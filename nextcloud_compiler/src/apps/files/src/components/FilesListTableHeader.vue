@@ -5,6 +5,7 @@
 <template>
 	<tr class="files-list__row-head">
 		<th class="files-list__column files-list__row-checkbox"
+		  :style="{'visibility': (isGuest ? 'hidden': 'show')}"
 			@keyup.esc.exact="resetSelection">
 			<NcCheckboxRadioSwitch v-bind="selectAllBind" data-cy-files-list-selection-checkbox @update:checked="onToggleAll" />
 		</th>
@@ -117,6 +118,9 @@ export default defineComponent({
 	},
 
 	computed: {
+		isGuest(): boolean {
+			return !OC.currentUser || OC.currentUser.includes('guest')
+		},
 		columns() {
 			// Hide columns if the list is too small
 			if (this.filesListWidth < 512) {

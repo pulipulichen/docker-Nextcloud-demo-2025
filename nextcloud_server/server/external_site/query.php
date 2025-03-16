@@ -26,7 +26,6 @@ $api_key = getenv('DIFY_API_KEY');
 
 $url = $base . 'chat-messages';
 
-
 $data = array(
     "inputs" => array(),
     "query" => "What are the specs of the iPhone 13 Pro Max?",
@@ -72,11 +71,12 @@ if (curl_errno($ch)) {
             }
         }
     }
-    echo 'Answer: ' . $answer;
+    // echo 'Answer: ' . $answer;
+    echo $answer;
 
-    echo "================================================";
+    // echo "================================================";
 
-    echo $response;
+    // echo $response;
 }
 
 curl_close($ch);

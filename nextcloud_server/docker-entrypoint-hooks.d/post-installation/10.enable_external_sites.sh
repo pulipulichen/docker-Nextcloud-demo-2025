@@ -8,4 +8,4 @@ if [ -n "$NEXTCLOUD_EXTERNAL_SITES" ]; then
   /var/www/html/occ config:app:set external sites --value=$NEXTCLOUD_EXTERNAL_SITES
 fi
 
-# sudo -u www-data /var/www/html/occ config:app:set external sites --value='{"1":{"id":1,"name":"Home","url":"/external_site/home.html","icon":"home.svg","lang":"","redirect":false},"2":{"id":2,"name":"Query","url":"/external_site/query.html","icon":"ask.svg","lang":"","redirect":false}}'
+# sudo -u www-data /var/www/html/occ config:app:set external sites --value='{"1":{"id":1,"name":"Home","url":"/external_site/home.html","icon":"home.svg","lang":"","redirect":false},"2":{"id":2,"name":"Query","url":"/external_site/query.html","icon":"ask.svg","lang":"","redirect":false},"3":{"id":3,"name":"Test","url":"/external_site/query.php","icon":"ask.svg","lang":"","redirect":false}}'

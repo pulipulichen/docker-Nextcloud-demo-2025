@@ -8069,6 +8069,9 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   computed: {
+    isGuest() {
+      return !OC.currentUser || OC.currentUser.includes('guest');
+    },
     isActive() {
       return this.activeStore.activeNode?.source === this.source.source;
     },
@@ -8979,6 +8982,9 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   computed: {
+    isGuest() {
+      return !OC.currentUser || OC.currentUser.includes('guest');
+    },
     columns() {
       // Hide columns if the list is too small
       if (this.filesListWidth < 512) {
@@ -11989,6 +11995,9 @@ var render = function render() {
     _setup = _vm._self._setupProxy;
   return _c("td", {
     staticClass: "files-list__row-checkbox",
+    style: {
+      visibility: _vm.isGuest ? "hidden" : "show"
+    },
     on: {
       keyup: function ($event) {
         if (!$event.type.indexOf("key") && _vm._k($event.keyCode, "esc", 27, $event.key, ["Esc", "Escape"])) return null;
@@ -12454,6 +12463,9 @@ var render = function render() {
     staticClass: "files-list__row-head"
   }, [_c("th", {
     staticClass: "files-list__column files-list__row-checkbox",
+    style: {
+      visibility: _vm.isGuest ? "hidden" : "show"
+    },
     on: {
       keyup: function ($event) {
         if (!$event.type.indexOf("key") && _vm._k($event.keyCode, "esc", 27, $event.key, ["Esc", "Escape"])) return null;
@@ -18552,4 +18564,4 @@ __webpack_require__.r(__webpack_exports__);
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=files-main.js.map?v=10a9722cba66d002d8ee
+//# sourceMappingURL=files-main.js.map?v=407eeb823439d8e68769

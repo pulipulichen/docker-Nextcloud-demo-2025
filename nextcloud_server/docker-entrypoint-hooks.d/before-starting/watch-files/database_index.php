@@ -9,6 +9,7 @@ echo "送出索引：" . $title;
 
 # 20250316-205000 將 curl 命令改寫為 PHP 版本
 $url = getenv("SEMANTIC_DATABASE_BASE") . '/index';
+// echo $url;
 $post_fields = array(
     'knowledge_id' => $knowledge_id,
     'title' => $encode_title,
@@ -33,4 +34,4 @@ if (curl_errno($ch)) {
 }
 curl_close ($ch);
 
-echo $result;
+// echo $result;

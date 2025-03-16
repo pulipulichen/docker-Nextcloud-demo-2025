@@ -72,9 +72,9 @@ watch_files_dest() {
 #   rm -rf $DEST/*
   
 #   ./watch-files/sync_to_nextcloud_files.sh
-  echo "================================================================"
-  echo "開始監控 ${DEST}"
-  echo "================================================================"
+  # echo "================================================================"
+  # echo "開始監控 ${DEST}"
+  # echo "================================================================"
 
   # 使用 inotifywait 持續監控目錄，並等待 30 秒，如果期間有任何變動，則在 while 迴圈中處理，20250316-195000
   inotifywait -m -r -e modify -e create -e delete -e move "$DEST" --format '%e %w%f %T' --timefmt '%Y-%m-%d %H:%M:%S' |  while read event file timestamp; 
@@ -132,5 +132,5 @@ watch_files_dest() {
 cd $(dirname $0)
 ./watch-files/sync_src_to_dist.sh
 # watch_files_src &
-watch_files_dest
+watch_files_dest &
 sleep 10

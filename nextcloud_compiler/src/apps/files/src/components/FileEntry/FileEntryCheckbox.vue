@@ -4,6 +4,7 @@
 -->
 <template>
 	<td class="files-list__row-checkbox"
+		:style="{'visibility': (isGuest ? 'hidden': 'show')}"
 		@keyup.esc.exact="resetSelection">
 		<NcLoadingIcon v-if="isLoading" :name="loadingLabel" />
 		<NcCheckboxRadioSwitch v-else
@@ -73,6 +74,10 @@ export default defineComponent({
 	},
 
 	computed: {
+		isGuest(): boolean {
+			return !OC.currentUser || OC.currentUser.includes('guest')
+		},
+
 		isActive() {
 			return this.activeStore.activeNode?.source === this.source.source
 		},

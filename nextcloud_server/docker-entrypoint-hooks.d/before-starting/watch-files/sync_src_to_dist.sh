@@ -14,6 +14,6 @@ cd $(dirname "$0")
 
 # 列出 /files 底下的所有檔案，但排除隱藏檔案，最後以相對路徑來 echo。20250316-203054
 find "$SRC" -not -path "*/.*" -type f -print0 | while IFS= read -r -d $'\0' file; do
-  echo "${file#$SRC}"
+  # echo "${file#$SRC}"
   php database_index.php "$file" "${file#$SRC}" # 20250316-205500 傳遞完整路徑和相對路徑
 done

@@ -5,6 +5,7 @@
 /nextcloud_server/server/dist/node_modules*
 /nextcloud_server/server/dist/data_image*
 /nextcloud_server/server/dist/core_src*
+/nextcloud_server/server/.sync_to_nextcloud_files.lock
 
 # /files
 # !/files/.gitkeep

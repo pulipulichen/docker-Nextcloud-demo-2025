@@ -28,43 +28,43 @@ if [ ! -d "$DEST" ]; then
     exit 1
 fi
 
-watch_files_src() {
-  # sleep 10
-    cd $(dirname $0)
-#   rm -rf $DEST/*
+# watch_files_src() {
+#   # sleep 10
+#     cd $(dirname $0)
+# #   rm -rf $DEST/*
   
-#   ./watch-files/sync_to_nextcloud_files.sh
+# #   ./watch-files/sync_to_nextcloud_files.sh
 
-  # 使用 inotifywait 持續監控目錄
-  inotifywait -m -r -e modify -e create -e delete -e move --format '%e %w%f %T' --timefmt '%Y-%m-%d %H:%M:%S' "$SRC" |
-  while read event file timestamp; do
-      echo "偵測到變動 ${event}"
-      case "$event" in
-          MODIFY|ATTRIB)
-              echo "[MODIFY] $file at $timestamp"
-              ./watch-files/add_files_event.sh "$file" "$timestamp"
-              ./watch-files/sync_to_nextcloud_files.sh
-              ;;
-          CREATE|CREATE*)
-              ./watch-files/add_files_event.sh "$file" "$timestamp"
-              ./watch-files/sync_to_nextcloud_files.sh
-              ;;
-          DELETE|DELETE*)
-              ./watch-files/delete_files_event.sh "$file" "$timestamp"
-              ./watch-files/sync_to_nextcloud_files.sh
-              ;;
-          MOVED_FROM)
-              old_path="$file"
-              ;;
-          MOVED_TO)
-              new_path="$file"
-              # echo "[MOVE] from $old_path to $new_path at $timestamp"
-              ./watch-files/move_files_event.sh "$old_path" "$new_path" "$timestamp"
-              ./watch-files/sync_to_nextcloud_files.sh
-              ;;
-      esac
-  done
-}
+#   # 使用 inotifywait 持續監控目錄
+#   inotifywait -m -r -e modify -e create -e delete -e move --format '%e %w%f %T' --timefmt '%Y-%m-%d %H:%M:%S' "$SRC" |
+#   while read event file timestamp; do
+#       echo "偵測到變動 ${event}"
+#       case "$event" in
+#           MODIFY|ATTRIB)
+#               echo "[MODIFY] $file at $timestamp"
+#               ./watch-files/add_files_event.sh "$file" "$timestamp"
+#               ./watch-files/sync_to_nextcloud_files.sh
+#               ;;
+#           CREATE|CREATE*)
+#               ./watch-files/add_files_event.sh "$file" "$timestamp"
+#               ./watch-files/sync_to_nextcloud_files.sh
+#               ;;
+#           DELETE|DELETE*)
+#               ./watch-files/delete_files_event.sh "$file" "$timestamp"
+#               ./watch-files/sync_to_nextcloud_files.sh
+#               ;;
+#           MOVED_FROM)
+#               old_path="$file"
+#               ;;
+#           MOVED_TO)
+#               new_path="$file"
+#               # echo "[MOVE] from $old_path to $new_path at $timestamp"
+#               ./watch-files/move_files_event.sh "$old_path" "$new_path" "$timestamp"
+#               ./watch-files/sync_to_nextcloud_files.sh
+#               ;;
+#       esac
+#   done
+# }
 
 watch_files_dest() {
   # sleep 10
@@ -73,39 +73,40 @@ watch_files_dest() {
   
 #   ./watch-files/sync_to_nextcloud_files.sh
 
-  # 使用 inotifywait 持續監控目錄
-  inotifywait -m -r -e modify -e create -e delete -e move --format '%e %w%f %T' --timefmt '%Y-%m-%d %H:%M:%S' "$DEST" |
-  while read event file timestamp; do
-      echo "偵測到變動 ${event}"
-      case "$event" in
-          MODIFY|ATTRIB)
-              echo "[MODIFY] $file at $timestamp"
-              ./watch-files/sync_to_nextcloud_files.sh
-              ./watch-files/add_files_event.sh "$file" "$timestamp"
+  # 使用 inotifywait 持續監控目錄，並等待 30 秒，如果期間有任何變動，則在 while 迴圈中處理，20250316-195000
+  inotifywait -m -t 30 -r -e modify -e create -e delete -e move --format '%e %w%f %T' --timefmt '%Y-%m-%d %H:%M:%S' "$DEST" |
+  while read event file timestamp; do # 讀取 inotifywait 的輸出，每次讀取一個事件，20250316-195000
+      echo "偵測到變動 ${event}: ${file}" # 顯示偵測到的事件，20250316-195000
+      
+    #   case "$event" in # 判斷事件類型，20250316-195000
+    #       MODIFY) # 如果是修改，20250316-195000
+    #           echo "[MODIFY] $file at $timestamp" # 顯示修改的文件和時間戳記，20250316-195000
+    #           ./watch-files/sync_to_nextcloud_files.sh # 同步檔案到 Nextcloud，20250316-195000
+    #           ./watch-files/add_files_event.sh "$file" "$timestamp" # 記錄檔案事件，20250316-195000
+    #           ;;
+    #       ATTRIB) # 如果只修改 ATTRIB，則不做任何事情，20250316-195000
+    #           ;;
+    #       CREATE|CREATE*) # 如果是建立，20250316-195000
+    #           ./watch-files/sync_to_nextcloud_files.sh # 同步檔案到 Nextcloud，20250316-195000
+    #           ./watch-files/add_files_event.sh "$file" "$timestamp" # 記錄檔案事件，20250316-195000
               
-              ;;
-          CREATE|CREATE*)
-              ./watch-files/sync_to_nextcloud_files.sh
-              ./watch-files/add_files_event.sh "$file" "$timestamp"
+    #           ;;
+    #       DELETE|DELETE*) # 如果是刪除，20250316-195000
+    #           ./watch-files/sync_to_nextcloud_files.sh # 同步檔案到 Nextcloud，20250316-195000
+    #           ./watch-files/delete_files_event.sh "$file" "$timestamp" # 記錄檔案事件，20250316-195000
+    #           ;;
+    #       MOVED_FROM) # 如果是移動來源，20250316-195000
+    #           old_path="$file" # 記錄舊路徑，20250316-195000
+    #           ;;
+    #       MOVED_TO) # 如果是移動目標，20250316-195000
+    #           new_path="$file" # 記錄新路徑，20250316-195000
+    #           # echo "[MOVE] from $old_path to $new_path at $timestamp"
+    #           ./watch-files/sync_to_nextcloud_files.sh # 同步檔案到 Nextcloud，20250316-195000
+    #           ./watch-files/move_files_event.sh "$old_path" "$new_path" "$timestamp" # 記錄檔案事件，20250316-195000
               
-              ;;
-          DELETE|DELETE*)
-              ./watch-files/sync_to_nextcloud_files.sh
-              ./watch-files/delete_files_event.sh "$file" "$timestamp"
-              
-              ;;
-          MOVED_FROM)
-              old_path="$file"
-              ;;
-          MOVED_TO)
-              new_path="$file"
-              # echo "[MOVE] from $old_path to $new_path at $timestamp"
-              ./watch-files/sync_to_nextcloud_files.sh
-              ./watch-files/move_files_event.sh "$old_path" "$new_path" "$timestamp"
-              
-              ;;
-      esac
-  done
+    #           ;;
+    #   esac # 結束判斷，20250316-195000
+  done # 結束迴圈，20250316-195000
 }
 
 cd $(dirname $0)

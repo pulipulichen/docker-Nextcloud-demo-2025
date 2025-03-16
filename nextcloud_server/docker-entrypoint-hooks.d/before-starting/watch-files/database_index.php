@@ -5,6 +5,8 @@ $title = $argv[2];
 $encode_title = rawurlencode($title); # 20250316-205500 更正變數賦值
 $knowledge_id = getenv("SEMANTIC_DATABASE_KNOWLEDGE_ID");
 
+echo "送出索引：" . $title;
+
 # 20250316-205000 將 curl 命令改寫為 PHP 版本
 $url = getenv("SEMANTIC_DATABASE_BASE") . '/index';
 $post_fields = array(

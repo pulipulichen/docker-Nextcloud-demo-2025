@@ -5,6 +5,8 @@ $title = $argv[2];
 $encode_title = rawurlencode($title); # 20250316-205500 更正變數賦值
 $knowledge_id = getenv("SEMANTIC_DATABASE_KNOWLEDGE_ID");
 
+echo "送出刪除：" . $title;
+
 $semantic_database_base = getenv("SEMANTIC_DATABASE_BASE"); # 20250316-210000 取得 SEMANTIC_DATABASE_BASE 環境變數
 
 # 使用 PHP 語法替換 curl

@@ -84,9 +84,9 @@ watch_files_dest() {
           continue
       fi
 
-      echo "================================================================"
-      echo "偵測到變動 ${event}: ${file}" # 顯示偵測到的事件，20250316-195000
-      echo "================================================================"
+      # echo "================================================================"
+      # echo "偵測到變動 ${event}: ${file}" # 顯示偵測到的事件，20250316-195000
+      # echo "================================================================"
 
       # sleep 5
 
@@ -101,34 +101,29 @@ watch_files_dest() {
       # 依據事件類型處理檔案，20250316-195000
    
       
-    #   case "$event" in # 判斷事件類型，20250316-195000
-    #       MODIFY) # 如果是修改，20250316-195000
-    #           echo "[MODIFY] $file at $timestamp" # 顯示修改的文件和時間戳記，20250316-195000
-    #           ./watch-files/sync_to_nextcloud_files.sh # 同步檔案到 Nextcloud，20250316-195000
-    #           ./watch-files/add_files_event.sh "$file" "$timestamp" # 記錄檔案事件，20250316-195000
-    #           ;;
-    #       ATTRIB) # 如果只修改 ATTRIB，則不做任何事情，20250316-195000
-    #           ;;
-    #       CREATE|CREATE*) # 如果是建立，20250316-195000
-    #           ./watch-files/sync_to_nextcloud_files.sh # 同步檔案到 Nextcloud，20250316-195000
-    #           ./watch-files/add_files_event.sh "$file" "$timestamp" # 記錄檔案事件，20250316-195000
+      case "$event" in # 判斷事件類型，20250316-195000
+          MODIFY) # 如果是修改，20250316-195000
+              ./watch-files/add_files_event.sh "$file" "$timestamp" # 記錄檔案事件，20250316-195000
+              ;;
+          ATTRIB) # 如果只修改 ATTRIB，則不做任何事情，20250316-195000
+              ;;
+          CREATE|CREATE*) # 如果是建立，20250316-195000
+              ./watch-files/add_files_event.sh "$file" "$timestamp" # 記錄檔案事件，20250316-195000
               
-    #           ;;
-    #       DELETE|DELETE*) # 如果是刪除，20250316-195000
-    #           ./watch-files/sync_to_nextcloud_files.sh # 同步檔案到 Nextcloud，20250316-195000
-    #           ./watch-files/delete_files_event.sh "$file" "$timestamp" # 記錄檔案事件，20250316-195000
-    #           ;;
-    #       MOVED_FROM) # 如果是移動來源，20250316-195000
-    #           old_path="$file" # 記錄舊路徑，20250316-195000
-    #           ;;
-    #       MOVED_TO) # 如果是移動目標，20250316-195000
-    #           new_path="$file" # 記錄新路徑，20250316-195000
-    #           # echo "[MOVE] from $old_path to $new_path at $timestamp"
-    #           ./watch-files/sync_to_nextcloud_files.sh # 同步檔案到 Nextcloud，20250316-195000
-    #           ./watch-files/move_files_event.sh "$old_path" "$new_path" "$timestamp" # 記錄檔案事件，20250316-195000
+              ;;
+          DELETE|DELETE*) # 如果是刪除，20250316-195000
+              ./watch-files/delete_files_event.sh "$file" "$timestamp" # 記錄檔案事件，20250316-195000
+              ;;
+          MOVED_FROM) # 如果是移動來源，20250316-195000
+              old_path="$file" # 記錄舊路徑，20250316-195000
+              ;;
+          MOVED_TO) # 如果是移動目標，20250316-195000
+              new_path="$file" # 記錄新路徑，20250316-195000
+              # echo "[MOVE] from $old_path to $new_path at $timestamp"
+              ./watch-files/move_files_event.sh "$old_path" "$new_path" "$timestamp" # 記錄檔案事件，20250316-195000
               
-    #           ;;
-    #   esac # 結束判斷，20250316-195000
+              ;;
+      esac # 結束判斷，20250316-195000
   done # 結束迴圈，20250316-195000
 
   echo "結束了"

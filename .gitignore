@@ -18,3 +18,4 @@
 /files/database/*
 !/files/database/README.md
 !/files/database/demo
+!/files/.file_sync_init

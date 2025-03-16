@@ -23,10 +23,6 @@ if [ ! -d "$DEST" ]; then
     exit 1
 fi
 
-
-
-
-
 watch_files() {
   # sleep 10
 
@@ -41,12 +37,15 @@ watch_files() {
           MODIFY|ATTRIB)
               # echo "[MODIFY] $file at $timestamp"
               ./watch-files/add_files_event.sh "$file" "$timestamp"
+              ./watch-files/sync_to_nextcloud_files.sh
               ;;
           CREATE|CREATE*)
               ./watch-files/add_files_event.sh "$file" "$timestamp"
+              ./watch-files/sync_to_nextcloud_files.sh
               ;;
           DELETE|DELETE*)
               ./watch-files/delete_files_event.sh "$file" "$timestamp"
+              ./watch-files/sync_to_nextcloud_files.sh
               ;;
           MOVED_FROM)
               old_path="$file"
@@ -55,6 +54,7 @@ watch_files() {
               new_path="$file"
               # echo "[MOVE] from $old_path to $new_path at $timestamp"
               ./watch-files/move_files_event.sh "$old_path" "$new_path" "$timestamp"
+              ./watch-files/sync_to_nextcloud_files.sh
               ;;
       esac
   done
